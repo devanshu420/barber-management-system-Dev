@@ -1,5 +1,5 @@
 import { LiveStatusUpdates } from "@/components/real-time/live-status-updates"
-import { NotificationCenter } from "@/components/notifications/notification-center"
+import { NotificationCenter } from "@/components/Otp/opt-registration"
 
 export default function LiveStatusPage() {
   return (

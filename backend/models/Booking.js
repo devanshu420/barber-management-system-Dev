@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+// models/Booking.js
+const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -7,9 +8,9 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    barberId: {
+    shopId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Barber",
+      ref: "BarberShop", // ✅ Must match model name exactly
       required: true,
     },
     serviceId: {
@@ -52,7 +53,6 @@ const bookingSchema = new mongoose.Schema(
     discount: {
       type: Number,
       default: 0,
-      min: [0, "Discount cannot be negative"],
     },
     finalAmount: {
       type: Number,
@@ -103,25 +103,31 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       maxlength: [500, "Review cannot exceed 500 characters"],
     },
+    isReviewed: {
+      type: Boolean,
+      default: false,
+    },
     reminderSent: {
       type: Boolean,
       default: false,
     },
+    cancelledAt: Date,
+    reviewDate: Date,
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
-// Index for efficient queries
-bookingSchema.index({ userId: 1, bookingDate: -1 })
-bookingSchema.index({ barberId: 1, bookingDate: -1 })
-bookingSchema.index({ status: 1, bookingDate: 1 })
+// Indexes
+bookingSchema.index({ userId: 1, bookingDate: -1 });
+bookingSchema.index({ shopId: 1, bookingDate: -1 });
+bookingSchema.index({ status: 1, bookingDate: 1 });
 
-// Calculate final amount before saving
+// Pre-save hook
 bookingSchema.pre("save", function (next) {
-  this.finalAmount = this.amount - this.discount
-  next()
-})
+  this.finalAmount = this.amount - this.discount;
+  next();
+});
 
-module.exports = mongoose.model("Booking", bookingSchema)
+module.exports = mongoose.model("booking", bookingSchema);

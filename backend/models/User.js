@@ -28,16 +28,30 @@ const userSchema = new mongoose.Schema(
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
+
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+
+    otp: {
+      type: String
+    },
+
+    otpExpires: {
+      type: Date
+    },
+
     profilePhoto: {
       type: String,
       default: null,
     },
     role: {
-       type: String,
-        enum: ["customer", "barber"], 
-        default: "customer",
-        required: true ,
-      }
+      type: String,
+      enum: ["customer", "barber"],
+      default: "customer",
+      required: true,
+    }
 
     ,
     location: {

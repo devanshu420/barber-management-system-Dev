@@ -1,5 +1,5 @@
 import { LiveChat } from "@/components/chat/live-chat"
-import { NotificationCenter } from "@/components/notifications/notification-center"
+import { NotificationCenter } from "@/components/Otp/opt-registration"
 
 export default function ChatPage() {
   return (

@@ -3,47 +3,8 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Building2, MapPin, Star, Users, Clock } from "lucide-react";
-
-// Mock shops data with coordinates
-const barbershops = [
-  {
-    id: 1,
-    name: "Downtown Salon",
-    address: "123 Main St",
-    coordinates: { lat: 40.7128, lng: -74.006 },
-    distance: 0.5,
-    rating: 4.8,
-    reviews: 245,
-    image: "https://via.placeholder.com/80?text=Shop1",
-    waitlist: 0,
-    barbers: 3,
-  },
-  {
-    id: 2,
-    name: "Main Street Barber",
-    address: "456 Market Ave",
-    coordinates: { lat: 40.7589, lng: -73.9851 },
-    distance: 1.2,
-    rating: 4.9,
-    reviews: 312,
-    image: "https://via.placeholder.com/80?text=Shop2",
-    waitlist: 2,
-    barbers: 2,
-  },
-  {
-    id: 3,
-    name: "Premium Grooming",
-    address: "789 Central Blvd",
-    coordinates: { lat: 40.7614, lng: -73.9776 },
-    distance: 1.8,
-    rating: 4.7,
-    reviews: 189,
-    image: "https://via.placeholder.com/80?text=Shop3",
-    waitlist: 1,
-    barbers: 4,
-  },
-];
+import { Building2, MapPin, Star, Users, Clock, AlertCircle } from "lucide-react";
+import axios from "axios";
 
 // 🔹 Distance calculation function
 function calculateDistance(lat1, lng1, lat2, lng2) {
@@ -77,37 +38,99 @@ export function ShopSelection({ userLocation, onSelect }) {
   const [selectedShop, setSelectedShop] = useState(null);
   const [nearbyShops, setNearbyShops] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // 🔹 Calculate distances and sort shops
+  // 🔹 Fetch shops from backend
   useEffect(() => {
-    if (!userLocation) {
-      setNearbyShops(barbershops);
-      setLoading(false);
-      return;
+    async function fetchNearbyShops() {
+      setLoading(true);
+      setError("");
+
+      try {
+        if (!userLocation) {
+          setError("Location not provided");
+          setLoading(false);
+          return;
+        }
+
+        // Call backend API to get shops (based on location or all active shops)
+        const response = await axios.get(
+          `http://localhost:5000/api/barbers/all-shops`
+        );
+
+        if (response.data.success) {
+          let shops = response.data.shops || [];
+
+          // Filter shops based on city/location
+          if (userLocation.address) {
+            shops = shops.filter((shop) =>
+              shop.location?.city?.toLowerCase().includes(userLocation.address.toLowerCase())
+            );
+          }
+
+          // Calculate distances if we have coordinates
+          const shopsWithDistance = shops.map((shop) => {
+            let distance = 0;
+
+            // If shop has coordinates, calculate distance
+            if (
+              shop.location?.coordinates?.lat &&
+              shop.location?.coordinates?.lng
+            ) {
+              distance = calculateDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                shop.location.coordinates.lat,
+                shop.location.coordinates.lng
+              );
+            }
+
+            return {
+              ...shop,
+              id: shop._id,
+              name: shop.shopName,
+              address: `${shop.location?.address}, ${shop.location?.city}`,
+              coordinates: {
+                lat: shop.location?.coordinates?.lat || 0,
+                lng: shop.location?.coordinates?.lng || 0,
+              },
+              distance: distance,
+              rating: shop.ratings?.average || 0,
+              reviews: shop.ratings?.count || 0,
+              image: shop.image || "https://via.placeholder.com/80?text=Shop",
+              waitlist: shop.earnings?.pending || 0,
+              barbers: shop.staff?.length || 0,
+            };
+          });
+
+          // Sort by distance
+          const sorted = shopsWithDistance.sort(
+            (a, b) => a.distance - b.distance
+          );
+
+          setNearbyShops(sorted);
+        } else {
+          setError("Failed to fetch shops");
+        }
+      } catch (err) {
+        console.error("Error fetching shops:", err);
+        setError("Unable to load nearby shops. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    const shopsWithDistance = barbershops.map((shop) => ({
-      ...shop,
-      distance: calculateDistance(
-        userLocation.latitude,
-        userLocation.longitude,
-        shop.coordinates.lat,
-        shop.coordinates.lng
-      ),
-    }));
-
-    // Sort by waitlist first, then by distance
-    const sorted = shopsWithDistance.sort((a, b) =>
-      a.waitlist !== b.waitlist ? a.waitlist - b.waitlist : a.distance - b.distance
-    );
-
-    setNearbyShops(sorted.slice(0, 10));
-    setLoading(false);
+    fetchNearbyShops();
   }, [userLocation]);
 
   const handleSelectShop = (shop) => {
     setSelectedShop(shop);
-    onSelect(shop);
+  };
+
+  const handleContinue = () => {
+    if (selectedShop) {
+      onSelect(selectedShop);
+    }
   };
 
   if (loading) {
@@ -131,18 +154,30 @@ export function ShopSelection({ userLocation, onSelect }) {
           Choose Your Barbershop
         </h3>
         <p className="text-gray-400 text-sm sm:text-base">
-          Select from nearby barbershops with the shortest wait times
+          {userLocation?.address && (
+            <span>Shops near <strong>{userLocation.address}</strong></span>
+          )}
         </p>
       </div>
+
+      {/* 🔹 Error State */}
+      {error && (
+        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start space-x-3">
+          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <p className="text-red-300 text-sm">{error}</p>
+        </div>
+      )}
 
       {/* 🔹 Empty State */}
       {nearbyShops.length === 0 ? (
         <div className="text-center py-12 p-6 bg-gray-800/30 border border-gray-700/50 rounded-xl">
           <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400">No barbershops found nearby</p>
+          <p className="text-gray-400">
+            No barbershops found in {userLocation?.address}
+          </p>
         </div>
       ) : (
-        /* 🔹 Shops Grid (Horizontal) */
+        /* 🔹 Shops Grid */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {nearbyShops.map((shop) => (
             <div
@@ -189,7 +224,7 @@ export function ShopSelection({ userLocation, onSelect }) {
                     </div>
                     <div className="flex items-center space-x-1 text-yellow-400">
                       <Star className="w-3.5 h-3.5 fill-yellow-400 flex-shrink-0" />
-                      <span className="font-semibold">{shop.rating}</span>
+                      <span className="font-semibold">{shop.rating.toFixed(1)}</span>
                       <span className="text-gray-400">({shop.reviews})</span>
                     </div>
                   </div>
@@ -197,7 +232,9 @@ export function ShopSelection({ userLocation, onSelect }) {
                   {/* Barbers Row */}
                   <div className="flex items-center space-x-1 text-gray-400 text-xs sm:text-sm">
                     <Users className="w-3.5 h-3.5 flex-shrink-0" />
-                    <span>{shop.barbers} barber{shop.barbers > 1 ? "s" : ""}</span>
+                    <span>
+                      {shop.barbers} barber{shop.barbers > 1 ? "s" : ""}
+                    </span>
                   </div>
                 </div>
 
@@ -233,115 +270,13 @@ export function ShopSelection({ userLocation, onSelect }) {
       {/* 🔹 Continue Button */}
       {selectedShop && (
         <Button
-          onClick={() => onSelect(selectedShop)}
+          onClick={handleContinue}
           className="w-full py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold rounded-lg transition transform hover:scale-105"
         >
-          Continue to Barber Selection
+          Continue to Service Selection
         </Button>
       )}
     </div>
   );
 }
 
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import { Button } from "@/components/ui/button";
-// import { Building2, MapPin, Star } from "lucide-react";
-
-// // Mock shops data
-// const mockShops = [
-//   {
-//     id: 1,
-//     name: "Downtown Salon",
-//     distance: 0.5,
-//     rating: 4.8,
-//     reviews: 245,
-//     image: "https://via.placeholder.com/80?text=Shop1",
-//     address: "123 Main St",
-//   },
-//   {
-//     id: 2,
-//     name: "Main Street Barber",
-//     distance: 1.2,
-//     rating: 4.9,
-//     reviews: 312,
-//     image: "https://via.placeholder.com/80?text=Shop2",
-//     address: "456 Market Ave",
-//   },
-//   {
-//     id: 3,
-//     name: "Premium Grooming",
-//     distance: 1.8,
-//     rating: 4.7,
-//     reviews: 189,
-//     image: "https://via.placeholder.com/80?text=Shop3",
-//     address: "789 Central Blvd",
-//   },
-// ];
-
-// export function ShopSelection({ userLocation, onSelect }) {
-//   const [selectedShop, setSelectedShop] = useState(null);
-
-//   return (
-//     <div className="space-y-6">
-//       <div className="text-center mb-8">
-//         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500/20 rounded-full mb-4">
-//           <Building2 className="w-8 h-8 text-blue-400" />
-//         </div>
-//         <h3 className="text-2xl font-bold text-white mb-2">Choose Your Barbershop</h3>
-//         <p className="text-gray-400">Select from nearby barbershops</p>
-//       </div>
-
-//       <div className="space-y-4">
-//         {mockShops.map((shop) => (
-//           <div
-//             key={shop.id}
-//             onClick={() => setSelectedShop(shop)}
-//             className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-//               selectedShop?.id === shop.id
-//                 ? "border-teal-500 bg-teal-500/10"
-//                 : "border-gray-700 bg-gray-800/30 hover:border-teal-500/50"
-//             }`}
-//           >
-//             <div className="flex items-start space-x-4">
-//               <img
-//                 src={shop.image}
-//                 alt={shop.name}
-//                 className="w-16 h-16 rounded-lg object-cover"
-//               />
-//               <div className="flex-1">
-//                 <h4 className="text-lg font-bold text-white">{shop.name}</h4>
-//                 <div className="flex items-center space-x-4 mt-2 text-sm">
-//                   <div className="flex items-center space-x-1 text-gray-400">
-//                     <MapPin className="w-4 h-4" />
-//                     <span>{shop.distance} km</span>
-//                   </div>
-//                   <div className="flex items-center space-x-1 text-yellow-400">
-//                     <Star className="w-4 h-4 fill-yellow-400" />
-//                     <span>{shop.rating}</span>
-//                     <span className="text-gray-400">({shop.reviews})</span>
-//                   </div>
-//                 </div>
-//                 <p className="text-gray-400 text-xs mt-1">{shop.address}</p>
-//               </div>
-//               {selectedShop?.id === shop.id && (
-//                 <div className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center">
-//                   <span className="text-white text-sm font-bold">✓</span>
-//                 </div>
-//               )}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       <Button
-//         onClick={() => selectedShop && onSelect(selectedShop)}
-//         disabled={!selectedShop}
-//         className="w-full py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 disabled:opacity-50 text-black font-semibold rounded-lg"
-//       >
-//         Continue to Barber Selection
-//       </Button>
-//     </div>
-//   );
-// }

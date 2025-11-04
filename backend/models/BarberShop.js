@@ -1,3 +1,4 @@
+// models/BarberShop.js
 const mongoose = require("mongoose");
 
 const barberSchema = new mongoose.Schema(
@@ -6,7 +7,6 @@ const barberSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      
     },
     shopName: {
       type: String,
@@ -36,7 +36,7 @@ const barberSchema = new mongoose.Schema(
         },
         category: {
           type: String,
-          enum: ["haircut", "beard", "styling", "treatment", "other", "wash"], // added 'wash'
+          enum: ["haircut", "beard", "styling", "treatment", "other", "wash"],
           default: "haircut",
         },
       },
@@ -217,6 +217,7 @@ barberSchema.methods.calculateAverageRating = function () {
   this.ratings.count = this.reviews.length;
 };
 
-const BarberShopModel = mongoose.model("barbershop", barberSchema);
+
+const BarberShopModel = mongoose.model("BarberShop", barberSchema);
 
 module.exports = BarberShopModel;

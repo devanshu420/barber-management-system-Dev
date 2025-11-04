@@ -270,21 +270,38 @@ exports.getShopsByBarberId = async (req, res) => {
 
 // Get all barber shops (for customers)
 exports.getAllBarberShops = async (req, res) => {
-  try {
-    const shops = await BarberShopModel.find({ isActive: true }).lean();
+ try {
+    const shops = await BarberShopModel.find({ isActive: true })
+      .select('_id shopName description location services staff ratings earnings image isActive')
+      .lean();
 
-    return res.json({
+    res.json({
       success: true,
       shops,
     });
   } catch (error) {
     console.error("Error fetching shops:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Failed to fetch shops",
       error: error.message,
     });
   }
+  // try {
+  //   const shops = await BarberShopModel.find({ isActive: true }).lean();
+
+  //   return res.json({
+  //     success: true,
+  //     shops,
+  //   });
+  // } catch (error) {
+  //   console.error("Error fetching shops:", error);
+  //   return res.status(500).json({
+  //     success: false,
+  //     message: "Failed to fetch shops",
+  //     error: error.message,
+  //   });
+  // }
 };
 
 
@@ -335,6 +352,7 @@ exports.getShopById = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 // Delete barber shop

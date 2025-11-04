@@ -1,33 +1,93 @@
-const express = require("express")
-const router = express.Router()
-const bookingController = require("../controllers/bookingController")
-const { authenticate, authorize } = require("../middlewares/authMiddleware")
+const express = require("express");
+const router = express.Router();
+const {
+  createBooking,
+  getUserBookings,
+  getShopBookings,
+  getBookedSlots,
+  getBookingById,
+  updateBookingStatus,
+  rescheduleBooking,
+  cancelBooking,
+  addReview,
+  getAllBookings,
+  getBookingStats,
+} = require("../controllers/bookingController");
+const { authenticate } = require("../middlewares/authMiddleware");
 
-// Create booking
-router.post("/", authenticate, bookingController.createBooking)
+// 🔹 Create booking (user)
+router.post("/create-bookings", authenticate, createBooking);
 
-// Get all bookings (user)
-router.get("/user", authenticate, bookingController.getUserBookings)
+// 🔹 Get user's bookings
+router.get("/user", authenticate, getUserBookings);
 
-// Get booking by ID
-router.get("/:id", authenticate, bookingController.getBookingById)
+// 🔹 Get single booking by ID
+router.get("/:id", authenticate, getBookingById);
 
-// Update booking status
-router.put("/:id/status", authenticate, bookingController.updateBookingStatus)
+// 🔹 Get shop's bookings (for barber)
+router.get("/shop/:shopId", getShopBookings);
 
-// Reschedule booking
-router.post("/:id/reschedule", authenticate, bookingController.rescheduleBooking)
+// 🔹 Get booked slots for specific date
+router.get("/shop/:shopId/date/:date", getBookedSlots);
 
-// Cancel booking
-router.post("/:id/cancel", authenticate, bookingController.cancelBooking)
+// 🔹 Update booking status
+router.put("/:id/status", authenticate, updateBookingStatus);
 
-// Add review
-router.post("/:id/review", authenticate, bookingController.addReview)
+// 🔹 Reschedule booking
+router.put("/:id/reschedule", authenticate, rescheduleBooking);
 
-// Get available slots
-router.post("/slots/available", bookingController.getAvailableSlots)
+// 🔹 Cancel booking
+router.put("/:id/cancel", authenticate, cancelBooking);
 
-// Admin - get all bookings
-router.get("/admin/all", authenticate, authorize("admin"), bookingController.getAllBookings)
+// 🔹 Add review
+router.put("/:id/review", authenticate, addReview);
 
-module.exports = router
+// 🔹 Admin: Get all bookings
+router.get("/admin/bookings", authenticate, getAllBookings);
+
+// 🔹 Admin: Get booking statistics
+router.get("/admin/bookings/stats/:shopId", authenticate, getBookingStats);
+
+module.exports = router;
+
+
+// const express = require("express");
+// const router = express.Router();
+// const {
+//   createBooking,
+//   getUserBookings,
+//   getShopBookings,
+//   getBookedSlots,
+//   getBookingById,
+//   updateBookingStatus,
+//   rescheduleBooking,
+//   cancelBooking,
+//   addReview,
+//   getAllBookings,
+//   getBookingStats,
+// } = require("../controllers/bookingController");
+// const { authenticate } = require("../middlewares/authMiddleware");
+
+// // User bookings
+// router.post("/bookings", authenticate, createBooking);
+// router.get("/bookings/user", authenticate, getUserBookings);
+// router.get("/bookings/:id", authenticate, getBookingById);
+
+// // Shop bookings
+// router.get("/bookings/shop/:shopId", getShopBookings);
+// router.get("/bookings/shop/:shopId/date/:date", getBookedSlots);
+// router.put("/bookings/:id/status", authenticate, updateBookingStatus);
+
+// // Reschedule & Cancel
+// router.put("/bookings/:id/reschedule", authenticate, rescheduleBooking);
+// router.put("/bookings/:id/cancel", authenticate, cancelBooking);
+
+// // Review
+// router.put("/bookings/:id/review", authenticate, addReview);
+
+// // Admin
+// router.get("/bookings", authenticate, getAllBookings);
+// router.get("/bookings/stats/:shopId", authenticate, getBookingStats);
+
+// module.exports = router;
+

@@ -71,6 +71,8 @@ export function RegisterForm() {
         setTimeout(() => {
           if (formData.role === "barber") {
             router.push("/barber-shop-registration");
+            
+
           } else {
             router.push("/");
           }
