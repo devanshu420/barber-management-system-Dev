@@ -13,6 +13,7 @@ export default function BarberDashboardPage() {
   const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Safely get barberId only on client side
   const barberId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function BarberDashboardPage() {
     async function fetchShops() {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/api/barbershops?barberId=${barberId}`);
+        const response = await axios.get(`http://localhost:5000/api/barbers/barbershops?barberId=${barberId}`);
         if (response.data.success) {
           setShops(response.data.shops);
         } else {
@@ -64,27 +65,33 @@ export default function BarberDashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {shops.map((shop) => (
-              <Card
+              <Link
                 key={shop._id}
-                className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg hover:shadow-teal-500/50 transition-shadow"
+                href={`/barber-shop/${shop._id}`}
+                passHref
+                legacyBehavior // Optional if using older Next.js, remove if using Link with <a>
               >
-                <CardHeader className="flex items-center space-x-4">
-                  <Building2 className="w-10 h-10 text-teal-400" />
-                  <CardTitle className="text-white font-semibold truncate">{shop.shopName}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-gray-300">
-                  <p className="mb-2">{shop.description || "No description provided."}</p>
-                  <p>
-                    <strong>Location:</strong> {shop.location?.address}, {shop.location?.city}
-                  </p>
-                  <p>
-                    <strong>Services:</strong> {shop.services?.map((s) => s.name).join(", ")}
-                  </p>
-                  <p>
-                    <strong>Rating:</strong> {shop.ratings?.average?.toFixed(1) || "0"} ({shop.ratings?.count || 0} reviews)
-                  </p>
-                </CardContent>
-              </Card>
+                <a>
+                  <Card className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg hover:shadow-teal-500/50 transition-shadow cursor-pointer">
+                    <CardHeader className="flex items-center space-x-4">
+                      <Building2 className="w-10 h-10 text-teal-400" />
+                      <CardTitle className="text-white font-semibold truncate">{shop.shopName}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-gray-300">
+                      <p className="mb-2">{shop.description || "No description provided."}</p>
+                      <p>
+                        <strong>Location:</strong> {shop.location?.address}, {shop.location?.city}
+                      </p>
+                      <p>
+                        <strong>Services:</strong> {shop.services?.map((s) => s.name).join(", ")}
+                      </p>
+                      <p>
+                        <strong>Rating:</strong> {shop.ratings?.average?.toFixed(1) || "0"} ({shop.ratings?.count || 0} reviews)
+                      </p>
+                    </CardContent>
+                  </Card>
+                </a>
+              </Link>
             ))}
           </div>
         )}
@@ -92,6 +99,8 @@ export default function BarberDashboardPage() {
     </div>
   );
 }
+
+
 
 
 // "use client";
@@ -109,12 +118,10 @@ export default function BarberDashboardPage() {
 //   const [shops, setShops] = useState([]);
 //   const [loading, setLoading] = useState(true);
 
-//   // We'll assume the logged in barber's ID is stored in localStorage.userId
 //   const barberId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
 //   useEffect(() => {
 //     if (!barberId) {
-//       // If not logged in, redirect to login
 //       router.push("/auth/barber-login");
 //       return;
 //     }
@@ -122,9 +129,13 @@ export default function BarberDashboardPage() {
 //     async function fetchShops() {
 //       setLoading(true);
 //       try {
-//         const response = await axios.get(`http://localhost:5000/api/barbershops?barberId=${barberId}`);
+//         console.log("Fetching shops for barberId:", barberId);
+//         const response = await axios.get(`http://localhost:5000/api/barbers/barbershops?barberId=${barberId}`);
+//         // console.log("Response data:", response.data);
+
 //         if (response.data.success) {
 //           setShops(response.data.shops);
+//           // console.log("Shops set in state:", response.data.shops);
 //         } else {
 //           setShops([]);
 //         }
@@ -142,18 +153,16 @@ export default function BarberDashboardPage() {
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black px-4 sm:px-6 lg:px-8 py-12">
 //       <div className="max-w-7xl mx-auto">
-//         {/* Header */}
 //         <div className="mb-12 flex justify-between items-center">
 //           <h1 className="text-4xl font-bold text-white">My Shops</h1>
 //           <Link href="/barber-shop-registration" passHref>
-//             <Button className="flex items-center space-x-2" >
+//             <Button className="flex items-center space-x-2">
 //               <Plus className="w-5 h-5" />
 //               <span>Add New Shop</span>
 //             </Button>
 //           </Link>
 //         </div>
 
-//         {/* Shops List */}
 //         {loading ? (
 //           <div className="text-center text-gray-400">Loading your shops...</div>
 //         ) : shops.length === 0 ? (
@@ -164,22 +173,22 @@ export default function BarberDashboardPage() {
 //         ) : (
 //           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 //             {shops.map((shop) => (
-//               <Card key={shop._id} className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg hover:shadow-teal-500/50 transition-shadow">
+//               <Card
+//                 key={shop._id}
+//                 className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg hover:shadow-teal-500/50 transition-shadow"
+//               >
 //                 <CardHeader className="flex items-center space-x-4">
 //                   <Building2 className="w-10 h-10 text-teal-400" />
 //                   <CardTitle className="text-white font-semibold truncate">{shop.shopName}</CardTitle>
 //                 </CardHeader>
 //                 <CardContent className="text-gray-300">
 //                   <p className="mb-2">{shop.description || "No description provided."}</p>
-
 //                   <p>
 //                     <strong>Location:</strong> {shop.location?.address}, {shop.location?.city}
 //                   </p>
-
 //                   <p>
 //                     <strong>Services:</strong> {shop.services?.map((s) => s.name).join(", ")}
 //                   </p>
-
 //                   <p>
 //                     <strong>Rating:</strong> {shop.ratings?.average?.toFixed(1) || "0"} ({shop.ratings?.count || 0} reviews)
 //                   </p>
@@ -192,3 +201,4 @@ export default function BarberDashboardPage() {
 //     </div>
 //   );
 // }
+

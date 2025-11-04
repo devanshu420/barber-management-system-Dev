@@ -6,7 +6,7 @@ const barberSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true,
+      
     },
     shopName: {
       type: String,
@@ -36,7 +36,7 @@ const barberSchema = new mongoose.Schema(
         },
         category: {
           type: String,
-          enum: ["haircut", "beard", "styling", "treatment", "other"],
+          enum: ["haircut", "beard", "styling", "treatment", "other", "wash"], // added 'wash'
           default: "haircut",
         },
       },
@@ -204,7 +204,7 @@ const barberSchema = new mongoose.Schema(
 // Index for location-based queries
 barberSchema.index({ "location.coordinates": "2dsphere" });
 
-// Calculate average rating
+// Calculate average rating method
 barberSchema.methods.calculateAverageRating = function () {
   if (this.reviews.length === 0) {
     this.ratings.average = 0;
@@ -218,4 +218,5 @@ barberSchema.methods.calculateAverageRating = function () {
 };
 
 const BarberShopModel = mongoose.model("barbershop", barberSchema);
+
 module.exports = BarberShopModel;

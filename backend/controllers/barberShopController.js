@@ -1,4 +1,4 @@
-const Barber = require("../models/BarberShop")
+// const Barber = require("../models/BarberShop")
 const Service = require("../models/Service")
 const User = require("../models/User")
 const BarberShopModel = require("../models/BarberShop");
@@ -7,7 +7,7 @@ const BarberShopModel = require("../models/BarberShop");
 // Get all barbers
 exports.getAllBarbers = async (req, res) => {
   try {
-    const barbers = await Barber.find({ isActive: true })
+    const barbers = await BarberShopModel.find({ isActive: true })
       .populate("barberId", "name phone profilePhoto")
       .sort({ "ratings.average": -1 })
 
@@ -28,7 +28,7 @@ exports.getAllBarbers = async (req, res) => {
 // Get barber by ID
 exports.getBarberById = async (req, res) => {
   try {
-    const barber = await Barber.findById(req.params.id)
+    const barber = await BarberShopModel.findById(req.params.id)
       .populate("barberId", "name phone profilePhoto email")
       .populate("reviews.userId", "name profilePhoto")
 
@@ -100,6 +100,64 @@ exports.getNearbyBarbers = async (req, res) => {
 // Register barber
 
 // Register a new barber shop
+// exports.registerBarberShop = async (req, res) => {
+//   try {
+//     const {
+//       shopName,
+//       description,
+//       location,
+//       services,
+//       workingHours,
+//       staff,
+//     } = req.body;
+
+//     // Validate required fields
+//     if (!shopName || !location || !location.address || !location.city) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields",
+//       });
+//     }
+
+   
+   
+
+ 
+//       return res.status(400).json({
+//         success: false,
+//         message: "You already have a registered shop",
+//       });
+    
+
+//     // Create new barber shop
+//     const barberShop = new BarberShopModel({
+//       barberId: req.user.id,
+//       shopName,
+//       description,
+//       location,
+//       services: services || [],
+//       workingHours: workingHours || {},
+//       staff: staff || [],
+//     });
+
+//     await barberShop.save();
+
+//     return res.status(201).json({
+//       success: true,
+//       message: "Shop registered successfully",
+//       shop: barberShop,
+//     });
+//   } catch (error) {
+//     console.error("Error registering barber shop:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to register shop",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
 exports.registerBarberShop = async (req, res) => {
   try {
     const {
@@ -119,19 +177,9 @@ exports.registerBarberShop = async (req, res) => {
       });
     }
 
-    // Check if barber already has a shop
-    const existingShop = await BarberShopModel.findOne({
-      barberId: req.user.id,
-    });
+   
 
-    if (existingShop) {
-      return res.status(400).json({
-        success: false,
-        message: "You already have a registered shop",
-      });
-    }
-
-    // Create new barber shop
+    // Create new barber shop document
     const barberShop = new BarberShopModel({
       barberId: req.user.id,
       shopName,
@@ -140,8 +188,10 @@ exports.registerBarberShop = async (req, res) => {
       services: services || [],
       workingHours: workingHours || {},
       staff: staff || [],
+      
     });
 
+    // Save shop to database
     await barberShop.save();
 
     return res.status(201).json({
@@ -158,6 +208,7 @@ exports.registerBarberShop = async (req, res) => {
     });
   }
 };
+
 
 // Get barber shop by barber ID
 exports.getBarberShopByUserId = async (req, res) => {

@@ -8,8 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   MapPin,
-  Phone,
-  Mail,
   Building2,
   Clock,
   AlertCircle,
@@ -24,7 +22,6 @@ export default function BarberRegistrationPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Form State
   const [formData, setFormData] = useState({
     shopName: "",
     description: "",
@@ -47,21 +44,17 @@ export default function BarberRegistrationPage() {
     staff: [{ name: "", role: "", phone: "", specialization: "" }],
   });
 
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleServiceChange = (index, field, value) => {
     const newServices = [...formData.services];
     newServices[index][field] = value;
-    setFormData((prev) => ({
-      ...prev,
-      services: newServices,
-    }));
+    setFormData((prev) => ({ ...prev, services: newServices }));
   };
 
   const handleWorkingHoursChange = (day, field, value) => {
@@ -80,10 +73,7 @@ export default function BarberRegistrationPage() {
   const handleStaffChange = (index, field, value) => {
     const newStaff = [...formData.staff];
     newStaff[index][field] = value;
-    setFormData((prev) => ({
-      ...prev,
-      staff: newStaff,
-    }));
+    setFormData((prev) => ({ ...prev, staff: newStaff }));
   };
 
   const addService = () => {
@@ -121,25 +111,22 @@ export default function BarberRegistrationPage() {
     setSuccess("");
 
     try {
-      // Validation
       if (!formData.shopName.trim()) {
         setError("Shop name is required");
         setLoading(false);
         return;
       }
-
       if (!formData.address.trim() || !formData.city.trim() || !formData.state.trim()) {
         setError("Complete address is required");
         setLoading(false);
         return;
       }
-
       if (formData.services.length === 0 || !formData.services[0].name) {
         setError("Add at least one service");
         setLoading(false);
         return;
       }
-
+      
       const payload = {
         shopName: formData.shopName,
         description: formData.description,
@@ -155,20 +142,26 @@ export default function BarberRegistrationPage() {
         },
         services: formData.services.map((s) => ({
           name: s.name,
-          price: parseInt(s.price),
-          duration: parseInt(s.duration),
+          price: Number(s.price),
+          duration: Number(s.duration),
           category: s.category,
         })),
         workingHours: formData.workingHours,
         staff: formData.staff.filter((s) => s.name.trim()),
       };
 
-      const response = await axios.post("/api/barber/register", payload);
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-      setSuccess("✅ Shop registered successfully! Redirecting...");
-      setTimeout(() => {
-        router.push("/dashboard/barber");
-      }, 2000);
+      const response = await axios.post("http://localhost:5000/api/barbers/barber-shop-registration", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data.success) {
+        setSuccess("✅ Shop registered successfully! Redirecting...");
+        setTimeout(() => router.push("/dashboard/barber"), 2000);
+      } else {
+        setError(response.data.message || "Failed to register shop");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to register shop");
     } finally {
@@ -176,7 +169,15 @@ export default function BarberRegistrationPage() {
     }
   };
 
-  const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+  const days = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black px-4 sm:px-6 lg:px-8">
@@ -210,18 +211,18 @@ export default function BarberRegistrationPage() {
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* 🔹 Shop Information */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
+          {/* Shop Information */}
+          <section className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
               <Building2 className="w-6 h-6 text-teal-400" />
               <span>Shop Information</span>
             </h2>
-
             <div className="space-y-4">
               <div>
-                <Label className="text-white font-semibold mb-2 block">Shop Name *</Label>
+                <Label className="text-white font-semibold mb-2 block">
+                  Shop Name *
+                </Label>
                 <Input
                   type="text"
                   name="shopName"
@@ -234,29 +235,32 @@ export default function BarberRegistrationPage() {
               </div>
 
               <div>
-                <Label className="text-white font-semibold mb-2 block">Description</Label>
+                <Label className="text-white font-semibold mb-2 block">
+                  Description
+                </Label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Tell customers about your shop"
                   rows="3"
-                  className="w-full bg-gray-800/50 border border-gray-700 text-white placeholder:text-gray-600 focus:border-teal-500/50 rounded-lg p-3"
+                  className="w-full bg-gray-800/50 border border-gray-700 text-white placeholder:text-gray-600 focus:border-teal-500/50 rounded-lg p-3 resize-none"
                 />
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* 🔹 Location Information */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
+          {/* Location Information */}
+          <section className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
               <MapPin className="w-6 h-6 text-teal-400" />
               <span>Location</span>
             </h2>
-
             <div className="space-y-4">
               <div>
-                <Label className="text-white font-semibold mb-2 block">Address *</Label>
+                <Label className="text-white font-semibold mb-2 block">
+                  Address *
+                </Label>
                 <Input
                   type="text"
                   name="address"
@@ -267,10 +271,11 @@ export default function BarberRegistrationPage() {
                   required
                 />
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-white font-semibold mb-2 block">City *</Label>
+                  <Label className="text-white font-semibold mb-2 block">
+                    City *
+                  </Label>
                   <Input
                     type="text"
                     name="city"
@@ -282,7 +287,9 @@ export default function BarberRegistrationPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-white font-semibold mb-2 block">State *</Label>
+                  <Label className="text-white font-semibold mb-2 block">
+                    State *
+                  </Label>
                   <Input
                     type="text"
                     name="state"
@@ -294,7 +301,9 @@ export default function BarberRegistrationPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-white font-semibold mb-2 block">Zip Code</Label>
+                  <Label className="text-white font-semibold mb-2 block">
+                    Zip Code
+                  </Label>
                   <Input
                     type="text"
                     name="zipCode"
@@ -305,10 +314,11 @@ export default function BarberRegistrationPage() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white font-semibold mb-2 block">Latitude</Label>
+                  <Label className="text-white font-semibold mb-2 block">
+                    Latitude
+                  </Label>
                   <Input
                     type="number"
                     step="0.000001"
@@ -320,7 +330,9 @@ export default function BarberRegistrationPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-white font-semibold mb-2 block">Longitude</Label>
+                  <Label className="text-white font-semibold mb-2 block">
+                    Longitude
+                  </Label>
                   <Input
                     type="number"
                     step="0.000001"
@@ -333,10 +345,10 @@ export default function BarberRegistrationPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* 🔹 Services */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
+          {/* Services */}
+          <section className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white flex items-center space-x-2">
                 <span>💇</span>
@@ -351,7 +363,6 @@ export default function BarberRegistrationPage() {
                 <span>Add Service</span>
               </Button>
             </div>
-
             <div className="space-y-4">
               {formData.services.map((service, idx) => (
                 <div
@@ -370,49 +381,63 @@ export default function BarberRegistrationPage() {
                       </Button>
                     )}
                   </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-gray-300 text-sm mb-1 block">Service Name *</Label>
+                      <Label className="text-gray-300 text-sm mb-1 block">
+                        Service Name *
+                      </Label>
                       <Input
                         type="text"
                         value={service.name}
-                        onChange={(e) => handleServiceChange(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          handleServiceChange(idx, "name", e.target.value)
+                        }
                         placeholder="e.g., Haircut"
                         className="bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 text-sm"
                         required
                       />
                     </div>
                     <div>
-                      <Label className="text-gray-300 text-sm mb-1 block">Price (₹) *</Label>
+                      <Label className="text-gray-300 text-sm mb-1 block">
+                        Price (₹) *
+                      </Label>
                       <Input
                         type="number"
                         value={service.price}
-                        onChange={(e) => handleServiceChange(idx, "price", e.target.value)}
+                        onChange={(e) =>
+                          handleServiceChange(idx, "price", e.target.value)
+                        }
                         placeholder="Price"
                         className="bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 text-sm"
                         required
                       />
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-gray-300 text-sm mb-1 block">Duration (min) *</Label>
+                      <Label className="text-gray-300 text-sm mb-1 block">
+                        Duration (min) *
+                      </Label>
                       <Input
                         type="number"
                         value={service.duration}
-                        onChange={(e) => handleServiceChange(idx, "duration", e.target.value)}
+                        onChange={(e) =>
+                          handleServiceChange(idx, "duration", e.target.value)
+                        }
                         placeholder="30"
                         className="bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 text-sm"
                         required
                       />
                     </div>
                     <div>
-                      <Label className="text-gray-300 text-sm mb-1 block">Category</Label>
+                      <Label className="text-gray-300 text-sm mb-1 block">
+                        Category
+                      </Label>
                       <select
                         value={service.category}
-                        onChange={(e) => handleServiceChange(idx, "category", e.target.value)}
+                        onChange={(e) =>
+                          handleServiceChange(idx, "category", e.target.value)
+                        }
                         className="w-full bg-gray-700/50 border border-gray-600 text-white rounded px-3 py-2 text-sm"
                       >
                         <option value="haircut">Haircut</option>
@@ -426,15 +451,14 @@ export default function BarberRegistrationPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* 🔹 Working Hours */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
+          {/* Working Hours */}
+          <section className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
               <Clock className="w-6 h-6 text-teal-400" />
               <span>Working Hours</span>
             </h2>
-
             <div className="space-y-3">
               {days.map((day) => (
                 <div key={day} className="flex items-center space-x-3">
@@ -451,7 +475,6 @@ export default function BarberRegistrationPage() {
                       {day}
                     </span>
                   </label>
-
                   {formData.workingHours[day].isOpen && (
                     <div className="flex items-center space-x-2 flex-1">
                       <Input
@@ -476,10 +499,10 @@ export default function BarberRegistrationPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* 🔹 Staff Members */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
+          {/* Staff Members */}
+          <section className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">Staff Members</h2>
               <Button
@@ -510,43 +533,54 @@ export default function BarberRegistrationPage() {
                       </Button>
                     )}
                   </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-gray-300 text-sm mb-1 block">Name</Label>
+                      <Label className="text-gray-300 text-sm mb-1 block">
+                        Name
+                      </Label>
                       <Input
                         type="text"
                         value={member.name}
-                        onChange={(e) => handleStaffChange(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          handleStaffChange(idx, "name", e.target.value)
+                        }
                         placeholder="Staff name"
                         className="bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 text-sm"
                       />
                     </div>
                     <div>
-                      <Label className="text-gray-300 text-sm mb-1 block">Role</Label>
+                      <Label className="text-gray-300 text-sm mb-1 block">
+                        Role
+                      </Label>
                       <Input
                         type="text"
                         value={member.role}
-                        onChange={(e) => handleStaffChange(idx, "role", e.target.value)}
+                        onChange={(e) =>
+                          handleStaffChange(idx, "role", e.target.value)
+                        }
                         placeholder="e.g., Senior Barber"
                         className="bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 text-sm"
                       />
                     </div>
                   </div>
-
                   <div>
-                    <Label className="text-gray-300 text-sm mb-1 block">Phone</Label>
+                    <Label className="text-gray-300 text-sm mb-1 block">
+                      Phone
+                    </Label>
                     <Input
                       type="tel"
                       value={member.phone}
-                      onChange={(e) => handleStaffChange(idx, "phone", e.target.value)}
+                      onChange={(e) =>
+                        handleStaffChange(idx, "phone", e.target.value)
+                      }
                       placeholder="Phone number"
                       className="bg-gray-700/50 border border-gray-600 text-white placeholder:text-gray-500 text-sm"
                     />
                   </div>
-
                   <div>
-                    <Label className="text-gray-300 text-sm mb-1 block">Specialization</Label>
+                    <Label className="text-gray-300 text-sm mb-1 block">
+                      Specialization
+                    </Label>
                     <Input
                       type="text"
                       value={member.specialization}
@@ -560,9 +594,9 @@ export default function BarberRegistrationPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* 🔹 Submit Button */}
+          {/* Submit Button */}
           <div className="flex gap-4">
             <Button
               type="submit"
