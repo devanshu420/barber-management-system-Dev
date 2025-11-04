@@ -5,7 +5,7 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="py-8">
+      <main className="">
         <BookingFlow />
       </main>
     </div>

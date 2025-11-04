@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const barberSchema = new mongoose.Schema(
   {
@@ -77,13 +77,41 @@ const barberSchema = new mongoose.Schema(
       },
     ],
     workingHours: {
-      monday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      tuesday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      wednesday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      thursday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      friday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      saturday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      sunday: { start: String, end: String, isOpen: { type: Boolean, default: false } },
+      monday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      tuesday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      wednesday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      thursday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      friday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      saturday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      sunday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: false },
+      },
     },
     availability: [
       {
@@ -170,23 +198,24 @@ const barberSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
 // Index for location-based queries
-barberSchema.index({ "location.coordinates": "2dsphere" })
+barberSchema.index({ "location.coordinates": "2dsphere" });
 
 // Calculate average rating
 barberSchema.methods.calculateAverageRating = function () {
   if (this.reviews.length === 0) {
-    this.ratings.average = 0
-    this.ratings.count = 0
-    return
+    this.ratings.average = 0;
+    this.ratings.count = 0;
+    return;
   }
 
-  const sum = this.reviews.reduce((acc, review) => acc + review.rating, 0)
-  this.ratings.average = Math.round((sum / this.reviews.length) * 10) / 10
-  this.ratings.count = this.reviews.length
-}
+  const sum = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+  this.ratings.average = Math.round((sum / this.reviews.length) * 10) / 10;
+  this.ratings.count = this.reviews.length;
+};
 
-module.exports = mongoose.model("Barber", barberSchema)
+const BarberShopModel = mongoose.model("barbershop", barberSchema);
+module.exports = BarberShopModel;

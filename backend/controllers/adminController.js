@@ -1,5 +1,5 @@
 const User = require("../models/User")
-const Barber = require("../models/Barber")
+const Barber = require("../models/BarberShop")
 const Booking = require("../models/Booking")
 const Payment = require("../models/Payment")
 

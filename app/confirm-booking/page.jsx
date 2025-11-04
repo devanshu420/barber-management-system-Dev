@@ -1,85 +1,315 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { CheckCircle, Calendar, Clock, User } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  CheckCircle,
+  Calendar,
+  Clock,
+  User,
+  Scissors,
+  CreditCard,
+} from "lucide-react";
+import { PaymentForm } from "@/components/payment/payment-form";
 
-const ConfirmBookingPage = () => {
-  const searchParams = useSearchParams();
+export default function ConfirmBookingPage() {
   const router = useRouter();
-  const barberId = searchParams.get("barberId");
-  const date = searchParams.get("date");
-  const time = searchParams.get("time");
+
+  // Example dummy booking data (replace with real props or context)
+  const bookingData = {
+    service: { name: "Haircut & Styling", price: 499, duration: 45 },
+    barber: {
+      name: "John Doe",
+      rating: 4.9,
+      image: "/images/barber1.jpg",
+    },
+    date: new Date().toISOString(),
+    time: "3:30 PM",
+  };
+
+  const [showPayment, setShowPayment] = useState(false);
+  const [bookingConfirmed, setBookingConfirmed] = useState(false);
+
+  const handleConfirmBooking = () => setShowPayment(true);
+
+  const handlePaymentComplete = (paymentData) => {
+    console.log("Payment completed:", paymentData);
+    setBookingConfirmed(true);
+    setShowPayment(false);
+    alert("Booking confirmed and payment processed!");
+  };
+
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+  if (bookingConfirmed) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+        <div className="text-center space-y-6 bg-white p-10 rounded-2xl shadow-md max-w-md w-full">
+          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-8 h-8 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Booking Confirmed!
+          </h2>
+          <p className="text-gray-500">
+            Your appointment has been successfully booked and paid for.
+          </p>
+          <Button onClick={() => router.push("/dashboard/customer")}>
+            View My Bookings
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showPayment) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+        <div className="bg-white shadow-md rounded-2xl p-8 w-full max-w-md">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Complete Payment
+          </h2>
+          <p className="text-gray-500 mb-6">
+            Secure payment to confirm your booking
+          </p>
+          <PaymentForm
+            amount={bookingData.service?.price || 0}
+            onPaymentComplete={handlePaymentComplete}
+            bookingDetails={{
+              service: bookingData.service?.name || "",
+              barber: bookingData.barber?.name || "",
+              date: bookingData.date ? formatDate(bookingData.date) : "",
+              time: bookingData.time || "",
+            }}
+          />
+          <Button
+            variant="outline"
+            onClick={() => setShowPayment(false)}
+            className="w-full mt-4"
+          >
+            Back to Booking Details
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-10 text-gray-900 transform transition-all duration-500 hover:scale-[1.02] animate-fadeIn">
-        
-        {/* Header */}
-        <div className="flex flex-col items-center mb-8">
-          <CheckCircle className="w-16 h-16 text-teal-400 mb-4 animate-bounce" />
-          <h1 className="text-3xl font-bold mb-2 text-center">Booking Confirmed!</h1>
-          <p className="text-gray-600 text-center">
-            Your appointment has been successfully scheduled.
-          </p>
-        </div>
-
-        {/* Booking Details */}
-        <div className="space-y-4 mb-8">
-          <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-4 hover:bg-teal-50 transition transform hover:scale-[1.02]">
-            <User className="w-6 h-6 text-teal-400" />
-            {/* <span>Barber ID: <span className="font-semibold">{barberId}</span></span> */}
-            <span>Barber ID: <span className="font-semibold">Indian Barber</span></span>
-
-          </div>
-
-          <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-4 hover:bg-yellow-50 transition transform hover:scale-[1.02]">
-            <Calendar className="w-6 h-6 text-yellow-400" />
-            <span>Date: <span className="font-semibold">{date}</span></span>
-          </div>
-
-          <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-4 hover:bg-pink-50 transition transform hover:scale-[1.02]">
-            <Clock className="w-6 h-6 text-pink-400" />
-            <span>Time: <span className="font-semibold">{time}</span></span>
-          </div>
-        </div>
-
-        {/* CTA Button */}
-        <button
-          onClick={() => router.push("/my-bookings")}
-          className="w-full py-3 bg-teal-400 hover:bg-teal-500 rounded-lg font-semibold text-lg text-white transition transform hover:scale-105"
-        >
-          View My Bookings
-        </button>
-
-        {/* Footer Note */}
-        <p className="text-gray-500 text-sm text-center mt-4">
-          You will also receive a confirmation email shortly.
+    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+      <div className="max-w-2xl w-full space-y-6">
+        <h2 className="text-2xl font-bold text-gray-900">Confirm Your Booking</h2>
+        <p className="text-gray-500">
+          Please review your appointment details before confirming
         </p>
+
+        {/* Appointment Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <CheckCircle className="w-5 h-5 mr-2 text-blue-500" />
+              Appointment Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {bookingData.service && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <Scissors className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium">{bookingData.service.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {bookingData.service.duration} minutes
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="font-bold">
+                  ₹{bookingData.service.price}
+                </Badge>
+              </div>
+            )}
+
+            {bookingData.barber && (
+              <div className="flex items-center space-x-3">
+                <img
+                  src={bookingData.barber.image || "/placeholder.svg"}
+                  alt={bookingData.barber.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="font-medium flex items-center">
+                    <User className="w-4 h-4 mr-2" />
+                    {bookingData.barber.name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    ★ {bookingData.barber.rating} rating
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {bookingData.date && bookingData.time && (
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                  <span className="font-medium">
+                    {formatDate(bookingData.date)}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <Clock className="w-4 h-4 mr-2 text-gray-400" />
+                  <span className="font-medium">{bookingData.time}</span>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Payment Summary */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <CreditCard className="w-5 h-5 mr-2" />
+              Payment Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Service Fee</span>
+                <span>₹{bookingData.service?.price || 0}</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>Booking Fee</span>
+                <span>₹0</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between font-bold text-lg">
+                <span>Total</span>
+                <span>₹{bookingData.service?.price || 0}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Confirm Button */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button
+            variant="outline"
+            className="flex-1 bg-transparent"
+            onClick={() => router.back()}
+          >
+            Back to Edit
+          </Button>
+          <Button onClick={handleConfirmBooking} className="flex-1">
+            Proceed to Payment
+          </Button>
+        </div>
       </div>
-
-      {/* Animations */}
-      <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-bounce {
-          animation: bounce 1s infinite alternate;
-        }
-
-        @keyframes bounce {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-8px); }
-        }
-      `}</style>
     </div>
   );
 }
 
 
-export default ConfirmBookingPage;
+
+// "use client";
+
+// import { useSearchParams, useRouter } from "next/navigation";
+// import { CheckCircle, Calendar, Clock, User } from "lucide-react";
+
+// const ConfirmBookingPage = () => {
+//   const searchParams = useSearchParams();
+//   const router = useRouter();
+//   const barberId = searchParams.get("barberId");
+//   const date = searchParams.get("date");
+//   const time = searchParams.get("time");
+
+//   return (
+//     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+//       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-10 text-gray-900 transform transition-all duration-500 hover:scale-[1.02] animate-fadeIn">
+        
+//         {/* Header */}
+//         <div className="flex flex-col items-center mb-8">
+//           <CheckCircle className="w-16 h-16 text-teal-400 mb-4 animate-bounce" />
+//           <h1 className="text-3xl font-bold mb-2 text-center">Booking Confirmed!</h1>
+//           <p className="text-gray-600 text-center">
+//             Your appointment has been successfully scheduled.
+//           </p>
+//         </div>
+
+//         {/* Booking Details */}
+//         <div className="space-y-4 mb-8">
+//           <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-4 hover:bg-teal-50 transition transform hover:scale-[1.02]">
+//             <User className="w-6 h-6 text-teal-400" />
+//             {/* <span>Barber ID: <span className="font-semibold">{barberId}</span></span> */}
+//             <span>Barber ID: <span className="font-semibold">Indian Barber</span></span>
+
+//           </div>
+
+//           <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-4 hover:bg-yellow-50 transition transform hover:scale-[1.02]">
+//             <Calendar className="w-6 h-6 text-yellow-400" />
+//             <span>Date: <span className="font-semibold">{date}</span></span>
+//           </div>
+
+//           <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-4 hover:bg-pink-50 transition transform hover:scale-[1.02]">
+//             <Clock className="w-6 h-6 text-pink-400" />
+//             <span>Time: <span className="font-semibold">{time}</span></span>
+//           </div>
+//         </div>
+
+//         {/* CTA Button */}
+//         <button
+//           onClick={() => router.push("/my-bookings")}
+//           className="w-full py-3 bg-teal-400 hover:bg-teal-500 rounded-lg font-semibold text-lg text-white transition transform hover:scale-105"
+//         >
+//           View My Bookings
+//         </button>
+
+//         {/* Footer Note */}
+//         <p className="text-gray-500 text-sm text-center mt-4">
+//           You will also receive a confirmation email shortly.
+//         </p>
+//       </div>
+
+//       {/* Animations */}
+//       <style jsx>{`
+//         .animate-fadeIn {
+//           animation: fadeIn 0.5s ease-out forwards;
+//         }
+
+//         @keyframes fadeIn {
+//           0% { opacity: 0; transform: translateY(20px); }
+//           100% { opacity: 1; transform: translateY(0); }
+//         }
+
+//         .animate-bounce {
+//           animation: bounce 1s infinite alternate;
+//         }
+
+//         @keyframes bounce {
+//           0% { transform: translateY(0); }
+//           100% { transform: translateY(-8px); }
+//         }
+//       `}</style>
+//     </div>
+//   );
+// }
+
+
+// export default ConfirmBookingPage;

@@ -1,80 +1,101 @@
-// // src/components/ui/card.jsx
+import * as React from "react"
 
-// "use client";
+import { cn } from "@/lib/utils"
 
-// import React from "react";
-// import clsx from "clsx";
-
-// // Main Card container
-// export function Card({ children, className, ...props }) {
-//   return (
-//     <div
-//       className={clsx(
-//         "rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden",
-//         className
-//       )}
-//       {...props}
-//     >
-//       {children}
-//     </div>
-//   );
-// }
-
-// // Card Header
-// export function CardHeader({ children, className, ...props }) {
-//   return (
-//     <div
-//       className={clsx("p-4 border-b border-gray-200", className)}
-//       {...props}
-//     >
-//       {children}
-//     </div>
-//   );
-// }
-
-// // Card Title (usually inside CardHeader)
-// export function CardTitle({ children, className, ...props }) {
-//   return (
-//     <h3
-//       className={clsx("text-lg font-semibold text-gray-900", className)}
-//       {...props}
-//     >
-//       {children}
-//     </h3>
-//   );
-// }
-
-// // Card Content
-// export function CardContent({ children, className, ...props }) {
-//   return (
-//     <div className={clsx("p-4", className)} {...props}>
-//       {children}
-//     </div>
-//   );
-// }
-
-// export default Card;
-
-// components/ui/card.jsx
-"use client";
-import React from "react";
-
-export function Card({ children, className }) {
-  return <div className={`rounded-lg border p-4 bg-white ${className}`}>{children}</div>;
+function Card({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        className
+      )}
+      {...props} />
+  );
 }
 
-export function CardHeader({ children, className }) {
-  return <div className={`mb-2 ${className}`}>{children}</div>;
+function CardHeader({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        className
+      )}
+      {...props} />
+  );
 }
 
-export function CardTitle({ children, className }) {
-  return <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>;
+function CardTitle({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn("leading-none font-semibold", className)}
+      {...props} />
+  );
 }
 
-export function CardDescription({ children, className }) {
-  return <p className={`text-sm text-gray-500 ${className}`}>{children}</p>;
+function CardDescription({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props} />
+  );
 }
 
-export function CardContent({ children, className }) {
-  return <div className={`${className}`}>{children}</div>;
+function CardAction({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props} />
+  );
+}
+
+function CardContent({
+  className,
+  ...props
+}) {
+  return (<div data-slot="card-content" className={cn("px-6", className)} {...props} />);
+}
+
+function CardFooter({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
+      {...props} />
+  );
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
 }

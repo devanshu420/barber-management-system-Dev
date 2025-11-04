@@ -56,29 +56,29 @@ const AboutService = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen flex flex-col items-center py-10 px-2">
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10 mb-8">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-950 to-black min-h-screen flex flex-col items-center pt-10 py-10 px-4 sm:px-12 lg:px-24">
+      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-14 mb-12">
         {features.map((feature, index) => (
-          <ScrollFade key={index} className="flex items-center border-b border-gray-200 pb-8">
+          <ScrollFade key={index} className="flex items-center border-b border-gray-700 pb-8">
             <img
               src={feature.image}
               alt=""
-              className="w-32 h-32 rounded-lg object-cover mr-7"
+              className="w-32 h-32 rounded-lg object-cover mr-8 shadow-lg"
             />
             <div>
-              <h3 className="font-extrabold text-2xl text-gray-800 mb-1">{feature.title}</h3>
-              <span className="text-sm text-gray-500">{feature.subtitle}</span>
+              <h3 className="font-extrabold text-2xl text-teal-400 mb-2">{feature.title}</h3>
+              <span className="text-gray-400 text-sm">{feature.subtitle}</span>
             </div>
           </ScrollFade>
         ))}
       </div>
 
       {/* Action Buttons */}
-      <ScrollFade className="flex gap-4 mt-4">
-        <button className="bg-black text-white px-6 py-3 rounded-md font-semibold shadow hover:bg-gray-800 transition">
+      <ScrollFade className="flex gap-6 mt-6">
+        <button className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-md font-semibold shadow-lg transition">
           Start free now
         </button>
-        <button className="border-2 border-black text-black px-6 py-3 rounded-md font-semibold shadow hover:bg-gray-100 transition">
+        <button className="border-2 border-teal-600 text-teal-600 px-8 py-3 rounded-md font-semibold shadow hover:bg-teal-700 hover:text-white transition">
           Make the Switch
         </button>
       </ScrollFade>

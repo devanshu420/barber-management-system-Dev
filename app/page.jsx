@@ -4,8 +4,6 @@ import { Navbar } from "@/components/navbar"
 import Home from "@/components/hero-section"
 import { ServicesSection } from "@/components/services-section"
 import  BussinessRelation from "@/components/BussinessRelation"
-import  PersonalAssistance from "@/components/PersonalAssistance"
-import  Quote from "@/components/Quote"
 import  Quality from "@/components/Quality"
 import AboutService from "@/components/AboutService";
 import FeautureInclude from "@/components/FeautureInclude";
@@ -23,12 +21,8 @@ export default function HomePage() {
         <Home />
         <ServicesSection />
         <BussinessRelation />
-        <PersonalAssistance />
-        <Quote />
         <Quality />
         <AboutService />
-        <FeautureInclude />
-        {/* <FeaturesSection /> */}
         <Footer />
       </main>
     </div>

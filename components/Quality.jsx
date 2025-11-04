@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useRef, useState, useEffect } from "react";
+import { BadgeCheck } from "lucide-react";
 
 // Scroll fade + slide component
 const ScrollFade = ({ children, className = "", delay = 0 }) => {
@@ -33,10 +36,10 @@ const ScrollFade = ({ children, className = "", delay = 0 }) => {
 };
 
 const Qaulity = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+  <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-950 to-black px-6 md:px-16 lg:px-24 pt-10">
     {/* Gradient Card */}
-    <ScrollFade delay={100} className="w-full max-w-5xl rounded-2xl mx-auto shadow-2xl overflow-hidden bg-gradient-to-b from-gray-800 to-teal-400 py-16 px-10 flex flex-col items-center">
-      <h2 className="text-white font-bold text-3xl lg:text-4xl text-center mb-14">
+    <ScrollFade delay={100} className="w-full max-w-5xl rounded-2xl mx-auto shadow-2xl overflow-hidden bg-gradient-to-b from-gray-800 to-teal-800 py-16 px-10 flex flex-col items-center">
+      <h2 className="text-white font-extrabold text-3xl lg:text-4xl text-center mb-14">
         What makes us different
       </h2>
 
@@ -45,14 +48,14 @@ const Qaulity = () => (
         {/* Feature 1 */}
         <ScrollFade delay={200} className="text-center flex-1 px-6">
           <div className="flex justify-center">
-            <span className="w-14 h-14 flex items-center justify-center border-2 border-white rounded-full text-white font-bold mb-5 text-2xl">
+            <span className="w-14 h-14 flex items-center justify-center border-2 border-teal-400 rounded-full text-teal-400 font-bold mb-5 text-2xl">
               01
             </span>
           </div>
-          <h3 className="text-white font-bold text-lg mb-3">
+          <h3 className="text-teal-400 font-bold text-lg mb-3">
             All-inclusive, transparent pricing
           </h3>
-          <p className="text-white text-base font-medium opacity-90">
+          <p className="text-teal-200 text-base font-medium opacity-90">
             We believe all business owners deserve access to the tools they need to succeed. Every provider has access to all of our available features for one low price.
           </p>
         </ScrollFade>
@@ -60,14 +63,14 @@ const Qaulity = () => (
         {/* Feature 2 */}
         <ScrollFade delay={400} className="text-center flex-1 px-6">
           <div className="flex justify-center">
-            <span className="w-14 h-14 flex items-center justify-center border-2 border-white rounded-full text-white font-bold mb-5 text-2xl">
+            <span className="w-14 h-14 flex items-center justify-center border-2 border-teal-400 rounded-full text-teal-400 font-bold mb-5 text-2xl">
               02
             </span>
           </div>
-          <h3 className="text-white font-bold text-lg mb-3">
+          <h3 className="text-teal-400 font-bold text-lg mb-3">
             Marketplace and Customer App to get more visibility
           </h3>
-          <p className="text-white text-base font-medium opacity-90">
+          <p className="text-teal-200 text-base font-medium opacity-90">
             Millions of customers around the world use Booksy to find and book services near them. Don't miss out, get your business in front of them.
           </p>
         </ScrollFade>
@@ -75,14 +78,14 @@ const Qaulity = () => (
         {/* Feature 3 */}
         <ScrollFade delay={600} className="text-center flex-1 px-6">
           <div className="flex justify-center">
-            <span className="w-14 h-14 flex items-center justify-center border-2 border-white rounded-full text-white font-bold mb-5 text-2xl">
+            <span className="w-14 h-14 flex items-center justify-center border-2 border-teal-400 rounded-full text-teal-400 font-bold mb-5 text-2xl">
               03
             </span>
           </div>
-          <h3 className="text-white font-bold text-lg mb-3">
+          <h3 className="text-teal-400 font-bold text-lg mb-3">
             Global community to inspire your journey
           </h3>
-          <p className="text-white text-base font-medium opacity-90">
+          <p className="text-teal-200 text-base font-medium opacity-90">
             We are building a global and diverse community of entrepreneurs. Booksy partners with world-renowned experts, educators and brands.
           </p>
         </ScrollFade>
@@ -90,7 +93,7 @@ const Qaulity = () => (
 
       {/* CTA Button */}
       <ScrollFade delay={800}>
-        <button className="bg-white text-black font-semibold text-lg px-8 py-3 rounded-lg shadow-lg mt-8 hover:bg-teal-300 transition">
+        <button className="bg-teal-400 hover:bg-teal-500 text-black font-semibold text-lg px-8 py-3 rounded-lg shadow-lg mt-8 transition">
           Start free now
         </button>
       </ScrollFade>
@@ -98,7 +101,7 @@ const Qaulity = () => (
 
     {/* Bottom Section */}
     <ScrollFade delay={1000} className="mt-16 text-center">
-      <div className="text-gray-900 text-2xl lg:text-3xl font-bold">
+      <div className="text-teal-300 text-2xl lg:text-3xl font-bold mb-20">
         Change is hard.<br />
         We make it easy.
       </div>

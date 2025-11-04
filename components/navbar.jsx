@@ -24,10 +24,9 @@ export function Navbar() {
 
   const navLinks = [
     { name: "Services", href: "/services" },
-    { name: "Barbers", href: "/barbers" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
-    { name: "Bookings", href: "/bookings" },
+    { name: "Bookings", href: "/my-booking" },
   ];
 
   // 🔹 Load login state from localStorage on mount
@@ -53,7 +52,7 @@ export function Navbar() {
       setUserName("");
       setIsMenuOpen(false);
       setIsProfileOpen(false);
-      router.push("/auth/login");
+      router.push("http://localhost:3000");
     } catch (error) {
       console.error("Error during logout:", error);
     }
