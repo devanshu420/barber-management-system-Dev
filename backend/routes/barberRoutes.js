@@ -7,6 +7,7 @@ const {
   getShopsByBarberId,
   updateBarberShop,
   deleteBarberShop,
+  getShopById,
 } = require("../controllers/barberShopController");
 const { authenticate } = require("../middlewares/authMiddleware");
 
@@ -21,6 +22,9 @@ router.get("/all-shops", getAllBarberShops);
 
 // Get multiple shops by barber ID
 router.get("/barbershops", getShopsByBarberId);
+
+// Get shop by ID
+router.get('/barber-shop/:shopId',authenticate, getShopById);
 
 // Update shop
 router.put("/shop/:id", authenticate, updateBarberShop);

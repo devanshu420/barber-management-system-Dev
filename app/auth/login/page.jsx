@@ -26,33 +26,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* 🔹 Role Selection Tabs */}
-      <div className="w-full max-w-md mb-6">
-        <div className="grid grid-cols-2 gap-3 p-1 bg-gray-800/50 rounded-lg border border-gray-700/50">
-          <button
-            onClick={() => setSelectedRole("customer")}
-            className={`flex items-center justify-center space-x-2 py-3 px-4 rounded-md font-semibold transition duration-300 text-sm ${
-              selectedRole === "customer"
-                ? "bg-gradient-to-r from-teal-500 to-teal-600 text-black shadow-lg scale-105"
-                : "bg-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-700/30"
-            }`}
-          >
-            <User className="w-4 h-4" />
-            <span>Customer</span>
-          </button>
-          <button
-            onClick={() => setSelectedRole("barber")}
-            className={`flex items-center justify-center space-x-2 py-3 px-4 rounded-md font-semibold transition duration-300 text-sm ${
-              selectedRole === "barber"
-                ? "bg-gradient-to-r from-teal-500 to-teal-600 text-black shadow-lg scale-105"
-                : "bg-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-700/30"
-            }`}
-          >
-            <Scissors className="w-4 h-4" />
-            <span>Barber</span>
-          </button>
-        </div>
-      </div>
+     
 
       {/* 🔹 Role Description */}
       <div className="w-full max-w-md mb-6">

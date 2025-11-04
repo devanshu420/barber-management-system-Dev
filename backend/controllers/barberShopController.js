@@ -240,25 +240,6 @@ exports.getBarberShopByUserId = async (req, res) => {
   }
 };
 
-// Get all barber shops (for customers)
-exports.getAllBarberShops = async (req, res) => {
-  try {
-    const shops = await BarberShopModel.find({ isActive: true }).lean();
-
-    return res.json({
-      success: true,
-      shops,
-    });
-  } catch (error) {
-    console.error("Error fetching shops:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch shops",
-      error: error.message,
-    });
-  }
-};
-
 // Get shops by barber ID (multiple shops)
 exports.getShopsByBarberId = async (req, res) => {
   try {
@@ -286,6 +267,27 @@ exports.getShopsByBarberId = async (req, res) => {
     });
   }
 };
+
+// Get all barber shops (for customers)
+exports.getAllBarberShops = async (req, res) => {
+  try {
+    const shops = await BarberShopModel.find({ isActive: true }).lean();
+
+    return res.json({
+      success: true,
+      shops,
+    });
+  } catch (error) {
+    console.error("Error fetching shops:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch shops",
+      error: error.message,
+    });
+  }
+};
+
+
 
 // Update barber shop
 exports.updateBarberShop = async (req, res) => {
@@ -319,6 +321,21 @@ exports.updateBarberShop = async (req, res) => {
     });
   }
 };
+
+// Get shop by ID
+exports.getShopById = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const shop = await BarberShopModel.findById(shopId);
+    if (!shop) {
+      return res.status(404).json({ success: false, message: "Shop not found" });
+    }
+    return res.json({ success: true, shop });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 // Delete barber shop
 exports.deleteBarberShop = async (req, res) => {
