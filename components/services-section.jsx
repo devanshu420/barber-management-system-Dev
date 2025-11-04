@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,60 +9,71 @@ const services = [
     icon: Scissors,
     title: "Classic Haircut",
     description: "Professional haircut tailored to your style and preferences",
-    price: "$25",
+    price: "₹25",
     duration: "30 min",
   },
   {
     icon: Razor,
     title: "Beard Trim & Shave",
     description: "Precision beard trimming and traditional hot towel shave",
-    price: "$20",
+    price: "₹20",
     duration: "25 min",
   },
   {
     icon: Sparkles,
     title: "Hair Styling",
     description: "Complete styling with premium products for special occasions",
-    price: "$15",
+    price: "₹15",
     duration: "20 min",
   },
   {
     icon: Crown,
     title: "Premium Package",
     description: "Full service including cut, shave, styling, and grooming",
-    price: "$50",
+    price: "₹50",
     duration: "60 min",
   },
 ];
 
 export function ServicesSection() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <section className="py-24 px-6 sm:px-8 lg:px-16 bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Choose from our range of professional grooming services, each delivered with expertise and attention to
-            detail.
+        {/* Section Header */}
+        <div className="text-center mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
+            Our Services
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Choose from our range of professional grooming services, each delivered with expertise and attention to detail.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
-                <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full w-fit">
-                  <service.icon className="h-8 w-8 text-blue-600" />
+            <Card
+              key={index}
+              className="border border-gray-200 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 bg-white flex flex-col"
+            >
+              <CardHeader className="text-center py-8">
+                <div className="mx-auto mb-5 p-4 bg-blue-50 rounded-full w-fit">
+                  <service.icon className="h-10 w-10 text-blue-600" />
                 </div>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
-                <CardDescription className="text-sm">{service.description}</CardDescription>
+                <CardTitle className="text-2xl font-semibold text-gray-900 mb-2">{service.title}</CardTitle>
+                <CardDescription className="text-gray-500 text-sm sm:text-base">
+                  {service.description}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-4">
-                  <span className="text-2xl font-bold text-blue-600">{service.price}</span>
+
+              <CardContent className="text-center mt-auto pb-8 px-6">
+                <div className="mb-6">
+                  <span className="text-2xl sm:text-3xl font-bold text-blue-600">{service.price}</span>
                   <span className="text-gray-500 ml-2">({service.duration})</span>
                 </div>
-                <Button className="w-full">Book Now</Button>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-all duration-300">
+                  Book Now
+                </Button>
               </CardContent>
             </Card>
           ))}

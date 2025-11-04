@@ -129,7 +129,7 @@ export function BookingFlow() {
                     <p className="font-medium">{bookingData.service.name}</p>
                     <p className="text-sm text-muted-foreground">{bookingData.service.duration} minutes</p>
                   </div>
-                  <Badge variant="secondary">${bookingData.service.price}</Badge>
+                  <Badge variant="secondary">₹{bookingData.service.price}</Badge>
                 </div>
               )}
 
@@ -180,7 +180,7 @@ export function BookingFlow() {
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center font-medium">
                     <span>Total</span>
-                    <span>${bookingData.service.price}</span>
+                    <span>₹{bookingData.service.price}</span>
                   </div>
                 </div>
               )}

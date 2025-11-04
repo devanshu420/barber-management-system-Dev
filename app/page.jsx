@@ -1,18 +1,35 @@
 "use client";
 
 import { Navbar } from "@/components/navbar"
-import { HeroSection } from "@/components/hero-section"
+import Home from "@/components/hero-section"
 import { ServicesSection } from "@/components/services-section"
-import { FeaturesSection } from "@/components/features-section"
+import  BussinessRelation from "@/components/BussinessRelation"
+import  PersonalAssistance from "@/components/PersonalAssistance"
+import  Quote from "@/components/Quote"
+import  Quality from "@/components/Quality"
+import AboutService from "@/components/AboutService";
+import FeautureInclude from "@/components/FeautureInclude";
+import Footer from "@/components/Footer";
+
+
+// import  Footer from "@/components/Footer"
+
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main>
-        <HeroSection />
+        <Home />
         <ServicesSection />
-        <FeaturesSection />
+        <BussinessRelation />
+        <PersonalAssistance />
+        <Quote />
+        <Quality />
+        <AboutService />
+        <FeautureInclude />
+        {/* <FeaturesSection /> */}
+        <Footer />
       </main>
     </div>
   )

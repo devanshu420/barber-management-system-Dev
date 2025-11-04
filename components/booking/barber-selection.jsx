@@ -8,7 +8,7 @@ import { Star, Award, Users } from "lucide-react"
 const barbers = [
   {
     id: "john-doe",
-    name: "Devanshu ",
+    name: "Shanu Kushwah ",
     rating: 4.9,
     reviews: 127,
     experience: "8 years",
@@ -19,7 +19,7 @@ const barbers = [
   },
   {
     id: "mike-smith",
-    name: "Mike Smith",
+    name: "Vikash Kushwah",
     rating: 4.8,
     reviews: 89,
     experience: "5 years",

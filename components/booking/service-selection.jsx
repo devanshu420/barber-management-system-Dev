@@ -46,52 +46,49 @@ const services = [
 
 export function ServiceSelection({ onSelect }) {
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Choose Your Service</h2>
-        <p className="text-muted-foreground">Select the service that best fits your needs</p>
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-6 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Choose Your Service</h2>
+        <p className="text-gray-500 text-sm sm:text-base">Select the service that best fits your needs</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {services.map((service) => (
           <Card
             key={service.id}
-            className="relative hover:shadow-md transition-shadow cursor-pointer group"
-            onClick={() => onSelect(service)}
+            className="relative rounded-2xl shadow-md hover:shadow-xl transition-shadow cursor-pointer overflow-hidden border border-gray-100 group bg-white"
           >
             {service.popular && (
-              <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground">
-                Popular
+              <Badge className="absolute top-3 right-3 bg-red-600 text-white px-2 py-1 text-xs rounded-full shadow-md">
+              Popular
               </Badge>
             )}
 
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <service.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{service.name}</CardTitle>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {service.duration} min
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs font-bold">
-                        ${service.price}
-                      </Badge>
-                    </div>
+            <CardHeader className="pb-2">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-purple-50 rounded-xl">
+                  <service.icon className="h-6 w-6 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg font-semibold text-gray-900">{service.name}</CardTitle>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Badge variant="outline" className="text-xs flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {service.duration} min
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs font-bold">
+                      ₹{service.price}
+                    </Badge>
                   </div>
                 </div>
               </div>
-              <CardDescription className="text-sm leading-relaxed">{service.description}</CardDescription>
+              <CardDescription className="text-gray-500 text-sm mt-2">{service.description}</CardDescription>
             </CardHeader>
 
-            <CardContent>
-              <Button 
-              onClick={() => onSelect(service)}
-              className="w-full group-hover:bg-primary/90 transition-colors">
+            <CardContent className="pt-4">
+              <Button
+                onClick={() => onSelect(service)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+              >
                 Select Service
               </Button>
             </CardContent>
