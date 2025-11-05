@@ -53,10 +53,10 @@ const Qaulity = () => (
             </span>
           </div>
           <h3 className="text-teal-400 font-bold text-lg mb-3">
-            All-inclusive, transparent pricing
+            Personalized Experience
           </h3>
           <p className="text-teal-200 text-base font-medium opacity-90">
-            We believe all business owners deserve access to the tools they need to succeed. Every provider has access to all of our available features for one low price.
+            Every client gets tailored grooming recommendations and barber matches based on their style and preferences.
           </p>
         </ScrollFade>
 
@@ -68,10 +68,10 @@ const Qaulity = () => (
             </span>
           </div>
           <h3 className="text-teal-400 font-bold text-lg mb-3">
-            Marketplace and Customer App to get more visibility
+            Seamless Digital Booking
           </h3>
           <p className="text-teal-200 text-base font-medium opacity-90">
-            Millions of customers around the world use Booksy to find and book services near them. Don't miss out, get your business in front of them.
+            From choosing your barber to paying online, our system makes the entire process smooth, fast, and stress-free.
           </p>
         </ScrollFade>
 
@@ -83,10 +83,10 @@ const Qaulity = () => (
             </span>
           </div>
           <h3 className="text-teal-400 font-bold text-lg mb-3">
-            Global community to inspire your journey
+            Professional & Verified Barbers
           </h3>
           <p className="text-teal-200 text-base font-medium opacity-90">
-            We are building a global and diverse community of entrepreneurs. Booksy partners with world-renowned experts, educators and brands.
+           All barbers are skilled, background-checked, and committed to delivering premium grooming services every time.
           </p>
         </ScrollFade>
       </div>

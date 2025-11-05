@@ -34,24 +34,24 @@ const ScrollFade = ({ children, className = "" }) => {
 const AboutService = () => {
   const features = [
     {
-      image: "https://cdn.prod.website-files.com/65ce807a7f0051db5b622a45/666839863dab24bf838b7fbd_onboarding-2.webp",
-      title: "24/7 live chat",
-      subtitle: "Get a human response in less than 30 seconds",
+      image: "https://simplycontact.com/wp-content/uploads/2022/09/24_7-chat-support.webp",
+      title: "💬24/7 live chat",
+      subtitle: "Chat directly with your barber to discuss styles, timings, or any special requests before your visit",
     },
     {
-      image: "https://cdn.prod.website-files.com/65ce807a7f0051db5b622a45/66a9df0f7cd3ab3b4e1a3108_livechat.png",
-      title: "Phone and email support",
-      subtitle: "90+ customer satisfaction",
+      image: "https://cilwo.com/wp-content/uploads/2023/03/3d-hand-holding-phone-with-reminder-push-notification-bell-design-illustration-vector.webp",
+      title: "🔔 Smart Notifications & Reminders",
+      subtitle: "Receive automatic alerts for upcoming appointments, exclusive offers, and new services.",
     },
     {
-      image: "https://cdn.prod.website-files.com/65ce807a7f0051db5b622a45/66a9df0fdc8b449c43b0a6dd_support.png",
-      title: "Personal onboarding support",
-      subtitle: "We’ll set you up for success",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTf82itV3OaXWeYmS3e2gz056DTmEh-amyzQA&s",
+      title: "⭐ Customer Feedback & Ratings",
+      subtitle: "Share your experience and help others choose the best barber while improving service quality.",
     },
     {
-      image: "https://cdn.prod.website-files.com/65ce807a7f0051db5b622a45/66683986724a5ce7bbbd1e5e_transfer-2.webp",
-      title: "Free data transfer",
-      subtitle: "All appointments, reviews and clients transferred to your new Booksy account",
+      image: "https://blog.nextbee.com/wp-content/uploads/2018/11/loyalty-reward.jpg",
+      title: "🎁 Loyalty & Rewards Program",
+      subtitle: "Earn points on every booking and redeem them for discounts, free grooming sessions, or premium upgrades.",
     },
   ];
 

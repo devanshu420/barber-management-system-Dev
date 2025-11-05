@@ -30,6 +30,7 @@ export default function CustomerDashboard() {
       const token = localStorage.getItem("token");
       const userName = localStorage.getItem("userName");
       const userRole = localStorage.getItem("userRole");
+      const booking = localStorage.getItem("userBookings") || 0;
 
       // Redirect to login if not authenticated
       if (!token) {
@@ -44,12 +45,12 @@ export default function CustomerDashboard() {
         email: localStorage.getItem("userEmail") || "user@example.com",
         phone: localStorage.getItem("userPhone") || "+91 9876543210",
         profilePhoto: null,
-        walletBalance: 5000,
+        walletBalance: 500,
         loyaltyPoints: 250,
         isEmailVerified: true,
         isPhoneVerified: true,
         joinDate: new Date().toLocaleDateString(),
-        bookings: 12,
+        bookings: booking,
         reviews: 8,
       });
     } catch (error) {
@@ -67,6 +68,7 @@ export default function CustomerDashboard() {
       localStorage.removeItem("userRole");
       localStorage.removeItem("userEmail");
       localStorage.removeItem("userPhone");
+      localStorage.removeItem("userBookings");
       router.push("/");
     } catch (error) {
       console.error("Error during logout:", error);

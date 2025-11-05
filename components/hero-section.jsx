@@ -116,7 +116,7 @@ const Home = () => {
 
           {/* CTA Buttons */}
           <ScrollFade className="flex flex-col sm:flex-row gap-4 justify-center mb-16 w-full sm:w-auto">
-            <Link href="/auth/register" className="w-full sm:w-auto">
+            <Link href="/booking" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto">
                 <CalendarClock className="mr-2 h-5 w-5" />
                 Book Appointment
@@ -224,7 +224,7 @@ const Home = () => {
             <p className="text-gray-300 text-lg mb-8">
               Join thousands of satisfied customers and experience premium barber services
             </p>
-            <Link href="/auth/register">
+            <Link href="/booking">
               <Button size="lg">
                 Get Started Now
                 <ArrowRight className="ml-2 h-5 w-5" />

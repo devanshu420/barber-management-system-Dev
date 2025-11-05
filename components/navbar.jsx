@@ -48,6 +48,12 @@ export function Navbar() {
     try {
       localStorage.removeItem("token");
       localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userRole");
+
+
+
       setIsAuthenticated(false);
       setUserName("");
       setIsMenuOpen(false);

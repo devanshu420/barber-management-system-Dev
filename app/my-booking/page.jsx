@@ -109,6 +109,11 @@ export default function MyBookingsPage() {
       });
       console.log("API Response:", response);
       const { success, data } = response.data;
+      const bookingLength = data.length;
+      console.log("Number of bookings fetched:", bookingLength);
+      const booking = localStorage.setItem("userBookings", bookingLength);
+
+      
 
       if (!success) {
         setError("Failed to load bookings");

@@ -13,7 +13,7 @@ export function LoginForm({ role = "customer" }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [selectedRole, setSelectedRole] = useState(role); // ✅ State for role selection
+  const [selectedRole, setSelectedRole] = useState(role); //  State for role selection
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -44,7 +44,7 @@ export function LoginForm({ role = "customer" }) {
         console.log("User role from DB:", actualRole);
         console.log("Selected role in form:", selectedRole);
 
-        // ✅ Check if roles match
+        //  Check if roles match
         if (actualRole !== selectedRole) {
           setMessage(
             `❌ Role mismatch! You are registered as "${actualRole}" but trying to login as "${selectedRole}". Please select the correct role.`
