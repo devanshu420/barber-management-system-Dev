@@ -37,11 +37,11 @@ const ScrollFade = ({ children, className = "", delay = 0 }) => {
 
 const BussinessRelation = () => {
   const features = [
-    "Easy, seamless booking for clients",
-    "Automated client engagement tools",
-    "Keep client notes for a personal touch",
-    "Appointment reminders",
-    "Reward loyal clients",
+    "Empowering local barbers to grow their business digitally",
+    "Helping salons reach more clients through our smart booking system",
+    "Building long-term trust between customers and skilled barbers",
+    "Providing growth tools and analytics to boost productivity",
+    "Creating new opportunities for barbers to earn and expand",
   ];
 
   return (
@@ -50,10 +50,16 @@ const BussinessRelation = () => {
         {/* Section Header */}
         <ScrollFade className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-snug">
-            Your business is built on relationships.
+            We grow together —
             <br />
-            <span className="text-teal-400">We help you nurture them.</span>
+            <span className="text-teal-400">Barbers and BarberBook.</span>
           </h2>
+          <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
+            At BarberBook, we believe success comes when our barbers and our
+            brand rise together. Our tools and platform are designed to help
+            barbers in Indore build their presence, attract clients, and grow
+            stronger every day.
+          </p>
         </ScrollFade>
 
         {/* Content */}
@@ -75,21 +81,19 @@ const BussinessRelation = () => {
 
             <ScrollFade delay={features.length * 150} className="mt-6">
               <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-8 py-3 rounded-md shadow-lg transition duration-300">
-                Start free now
+                Join the Growth Journey
               </button>
             </ScrollFade>
           </div>
 
-          {/* Right Side - Phone Image */}
+          {/* Right Side - Indian Barber Image */}
           <ScrollFade delay={300} className="flex-1 flex justify-center items-center min-w-[320px]">
             <div className="relative flex items-center">
-              {/* Dark teal background box */}
               <div className="absolute rounded-xl bg-teal-900 w-[300px] h-[400px] left-8 top-8 -z-10 shadow-lg"></div>
-              {/* Phone image */}
               <img
-                src="https://cdn.prod.website-files.com/65ce807a7f0051db5b622a45/66a32af309fe379e771fb55d_Reviews.avif"
-                alt="App mockup"
-                className="w-[260px] md:w-[310px] rounded-[2rem] shadow-2xl border border-teal-700"
+                src="https://www.milady.com/wp-content/uploads/2023/09/Barbering-opportunities-abound.jpg"
+                alt="Indian barber working with client"
+                className="w-[260px] md:w-[310px] rounded-[2rem] shadow-2xl border border-teal-700 object-cover"
                 style={{ position: "relative" }}
               />
             </div>

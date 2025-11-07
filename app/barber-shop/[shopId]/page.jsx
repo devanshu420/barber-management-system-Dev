@@ -1,78 +1,177 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Edit2, Save, X } from "lucide-react";
+import { ArrowLeft, Edit2, Save, X, Users, Calendar } from "lucide-react";
 
 export default function ShopDetailPage() {
-  const { shopId } = useParams();
+  const params = useParams();
+  const shopId = params?.shopId; // ✅ Better handling of params
   const router = useRouter();
   const [shop, setShop] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(""); // ✅ NEW: Error state for debugging
   const [editing, setEditing] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [formData, setFormData] = useState({});
+  
+  // Bookings state
+  const [showBookings, setShowBookings] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [bookingsLoading, setBookingsLoading] = useState(false);
+  
+  const cursorRef = useRef(null);
+  const glowRef = useRef(null);
+  const [cursorVisible, setCursorVisible] = useState(true);
 
- useEffect(() => {
-  async function fetchShop() {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token"); // or wherever you keep the auth token
-      const response = await axios.get(`http://localhost:5000/api/barbers/barber-shop/${shopId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.data.success) {
-        setShop(response.data.shop);
-        setFormData(response.data.shop);
-      } else {
-        setShop(null);
+  // ✅ FIXED: Fetch shop with better error handling
+  useEffect(() => {
+    async function fetchShop() {
+      if (!shopId) {
+        setError("No shop ID provided");
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error("Failed to fetch shop:", error);
-      setShop(null);
-    } finally {
-      setLoading(false);
+
+      setLoading(true);
+      setError("");
+      try {
+        const token = localStorage.getItem("token");
+        
+        // ✅ TRY BOTH API ENDPOINTS
+        let res;
+        try {
+          // First try the barber-shop endpoint
+          res = await axios.get(
+            `http://localhost:5000/api/barbers/barber-shop/${shopId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+        } catch (err1) {
+          console.log("First endpoint failed, trying alternative...");
+          // If first fails, try the barbershops endpoint
+          res = await axios.get(
+            `http://localhost:5000/api/barbershops/${shopId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+        }
+
+        if (res.data.success) {
+          setShop(res.data.shop);
+          setFormData(res.data.shop);
+          setError("");
+        } else {
+          setError(res.data.message || "Failed to fetch shop");
+          setShop(null);
+        }
+      } catch (err) {
+        console.error("Error fetching shop:", err);
+        setError(
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to fetch shop details"
+        );
+        setShop(null);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  if (shopId) {
     fetchShop();
-  }
-}, [shopId]);
+  }, [shopId]);
 
+  // Fetch bookings
+  const fetchBookings = async () => {
+    setBookingsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `http://localhost:5000/api/bookings/shop/${shopId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        console.log("Booking res" , res);
+        
+        setBookings(res.data.bookings || []);
+      } else {
+        setBookings([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch bookings:", err);
+      setBookings([]);
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
+  const handleToggleBookings = () => {
+    if (!showBookings) {
+      fetchBookings();
+    }
+    setShowBookings(!showBookings);
+  };
+
+  // Animated cursor
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    const glow = glowRef.current;
+    if (!cursor || !glow) return;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let posX = 0;
+    let posY = 0;
+    let glowX = 0;
+    let glowY = 0;
+    let frame;
+
+    const onMouseMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+
+    const animate = () => {
+      posX += (mouseX - posX) * 0.25;
+      posY += (mouseY - posY) * 0.25;
+      glowX += (mouseX - glowX) * 0.1;
+      glowY += (mouseY - glowY) * 0.1;
+
+      if (cursorVisible) {
+        cursor.style.opacity = "1";
+        glow.style.opacity = "0.4";
+      } else {
+        cursor.style.opacity = "0";
+        glow.style.opacity = "0";
+      }
+
+      cursor.style.transform = `translate3d(${posX - 8}px, ${posY - 8}px, 0)`;
+      glow.style.transform = `translate3d(${glowX - 80}px, ${glowY - 80}px, 0)`;
+
+      frame = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    animate();
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      cancelAnimationFrame(frame);
+    };
+  }, [cursorVisible]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleNestedInputChange = (e, parent) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [parent]: {
-        ...prev[parent],
-        [name]: value,
-      },
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleLocationChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      location: {
-        ...prev.location,
-        [name]: value,
-      },
+      location: { ...prev.location, [name]: value },
     }));
   };
 
@@ -80,274 +179,391 @@ export default function ShopDetailPage() {
     e.preventDefault();
     setUpdating(true);
     try {
-      const response = await axios.put(
+      const token = localStorage.getItem("token");
+      const res = await axios.put(
         `http://localhost:5000/api/barbershops/${shopId}`,
-        formData
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (response.data.success) {
+      if (res.data.success) {
         alert("Shop updated successfully!");
-        setShop(response.data.shop);
-        setFormData(response.data.shop);
+        setShop(res.data.shop);
+        setFormData(res.data.shop);
         setEditing(false);
       }
-    } catch (error) {
-      console.error("Failed to update shop:", error);
-      alert("Error updating shop");
+    } catch (err) {
+      console.error("Failed to update shop:", err);
+      alert(err.response?.data?.message || "Error updating shop");
     } finally {
       setUpdating(false);
     }
   };
 
-  const handleCancel = () => {
-    setFormData(shop);
-    setEditing(false);
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case "completed":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "pending":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+      case "cancelled":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+    }
   };
 
-  if (loading)
+  // Loading screen
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center">
-        <div className="text-white text-xl">Loading shop details...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] text-cyan-300 font-poppins">
+        <motion.div
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          Loading shop details...
+        </motion.div>
       </div>
     );
+  }
 
-  if (!shop)
+  // ✅ FIXED: Better error handling display
+  if (error || !shop) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center">
-        <div className="text-white text-xl">Shop not found</div>
-      </div>
-    );
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center text-teal-400 hover:text-teal-300"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
-          </button>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] text-gray-400 font-poppins px-4">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold text-red-400">⚠️ Error</h1>
+          <p className="text-lg">{error || "Shop not found"}</p>
+          <p className="text-sm text-gray-500">
+            Shop ID: <span className="text-cyan-400">{shopId}</span>
+          </p>
           <Button
-            onClick={() => setEditing(!editing)}
-            className="flex items-center space-x-2"
+            onClick={() => router.back()}
+            className="mt-4 bg-gradient-to-r from-cyan-500 to-teal-400 text-black font-semibold px-6 py-2 rounded-full"
           >
-            {editing ? (
-              <>
-                <X className="w-5 h-5" />
-                <span>Cancel Edit</span>
-              </>
-            ) : (
-              <>
-                <Edit2 className="w-5 h-5" />
-                <span>Edit Shop</span>
-              </>
-            )}
+            Go Back
           </Button>
         </div>
+      </div>
+    );
+  }
 
-        {/* Shop Information */}
-        <Card className="bg-gray-800 border border-gray-700 mb-8">
-          <CardHeader className="bg-gray-700 border-b border-gray-600">
-            <CardTitle className="text-white text-3xl">{shop.shopName}</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            {!editing ? (
-              // View Mode
-              <div className="space-y-6">
-                {/* Basic Info */}
-                <div>
-                  <h3 className="text-teal-400 font-semibold mb-2">Description</h3>
-                  <p className="text-gray-300">{shop.description || "No description provided"}</p>
-                </div>
+  return (
+    <>
+      {/* Cursor Glow */}
+      <div
+        ref={glowRef}
+        className="pointer-events-none fixed z-[9998] w-48 h-48 rounded-full blur-3xl opacity-40 bg-gradient-to-tr from-cyan-400/30 to-teal-500/20 mix-blend-screen transition-opacity duration-200"
+        style={{ opacity: cursorVisible ? 0.4 : 0 }}
+      />
 
-                {/* Location */}
-                <div>
-                  <h3 className="text-teal-400 font-semibold mb-2">Location</h3>
-                  <div className="text-gray-300 space-y-1">
-                    <p>
-                      <strong>Address:</strong> {shop.location?.address}
-                    </p>
-                    <p>
-                      <strong>City:</strong> {shop.location?.city}
-                    </p>
-                    <p>
-                      <strong>State:</strong> {shop.location?.state}
-                    </p>
-                    <p>
-                      <strong>Zip Code:</strong> {shop.location?.zipCode}
-                    </p>
-                  </div>
-                </div>
+      {/* Cursor Dot */}
+      <div
+        ref={cursorRef}
+        className="pointer-events-none fixed z-[9999] w-4 h-4 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(20,200,180,0.7)] transition-opacity duration-200"
+        style={{ opacity: cursorVisible ? 1 : 0 }}
+      />
 
-                {/* Services */}
-                <div>
-                  <h3 className="text-teal-400 font-semibold mb-2">Services</h3>
-                  <div className="space-y-2">
-                    {shop.services && shop.services.length > 0 ? (
-                      shop.services.map((service, index) => (
-                        <div key={index} className="bg-gray-700 p-3 rounded">
-                          <p className="text-white">
-                            <strong>{service.name}</strong> - ₹{service.price}
-                          </p>
-                          <p className="text-gray-400 text-sm">Duration: {service.duration} mins</p>
-                          <p className="text-gray-400 text-sm">Category: {service.category}</p>
-                        </div>
-                      ))
+      {/* Main Page */}
+      <div
+        className="min-h-screen relative cursor-none bg-gradient-to-br from-[#050a0c] via-[#0b0e13] to-[#030405] text-gray-200 px-6 py-12 font-poppins overflow-hidden"
+        onMouseEnter={() => setCursorVisible(true)}
+        onMouseLeave={() => setCursorVisible(false)}
+      >
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-between items-center mb-10"
+          >
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              onClick={() => router.back()}
+              className="flex items-center gap-2 text-cyan-400 hover:text-teal-300 transition"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Back</span>
+            </motion.button>
+
+            <div className="flex gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: "0px 0px 15px rgba(0,255,200,0.3)" }}
+                onClick={handleToggleBookings}
+                className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-400 text-white font-semibold shadow-xl shadow-purple-800/30"
+              >
+                <Calendar className="w-5 h-5" />
+                {showBookings ? "Hide Bookings" : "View Bookings"}
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: "0px 0px 15px rgba(0,255,200,0.3)" }}
+                onClick={() => setEditing(!editing)}
+                className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-teal-400 text-black font-semibold shadow-xl shadow-cyan-800/30"
+              >
+                {editing ? <X className="w-5 h-5" /> : <Edit2 className="w-5 h-5" />}
+                {editing ? "Cancel Edit" : "Edit Shop"}
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Shop Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg shadow-cyan-900/20 p-8 mb-10"
+          >
+            <CardHeader>
+              <CardTitle className="text-3xl font-semibold text-white tracking-wide">
+                {shop.shopName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!editing ? (
+                <motion.div
+                  initial="hidden"
+                  animate="show"
+                  variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+                  className="space-y-8"
+                >
+                  <motion.div variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}>
+                    <h3 className="text-cyan-400 font-semibold mb-2">Description</h3>
+                    <p className="text-gray-300">{shop.description || "No description"}</p>
+                  </motion.div>
+
+                  <motion.div variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}>
+                    <h3 className="text-cyan-400 font-semibold mb-2">Location</h3>
+                    <div className="space-y-1 text-gray-300">
+                      <p>{shop.location?.address || "N/A"}</p>
+                      <p>
+                        {shop.location?.city || "N/A"}, {shop.location?.state || "N/A"}{" "}
+                        {shop.location?.zipCode || ""}
+                      </p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}>
+                    <h3 className="text-cyan-400 font-semibold mb-2">Services</h3>
+                    {shop.services?.length ? (
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {shop.services.map((s, i) => (
+                          <motion.div
+                            key={i}
+                            whileHover={{
+                              scale: 1.05,
+                              borderColor: "#22d3ee",
+                              boxShadow: "0 0 20px rgba(34,211,238,0.2)",
+                            }}
+                            className="rounded-xl border border-gray-700 bg-[#0a0f11]/70 p-4 transition-all duration-300 cursor-pointer"
+                          >
+                            <p className="text-white font-semibold">{s.name}</p>
+                            <p className="text-sm text-gray-400">
+                              ₹{s.price} • {s.duration} mins
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Category: {s.category}
+                            </p>
+                          </motion.div>
+                        ))}
+                      </div>
                     ) : (
                       <p className="text-gray-400">No services added</p>
                     )}
+                  </motion.div>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-cyan-400 mb-2">Shop Name</label>
+                    <input
+                      type="text"
+                      name="shopName"
+                      value={formData.shopName || ""}
+                      onChange={handleInputChange}
+                      className="w-full bg-[#0a0f11]/60 border border-gray-700 text-white p-3 rounded-lg focus:border-cyan-400 outline-none transition"
+                    />
                   </div>
-                </div>
-
-                {/* Ratings */}
-                <div>
-                  <h3 className="text-teal-400 font-semibold mb-2">Ratings</h3>
-                  <p className="text-gray-300">
-                    Average: {shop.ratings?.average?.toFixed(1) || "0"} / 5 ({shop.ratings?.count || 0} reviews)
-                  </p>
-                </div>
-
-                {/* Earnings */}
-                <div>
-                  <h3 className="text-teal-400 font-semibold mb-2">Earnings</h3>
-                  <div className="text-gray-300 space-y-1">
-                    <p>
-                      <strong>Total Earnings:</strong> ₹{shop.earnings?.total || 0}
-                    </p>
-                    <p>
-                      <strong>Pending:</strong> ₹{shop.earnings?.pending || 0}
-                    </p>
+                  <div>
+                    <label className="block text-cyan-400 mb-2">Description</label>
+                    <textarea
+                      name="description"
+                      value={formData.description || ""}
+                      onChange={handleInputChange}
+                      rows={3}
+                      className="w-full bg-[#0a0f11]/60 border border-gray-700 text-white p-3 rounded-lg focus:border-cyan-400 outline-none transition"
+                    />
                   </div>
-                </div>
+                  <div>
+                    <h3 className="text-cyan-400 font-semibold mb-3">Location</h3>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {["address", "city", "state", "zipCode"].map((key) => (
+                        <input
+                          key={key}
+                          type="text"
+                          name={key}
+                          placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+                          value={formData.location?.[key] || ""}
+                          onChange={handleLocationChange}
+                          className="bg-[#0a0f11]/60 border border-gray-700 text-white p-3 rounded-lg focus:border-cyan-400 outline-none transition"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      type="submit"
+                      disabled={updating}
+                      className="flex-1 bg-gradient-to-r from-cyan-500 to-teal-400 text-black font-semibold rounded-full shadow-md shadow-cyan-800/40 hover:scale-105 transition disabled:opacity-50"
+                    >
+                      <Save className="w-5 h-5 mr-2" />
+                      {updating ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setEditing(false)}
+                      className="flex-1 rounded-full border border-gray-700 text-gray-300 hover:border-cyan-400 transition"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </CardContent>
+          </motion.div>
 
-                {/* Verification Status */}
-                <div>
-                  <h3 className="text-teal-400 font-semibold mb-2">Shop Status</h3>
-                  <p className="text-gray-300">
-                    <strong>Verified:</strong> {shop.isVerified ? "Yes" : "No"}
-                  </p>
-                  <p className="text-gray-300">
-                    <strong>Active:</strong> {shop.isActive ? "Yes" : "No"}
-                  </p>
-                </div>
+          {/* Bookings Section */}
+          {showBookings && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg shadow-purple-900/20 p-8 mb-10"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <Calendar className="w-5 h-5 text-purple-400" />
+                <h2 className="text-white text-2xl font-semibold">Bookings</h2>
               </div>
-            ) : (
-              // Edit Mode
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Shop Name */}
-                <div>
-                  <label className="block text-teal-400 font-semibold mb-2">Shop Name</label>
-                  <input
-                    type="text"
-                    name="shopName"
-                    value={formData.shopName || ""}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-teal-400 outline-none"
-                  />
-                </div>
 
-                {/* Description */}
-                <div>
-                  <label className="block text-teal-400 font-semibold mb-2">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description || ""}
-                    onChange={handleInputChange}
-                    rows="4"
-                    className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-teal-400 outline-none"
-                  />
+              {bookingsLoading ? (
+                <motion.div
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="text-center text-purple-300"
+                >
+                  Loading bookings...
+                </motion.div>
+              ) : bookings.length ? (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {bookings.map((booking, i) => (
+                    <motion.div
+                      key={booking._id || i}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      whileHover={{
+                        scale: 1.05,
+                        borderColor: "#a855f7",
+                        boxShadow: "0 0 20px rgba(168,85,247,0.2)",
+                      }}
+                      className="border border-gray-700 rounded-xl bg-[#0a0f11]/70 p-5 transition-all duration-300 cursor-pointer"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="text-white font-semibold">{booking.customerName || "N/A"}</p>
+                          <p className="text-gray-400 text-sm">{booking.serviceName || "Service"}</p>
+                        </div>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                            booking.status
+                          )}`}
+                        >
+                          {booking.status || "Unknown"}
+                        </span>
+                      </div>
+                      <div className="space-y-1 text-sm text-gray-400">
+                        <p>
+                          📅 {booking.date
+                            ? new Date(booking.date).toLocaleDateString()
+                            : "Date not set"}
+                        </p>
+                        <p>🕒 {booking.time || "Time not set"}</p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
+              ) : (
+                <p className="text-gray-400 text-center">No bookings yet</p>
+              )}
+            </motion.div>
+          )}
 
-                {/* Location Fields */}
-                <div>
-                  <h3 className="text-teal-400 font-semibold mb-3">Location</h3>
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      name="address"
-                      placeholder="Address"
-                      value={formData.location?.address || ""}
-                      onChange={(e) => handleLocationChange(e)}
-                      className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-teal-400 outline-none"
-                    />
-                    <input
-                      type="text"
-                      name="city"
-                      placeholder="City"
-                      value={formData.location?.city || ""}
-                      onChange={(e) => handleLocationChange(e)}
-                      className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-teal-400 outline-none"
-                    />
-                    <input
-                      type="text"
-                      name="state"
-                      placeholder="State"
-                      value={formData.location?.state || ""}
-                      onChange={(e) => handleLocationChange(e)}
-                      className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-teal-400 outline-none"
-                    />
-                    <input
-                      type="text"
-                      name="zipCode"
-                      placeholder="Zip Code"
-                      value={formData.location?.zipCode || ""}
-                      onChange={(e) => handleLocationChange(e)}
-                      className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:border-teal-400 outline-none"
-                    />
-                  </div>
-                </div>
+          {/* Staff Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg shadow-cyan-900/20 p-8"
+          >
+            <div className="flex items-center gap-2 mb-6">
+              <Users className="w-5 h-5 text-cyan-400" />
+              <h2 className="text-white text-2xl font-semibold">Staff Members</h2>
+            </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4">
-                  <Button
-                    type="submit"
-                    disabled={updating}
-                    className="flex items-center space-x-2 bg-teal-600 hover:bg-teal-700"
+            {shop.staff?.length ? (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {shop.staff.map((member, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{
+                      scale: 1.05,
+                      borderColor: "#22d3ee",
+                      boxShadow: "0 0 20px rgba(34,211,238,0.2)",
+                    }}
+                    className="border border-gray-700 rounded-xl bg-[#0a0f11]/70 p-4 transition-all duration-300 cursor-pointer"
                   >
-                    <Save className="w-5 h-5" />
-                    <span>{updating ? "Saving..." : "Save Changes"}</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleCancel}
-                    className="bg-gray-600 hover:bg-gray-700"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Staff Section */}
-        <Card className="bg-gray-800 border border-gray-700">
-          <CardHeader className="bg-gray-700 border-b border-gray-600">
-            <CardTitle className="text-white">Staff</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            {shop.staff && shop.staff.length > 0 ? (
-              <div className="space-y-3">
-                {shop.staff.map((member, index) => (
-                  <div key={index} className="bg-gray-700 p-3 rounded">
-                    <p className="text-white">
-                      <strong>{member.name}</strong> - {member.role}
+                    <p className="text-white font-semibold">{member.name}</p>
+                    <p className="text-gray-400 text-sm">{member.role}</p>
+                    <p className="text-gray-400 text-xs">Phone: {member.phone}</p>
+                    <p className="text-gray-500 text-xs mt-1">
+                      Specialization: {member.specialization || "N/A"}
                     </p>
-                    <p className="text-gray-400 text-sm">Phone: {member.phone}</p>
-                    <p className="text-gray-400 text-sm">
-                      Specialization: {member.specialization?.join(", ")}
-                    </p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400">No staff members added</p>
+              <p className="text-gray-400">No staff added yet</p>
             )}
-          </CardContent>
-        </Card>
+          </motion.div>
+        </div>
+
+        <style jsx global>{`
+          @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+          
+          .font-poppins {
+            font-family: "Poppins", sans-serif;
+          }
+
+          body, html {
+            cursor: none !important;
+          }
+
+          @media (hover: none) {
+            body, html {
+              cursor: auto !important;
+            }
+          }
+        `}</style>
       </div>
-    </div>
+    </>
   );
 }
+
+
+
+
+
+
+
+
+
+

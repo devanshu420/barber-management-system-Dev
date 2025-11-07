@@ -25,7 +25,7 @@ router.get("/user", authenticate, getUserBookings);
 router.get("/:id", authenticate, getBookingById);
 
 // 🔹 Get shop's bookings (for barber)
-router.get("/shop/:shopId", getShopBookings);
+router.get("/shop/:shopId", getShopBookings);  //http://localhost:5000/api/bookings/shop/:shopId
 
 // 🔹 Get booked slots for specific date
 router.get("/shop/:shopId/date/:date", getBookedSlots);
