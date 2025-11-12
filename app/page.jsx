@@ -7,7 +7,7 @@ import { ServicesSection } from "@/components/services-section"
 import  BussinessRelation from "@/components/BussinessRelation"
 import  Quality from "@/components/Quality"
 import AboutService from "@/components/AboutService";
-import FeautureInclude from "@/components/FeautureInclude";
+
 import Footer from "@/components/Footer";
 
 export default function HomePage() {

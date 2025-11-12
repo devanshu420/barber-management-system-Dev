@@ -12,7 +12,7 @@ export function LocationSelection({ onSelect }) {
   const [manualLocation, setManualLocation] = useState("");
   const [showManualInput, setShowManualInput] = useState(false);
 
-  // 🔹 Get current location via GPS
+  //  Get current location via GPS
   const handleGPSLocation = async () => {
     setLoading(true);
     setError("");
