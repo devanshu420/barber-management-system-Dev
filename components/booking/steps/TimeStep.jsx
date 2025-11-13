@@ -33,7 +33,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
 
         // Get shop details including working hours
         const response = await axios.get(
-          `http://localhost:5000/api/barbers/barber-shop/${shopId}`,
+          `http://localhost:5000/api/barbers/shops/${shopId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -44,7 +44,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
         console.log("Shop data:", response.data);
 
         if (response.data.success) {
-          const shopData = response.data.shop;
+          const shopData = response.data.data;
           setWorkingHours(shopData.workingHours || {});
 
           // Fetch booked appointments for this shop
@@ -113,6 +113,28 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
 
     return slots;
   };
+
+
+const generateEndTime = (startTime, duration) => {
+  const [time, period] = startTime.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (period === "PM" && hours !== 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+
+  const start = new Date();
+  start.setHours(hours, minutes);
+
+  const end = new Date(start.getTime() + duration * 60000);
+
+  const endHours = end.getHours() % 12 || 12;
+  const endMinutes = end.getMinutes().toString().padStart(2, "0");
+  const endPeriod = end.getHours() >= 12 ? "PM" : "AM";
+
+  return `${endHours}:${endMinutes} ${endPeriod}`;
+};
+
+
 
   // 🔹 Convert 24-hour to 12-hour format
   const convertTo12Hour = (time24) => {
@@ -185,11 +207,17 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
     return workingDays.includes(dayName);
   };
 
-  const handleConfirm = () => {
-    if (selectedDate && selectedTime) {
-      onSelect(selectedDate, selectedTime);
-    }
-  };
+ const handleConfirm = () => {
+  if (selectedDate && selectedTime) {
+    const endTime = generateEndTime(selectedTime, serviceDuration);
+
+    onSelect(selectedDate, {
+      startTime: selectedTime,
+      endTime: endTime,
+    });
+  }
+};
+
 
   if (loading) {
     return (

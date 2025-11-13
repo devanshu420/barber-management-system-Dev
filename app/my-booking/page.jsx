@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import API from "../../lib/api";
 import {
   Calendar,
   Clock,

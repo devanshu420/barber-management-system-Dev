@@ -33,7 +33,7 @@ export function ServiceSelection({ onSelect, shop }) {
         }
 
         const response = await axios.get(
-          `http://localhost:5000/api/barbers/barber-shop/${shopId}`,
+          `http://localhost:5000/api/barbers/shops/${shopId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -42,7 +42,7 @@ export function ServiceSelection({ onSelect, shop }) {
         );
 
         if (response.data.success) {
-          const shopData = response.data.shop;
+          const shopData = response.data.data;
           const fetchedServices = shopData.services || [];
 
           if (fetchedServices.length === 0) {
@@ -50,15 +50,15 @@ export function ServiceSelection({ onSelect, shop }) {
             setLoading(false);
             return;
           }
+const transformedServices = fetchedServices.map((service) => ({
+  _id: service._id,   
+  name: service.name,
+  description: service.description || "Professional service",
+  price: service.price,
+  duration: service.duration,
+  category: service.category || "General",
+}));
 
-          const transformedServices = fetchedServices.map((service, index) => ({
-            id: service._id || `service_${index}`,
-            name: service.name || "Unnamed Service",
-            description: service.description || "Professional service",
-            price: service.price || 0,
-            duration: service.duration || 30,
-            category: service.category || "General",
-          }));
 
           setServices(transformedServices);
         } else {
@@ -84,7 +84,8 @@ export function ServiceSelection({ onSelect, shop }) {
     setSelectedServices([service]);
   };
 
-  const isSelected = (service) => selectedServices.find((s) => s.id === service.id);
+  const isSelected = (service) => selectedServices.find((s) => s._id === service._id);
+
 
   const getTotalPrice = () => {
     return selectedServices.reduce((total, s) => total + s.price, 0);
@@ -151,7 +152,7 @@ export function ServiceSelection({ onSelect, shop }) {
         <div className="space-y-4">
           {services.map((service, idx) => (
             <motion.div
-              key={service.id}
+              key={service._id || `service_${idx}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.1 }}

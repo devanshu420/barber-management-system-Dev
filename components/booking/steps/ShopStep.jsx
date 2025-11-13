@@ -12,8 +12,8 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLng / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -48,16 +48,27 @@ export function ShopSelection({ userLocation, onSelect }) {
           return;
         }
 
-        const response = await axios.get("http://localhost:5000/api/barbers/all-shops");
+        const response = await axios.get("http://localhost:5000/api/barbers/shops");
+        console.log("API RESPONSE:", response.data);
+
 
         if (response.data.success) {
-          let shops = response.data.shops || [];
+          let shops = response.data.data || [];
 
-          if (userLocation.address) {
-            shops = shops.filter((shop) =>
-              shop.location?.city?.toLowerCase().includes(userLocation.address.toLowerCase())
-            );
-          }
+          // if (userLocation.city) {
+          //   shops = shops.filter((shop) =>
+          //     shop.location?.city?.toLowerCase().includes(userLocation.city.toLowerCase())
+          //   );
+          // }
+
+          const userCity =
+  userLocation.city ||
+  (userLocation.address?.split(",")[0] || "").trim().toLowerCase();
+
+shops = shops.filter((shop) =>
+  shop.location?.city?.toLowerCase().includes(userCity)
+);
+
 
           const shopsWithDistance = shops.map((shop) => {
             let distance = 0;
@@ -168,11 +179,10 @@ export function ShopSelection({ userLocation, onSelect }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               onClick={() => setSelectedShop(shop)}
-              className={`p-5 rounded-xl border-2 cursor-pointer transition-all flex flex-col h-full group ${
-                selectedShop?.id === shop.id
+              className={`p-5 rounded-xl border-2 cursor-pointer transition-all flex flex-col h-full group ${selectedShop?.id === shop.id
                   ? "border-teal-500 bg-teal-500/10 shadow-lg shadow-teal-500/20"
                   : "border-gray-700 bg-gray-800/30 hover:border-teal-500/50 hover:bg-gray-800/50"
-              }`}
+                }`}
             >
               {/* Shop Image */}
               <div className="relative mb-4 rounded-lg overflow-hidden group-hover:shadow-lg transition-shadow">
@@ -229,11 +239,10 @@ export function ShopSelection({ userLocation, onSelect }) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setSelectedShop(shop)}
-                className={`w-full py-2 rounded-lg font-semibold transition-all ${
-                  selectedShop?.id === shop.id
+                className={`w-full py-2 rounded-lg font-semibold transition-all ${selectedShop?.id === shop.id
                     ? "bg-teal-500 hover:bg-teal-600 text-black"
                     : "bg-gray-700 hover:bg-teal-500 text-white hover:text-black"
-                }`}
+                  }`}
               >
                 {selectedShop?.id === shop.id ? "Selected ✓" : "Select"}
               </motion.button>

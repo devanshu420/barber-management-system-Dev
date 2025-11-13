@@ -33,19 +33,50 @@ export function BookingConfirmation({ bookingData, onBack }) {
         return;
       }
 
+console.log("Booking Data:", bookingData);
+console.log("Service Object:", bookingData.service);
+console.log("Service ID:", bookingData.service?._id);
+
+
       const payload = {
-        shopId: bookingData.shop?.id || bookingData.shop?._id,
-        serviceId: bookingData.service?.id || bookingData.service?._id,
-        serviceName: bookingData.service?.name,
-        bookingDate: new Date(bookingData.date).toISOString(),
-        bookingTime: {
-          startTime: bookingData.time?.startTime || "10:00 AM",
-          endTime: bookingData.time?.endTime || "10:30 AM",
-        },
-        amount: bookingData.service?.price || 0,
-        paymentMethod: "razorpay",
-        notes: bookingData.notes || "",
-      };
+  shopId: bookingData.shop?._id,  
+ serviceId: bookingData.service?._id,
+
+  serviceName: bookingData.service?.name,
+  bookingDate: new Date(bookingData.date).toISOString(),
+  bookingTime: {
+    startTime: bookingData.time?.startTime,
+    endTime: bookingData.time?.endTime,
+  },
+  amount: bookingData.service?.price,
+  paymentMethod: "razorpay",
+  notes: bookingData.notes || "",
+};
+
+
+      // const payload = {
+      //   shopId: bookingData.shop?.id || bookingData.shop?._id,
+      //   serviceId: bookingData.service?.id || bookingData.service?._id,
+      //   serviceName: bookingData.service?.name,
+      //   bookingDate: new Date(bookingData.date).toISOString(),
+      //   bookingTime: {
+      //     startTime: bookingData.time?.startTime || "10:00 AM",
+      //     endTime: bookingData.time?.endTime || "10:30 AM",
+      //   },
+      //   amount: bookingData.service?.price || 0,
+      //   paymentMethod: "razorpay",
+      //   notes: bookingData.notes || "",
+      // };
+
+
+if (!bookingData.service?._id) {
+  setConfirmationMessage("❌ Service ID missing. Please reselect the service.");
+  setIsConfirming(false);
+  return;
+}
+
+
+
 
       const response = await axios.post("/api/bookings/create-bookings", payload, {
         headers: {

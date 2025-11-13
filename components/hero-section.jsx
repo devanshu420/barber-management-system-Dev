@@ -1,31 +1,40 @@
 "use client";
 
-import React, { useEffect, useRef, useState, forwardRef } from "react";
+import React, { useEffect, useState, useRef, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarClock, Clock, Star, Scissors, ArrowRight , Gift , Smartphone } from "lucide-react";
+import {
+  Scissors,
+  Clock,
+  Star,
+  CalendarClock,
+  Gift,
+  Smartphone,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
+
+// ========== BUTTON COMPONENT ==========
 const Button = forwardRef(
-  (
-    { className = "", variant = "default", size = "default", children, ...props },
-    ref
-  ) => {
+  ({ className = "", variant = "default", size = "default", children, ...props }, ref) => {
     const base =
-      "inline-flex items-center justify-center font-medium transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+      "inline-flex items-center justify-center font-semibold transition-all rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none select-none cursor-pointer";
 
     const variants = {
       default:
-        "bg-gradient-to-r from-cyan-500 to-teal-500 text-black hover:from-cyan-600 hover:to-teal-600 shadow-lg hover:shadow-cyan-500/50 transform hover:scale-105",
+        "bg-gradient-to-r from-cyan-500 to-teal-500 text-black hover:from-cyan-600 hover:to-teal-600 shadow-lg hover:shadow-cyan-500/60 transform hover:scale-105 hover:shadow-2xl",
       outline:
-        "border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 transition",
+        "border-2 border-cyan-400 text-cyan-300 hover:bg-cyan-500/10 transition",
       ghost: "hover:bg-white/10 text-white",
-      link: "text-cyan-400 underline-offset-4 hover:underline",
     };
 
     const sizes = {
-      sm: "h-9 px-3 text-sm",
-      default: "h-10 px-4 text-base",
-      lg: "h-12 px-8 text-lg",
+      sm: "h-9 px-4 text-sm",
+      default: "h-10 px-5 text-base",
+      lg: "h-13 px-8 text-lg py-3",
       icon: "h-10 w-10",
     };
 
@@ -42,313 +51,558 @@ const Button = forwardRef(
 );
 Button.displayName = "Button";
 
-// Reveal-on-Scroll Animation
-const ScrollFade = ({ children, className = "" }) => {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.unobserve(ref.current);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-  return (
-    <div
-      ref={ref}
-      className={`${className} transition-all duration-700 ease-out transform ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
-    >
-      {children}
-    </div>
-  );
-};
-
-
-
-// For cursor
-
+// ========== FUTURISTIC CURSOR ==========
 function FuturisticCursor() {
   const cursorRef = useRef(null);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(false);
   const [hovering, setHovering] = useState(false);
 
-  // Track mouse movement
   useEffect(() => {
-    const cursor = cursorRef.current;
-
-    const handleMove = (e) => {
-      if (cursor) {
-        cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
-      }
+    const handleMouseMove = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+      setIsVisible(true);
     };
-
-    window.addEventListener("mousemove", handleMove);
-    return () => window.removeEventListener("mousemove", handleMove);
+    const handleMouseLeave = () => setIsVisible(false);
+    
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+    };
   }, []);
 
-  // Hide default cursor
   useEffect(() => {
-    document.body.classList.add("cursor-none");
-    return () => document.body.classList.remove("cursor-none");
+    document.body.style.cursor = "none";
+    return () => {
+      document.body.style.cursor = "auto";
+    };
   }, []);
 
-  // Hover effect on clickable elements
   useEffect(() => {
-    const set = () => setHovering(true);
-    const unset = () => setHovering(false);
-    const elements = document.querySelectorAll(
-      "button, a, [tabindex]:not([tabindex='-1']), input, label"
+    const setHover = () => setHovering(true);
+    const clearHover = () => setHovering(false);
+    const els = document.querySelectorAll(
+      "button, a, [role='button'], input, label, textarea"
     );
-
-    elements.forEach((el) => {
-      el.addEventListener("mouseenter", set);
-      el.addEventListener("mouseleave", unset);
+    els.forEach((el) => {
+      el.addEventListener("mouseenter", setHover);
+      el.addEventListener("mouseleave", clearHover);
     });
-
-    return () =>
-      elements.forEach((el) => {
-        el.removeEventListener("mouseenter", set);
-        el.removeEventListener("mouseleave", unset);
+    return () => {
+      els.forEach((el) => {
+        el.removeEventListener("mouseenter", setHover);
+        el.removeEventListener("mouseleave", clearHover);
       });
+    };
   }, []);
 
   return (
     <div
       ref={cursorRef}
-      className="fixed top-0 left-0 z-[10000] pointer-events-none mix-blend-screen transition-transform duration-75"
+      className="fixed top-0 left-0 z-[10000] pointer-events-none"
+      style={{
+        transform: `translate(calc(${cursorPos.x}px - 50%), calc(${cursorPos.y}px - 50%))`,
+        opacity: isVisible ? 1 : 0,
+        transition: "opacity 0.2s ease-out",
+      }}
     >
-      <div
-        className={`w-4 h-4 rounded-full border-2 ${
+      <motion.div
+        animate={{
+          scale: hovering ? 1.5 : 1,
+        }}
+        transition={{ duration: 0.2 }}
+        className={`w-5 h-5 rounded-full border-2 transition-all duration-150 ${
           hovering
-            ? "border-cyan-300 bg-cyan-200/25"
-            : "border-cyan-500 bg-cyan-400/20"
-        } transition-all duration-150`}
+            ? "border-cyan-300 bg-cyan-200/50 shadow-lg shadow-cyan-400/80"
+            : "border-cyan-500 bg-cyan-400/30 shadow-lg shadow-cyan-400/50"
+        }`}
         style={{
           boxShadow: hovering
-            ? "0 0 20px 6px rgba(34,211,238,0.5)"
-            : "0 0 12px 3px rgba(34,211,238,0.4)",
+            ? "0 0 30px 10px rgba(34,211,238,0.7), 0 0 60px 20px rgba(34,211,238,0.4)"
+            : "0 0 20px 6px rgba(34,211,238,0.5), 0 0 40px 12px rgba(34,211,238,0.2)",
         }}
       />
     </div>
   );
 }
 
+// ========== HERO SLIDER WITH NAVIGATION ==========
+function HeroSlider() {
+  const heroImages = ["/hero1.png", "/hero2.png", "/hero3.png", "/hero4.png"];
 
-
-
-
-// Shimmer Place Loader
-const ShimmerPlaceholder = () => (
-  <div className="relative h-44 bg-gray-900/60 rounded-2xl border border-gray-800/50 overflow-hidden">
-    <div className="absolute inset-0 shimmer-effect" />
-  </div>
-);
-
-// Home/Dashboard Page – Use all features
-const Home = () => {
-  // Simulate loading
-  const [loading, setLoading] = useState(true);
-  const [cards, setCards] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [imageErrors, setImageErrors] = useState({});
+  const [autoPlay, setAutoPlay] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setCards([
-  {
-    icon: Scissors,
-    title: "Expert Barbers",
-    description: "All barbers professionally verified, handpicked for skill.",
-  },
-  {
-    icon: CalendarClock,
-    title: "Easy Booking",
-    description: "Book appointments anytime, instantly see slots and save time.",
-  },
-  {
-    icon: Star,
-    title: "Top Rated",
-    description: "4.9 star average, 1000+ happy customers, 0 hassle.",
-  },
-  {
-    icon: Clock,
-    title: "Fast Service",
-    description: "Average wait: only 15 mins! Get in and out quickly.",
-  },
-   {
-    icon: Gift, 
-    title: "Loyalty Points",
-    description:
-      "Earn points on every visit and redeem them for free services and discounts.",
-  },
-  {
-    icon: Smartphone,
-    title: "Smart Reminders",
-    description:
-      "Get automated reminders for your upcoming bookings and offers.",
-  },
-]);
+    if (!autoPlay) return;
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [autoPlay, heroImages.length]);
 
-      setLoading(false);
-    }, 1400);
-    return () => clearTimeout(t);
-  }, []);
+  const handlePrev = () => {
+    setIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+    setAutoPlay(false);
+  };
+
+  const handleNext = () => {
+    setIndex((prev) => (prev + 1) % heroImages.length);
+    setAutoPlay(false);
+  };
+
+  const onImageError = (i) => {
+    setImageErrors((prev) => ({ ...prev, [i]: true }));
+  };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden">
-      {/* Custom Futuristic Cursor */}
-      <FuturisticCursor />
+    <div className="relative w-full h-screen max-h-screen overflow-hidden rounded-3xl shadow-2xl group">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, scale: 1.08 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.92 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+          className="absolute inset-0 w-full h-full"
+        >
+          {!imageErrors[index] ? (
+            <Image
+              src={heroImages[index]}
+              alt={`Hero Slide ${index + 1}`}
+              fill
+              priority={index === 0}
+              onError={() => onImageError(index)}
+              className="object-cover"
+              sizes="100vw"
+              quality={85}
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-cyan-900 via-black to-teal-900">
+              <div className="text-center">
+                <Scissors className="w-16 h-16 mx-auto mb-4 text-cyan-300 opacity-40" />
+                <p className="text-cyan-300 font-semibold">Image Not Available</p>
+                <small className="text-cyan-400 text-sm block mt-2">
+                  Place image at: /hero{index + 1}.jpg
+                </small>
+              </div>
+            </div>
+          )}
 
-      {/* Ambient Background Glows */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl select-none pointer-events-none"></div>
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl select-none pointer-events-none"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-cyan-950/80 select-none pointer-events-none" />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Main Content */}
-      <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Header */}
-       {/* Main Content */}
-<div className="relative z-10 max-w-6xl mx-auto min-h-screen flex flex-col justify-center">
-  {/* Header */}
+      {/* Hero Content */}
+      {/* <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 1 }}
+        >
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight text-white drop-shadow-2xl mb-4">
+            Welcome to{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 animate-pulse">
+              The Barber Studio
+            </span>
+          </h1>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="text-lg md:text-2xl text-gray-200 drop-shadow-lg max-w-2xl mb-8"
+        >
+          Redefining grooming with modern style and precision.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+          className="flex flex-col sm:flex-row gap-4"
+        >
+          <Link href="/booking" legacyBehavior>
+            <a>
+              <Button size="lg" className="shadow-2xl">
+                Book Your Style <ArrowRight className="ml-2" />
+              </Button>
+            </a>
+          </Link>
+          <Button size="lg" variant="outline">
+            Learn More
+          </Button>
+        </motion.div>
+      </div> */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20">
   <motion.div
-    initial={{ opacity: 0, y: -24 }}
+    initial={{ opacity: 0, y: 30 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.7, ease: "easeOut" }}
-    className="flex flex-col items-center justify-center text-center px-4 py-10"
+    transition={{ delay: 0.3, duration: 1 }}
   >
-    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight drop-shadow-2xl mb-6">
-      Universal{" "}
-      <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">
-        Barber Dashboard
+    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight text-white drop-shadow-2xl mb-4">
+      Elevate Your{" "}
+      <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 animate-pulse">
+        Barber Business
       </span>
     </h1>
-    <p className="text-gray-300 max-w-3xl text-xl sm:text-2xl mb-10">
-      Schedule, view stats, and manage all your appointments — all in one modern dashboard.
-    </p>
-    <motion.div
-      className="mt-4 flex flex-col sm:flex-row gap-5 justify-center"
-      initial={false}
-    >
-      <Link href="/booking" legacyBehavior>
-        <Button size="lg" className="text-lg px-8 py-6">
-          <CalendarClock className="mr-2 h-6 w-6" />
-          Book Appointment
-          <ArrowRight className="ml-2 h-6 w-6" />
+  </motion.div>
+
+  <motion.p
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.5, duration: 1 }}
+    className="text-lg md:text-2xl text-gray-200 drop-shadow-lg max-w-2xl mb-8"
+  >
+    A modern Barber Management System designed to streamline bookings,
+    manage staff, track inventory, and enhance your customer experience — 
+    all in one smart platform.
+  </motion.p>
+
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay: 0.7, duration: 0.8 }}
+    className="flex flex-col sm:flex-row gap-4"
+  >
+    <Link href="/booking" legacyBehavior>
+      <a>
+        <Button size="lg" className="shadow-2xl">
+          Get Started <ArrowRight className="ml-2" />
         </Button>
-      </Link>
-      <Link href="/services" legacyBehavior>
-        <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-          View Services
-        </Button>
-      </Link>
-    </motion.div>
+      </a>
+    </Link>
+    <Button size="lg" variant="outline">
+      Learn More
+    </Button>
   </motion.div>
 </div>
 
 
-        {/* Cards Section */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-2 md:px-0">
-          {loading
-            ? [1, 2, 3].map((k) => <ShimmerPlaceholder key={k} />)
-            : cards.map(({ icon: Icon, title, description }, idx) => (
-              <motion.div
-                key={title}
-                className="group p-7 rounded-2xl bg-gray-900/50 border border-gray-800/50 shadow-xl hover:border-cyan-500/60 hover:shadow-cyan-400/20 transition relative overflow-hidden"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.13, ease: "easeOut" }}
-                whileHover={{
-                  y: -8,
-                  transition: { duration: 0.23, ease: "easeOut" },
-                }}
-              >
-                {/* Neon Glow Overlay */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-cyan-400 to-teal-500 opacity-10 blur-xl" />
-                </div>
-                <div className="relative z-10">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 p-3 mb-4 flex items-center justify-center shadow-lg">
-                    <Icon className="w-full h-full text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-300">{title}</h3>
-                  <p className="text-gray-400 text-sm">{description}</p>
-                </div>
-                {/* Hover border glow */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                  <div className="absolute inset-0 rounded-2xl" style={{ boxShadow: "inset 0 0 24px 3px rgba(34,211,238,0.18)" }}/>
-                </div>
-              </motion.div>
-            ))}
-        </section>
+     
+ {/* Navigation Arrows */}
+{/* Navigation Arrows */}
+<Button
+  onClick={handlePrev}
+  variant="ghost"
+  size="icon"
+  className="absolute left-6 top-1/2 transform -translate-y-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md bg-black/30"
+>
+  <ChevronLeft className="w-6 h-6" />
+</Button>
 
-        {/* Section Break / CTA */}
-        <motion.section
-          className="max-w-3xl mx-auto text-center py-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-            Ready to Experience <span className="text-cyan-400">Premium</span> Service?
-          </h2>
-          <p className="text-gray-300 text-lg mb-8">
-            Join others and feel the difference.
-          </p>
-          <Link href="/booking" legacyBehavior>
-            <Button size="lg">
-              Get Started
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-        </motion.section>
+<Button
+  onClick={handleNext}
+  variant="ghost"
+  size="icon"
+  className="absolute right-6 top-1/2 transform -translate-y-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md bg-black/30"
+>
+  <ChevronRight className="w-6 h-6" />
+</Button>
+
+
+
+      {/* Slide Indicators */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-30">
+        {heroImages.map((_, i) => (
+          <motion.button
+            key={i}
+            onClick={() => {
+              setIndex(i);
+              setAutoPlay(false);
+            }}
+            className={`transition-all rounded-full ${
+              i === index
+                ? "bg-cyan-400 w-8 h-2"
+                : "bg-gray-500 w-2 h-2 hover:bg-gray-300"
+            }`}
+            whileHover={{ scale: 1.2 }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ========== FEATURE CARD COMPONENT ==========
+function FeatureCard({ Icon, title, description, delay }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay }}
+      viewport={{ once: true }}
+      whileHover={{
+        scale: 1.08,
+        boxShadow: "0 0 30px rgba(34,211,238,0.5)",
+      }}
+      className="group relative bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-xl border border-cyan-400/20 rounded-2xl p-8 overflow-hidden transition-all cursor-default"
+    >
+      {/* Gradient Background on Hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+      {/* Icon */}
+      <motion.div
+        whileHover={{ rotate: 360, scale: 1.15 }}
+        transition={{ duration: 0.6 }}
+        className="mb-5 w-16 h-16 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-cyan-500/50"
+      >
+        <Icon className="w-8 h-8 text-white" strokeWidth={1.5} />
+      </motion.div>
+
+      {/* Title & Description */}
+      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+        {title}
+      </h3>
+      <p className="text-gray-400 leading-relaxed">{description}</p>
+
+      {/* Bottom Accent Line */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+    </motion.div>
+  );
+}
+
+// ========== SHIMMER PLACEHOLDER ==========
+const ShimmerPlaceholder = () => (
+  <div className="relative h-60 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 overflow-hidden">
+    <div className="absolute inset-0 shimmer-effect" />
+  </div>
+);
+
+// ========== MAIN HOME PAGE ==========
+export default function Home() {
+  const [loading, setLoading] = useState(true);
+  const [features, setFeatures] = useState([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFeatures([
+        {
+          icon: Scissors,
+          title: "Expert Barbers",
+          description: "Professionally trained barbers for every style.",
+        },
+        {
+          icon: CalendarClock,
+          title: "Instant Booking",
+          description: "Book your seat anytime, no waiting hassle.",
+        },
+        {
+          icon: Star,
+          title: "Top Rated",
+          description: "4.9 stars with 1000+ happy clients.",
+        },
+        {
+          icon: Clock,
+          title: "Quick Service",
+          description: "Get styled in just 15 minutes average.",
+        },
+        {
+          icon: Gift,
+          title: "Loyalty Rewards",
+          description: "Earn points and redeem exciting offers.",
+        },
+        {
+          icon: Smartphone,
+          title: "Smart Reminders",
+          description: "Never miss your appointment again.",
+        },
+      ]);
+      setLoading(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-950 to-cyan-950 text-white overflow-x-hidden select-none">
+      <FuturisticCursor />
+
+      {/* Animated Background Blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            x: [0, 50, 0],
+            y: [0, 50, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity }}
+          className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            x: [0, -50, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity, delay: 2 }}
+          className="absolute -bottom-40 -left-40 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl"
+        />
       </div>
 
-      {/* Styles for Shimmer Loader & Cursor */}
+      {/* Main Content */}
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        {/* Hero Section */}
+        <HeroSlider />
+
+        {/* Features Section */}
+        <section className="mt-24 sm:mt-32 lg:mt-40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16 sm:mb-20"
+          >
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
+              Why Choose{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-teal-400">
+                The Barber Studio
+              </span>
+            </h2>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto drop-shadow-sm">
+              Experience premium grooming with cutting-edge technology and expert care.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+            {loading
+              ? [1, 2, 3, 4, 5, 6].map((k) => <ShimmerPlaceholder key={k} />)
+              : features.map(({ icon: Icon, title, description }, idx) => (
+                  <FeatureCard
+                    key={title}
+                    Icon={Icon}
+                    title={title}
+                    description={description}
+                    delay={idx * 0.1}
+                  />
+                ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="mt-32 sm:mt-40 lg:mt-48 mb-16 px-6 sm:px-12 py-16 sm:py-24 bg-gradient-to-r from-cyan-900/30 to-teal-900/30 backdrop-blur-xl border border-cyan-400/20 rounded-3xl text-center"
+        >
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
+            Experience{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">
+              Luxury
+            </span>{" "}
+            in Every Cut
+          </h2>
+          <p className="text-gray-300 text-lg sm:text-xl mb-10 max-w-2xl mx-auto drop-shadow-sm">
+            Book your next transformation today and join thousands of satisfied clients.
+          </p>
+          <Link href="/booking" legacyBehavior>
+            <a>
+              <Button size="lg" className="shadow-2xl">
+                Get Started <ArrowRight className="ml-2" />
+              </Button>
+            </a>
+          </Link>
+        </motion.section>
+      </main>
+
+      {/* Global Styles */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        * { font-family: "Poppins", sans-serif;}
-        body, .cursor-none, .cursor-none * { cursor: none !important; }
-        @keyframes shimmer {
-          0% {transform: translateX(-100%);}
-          100% {transform: translateX(100%);}
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");
+
+        * {
+          font-family: "Poppins", sans-serif;
         }
+
+        html {
+          scroll-behavior: smooth;
+        }
+
+        body {
+          cursor: none !important;
+          background-color: #0a0a0a;
+          overflow-x: hidden;
+        }
+
         .shimmer-effect::before {
           content: "";
           position: absolute;
-          top: 0; left: 0; width: 100%; height: 100%;
-          background: linear-gradient(90deg,transparent,rgba(34,211,238,0.12),transparent);
+          inset: 0;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(34, 211, 238, 0.15),
+            transparent
+          );
           animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #06b6d4, #14b8a6);
+          border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #00d9ff, #2dd4bf);
         }
       `}</style>
     </div>
   );
-};
-
-export default Home;
+}
 
 // "use client";
 
-// import React, { forwardRef, useEffect, useRef, useState } from "react";
-// import { CalendarClock, Clock, Star, Scissors, ArrowRight } from "lucide-react";
+// import React, { useEffect, useRef, useState, forwardRef } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import {
+//   CalendarClock,
+//   Clock,
+//   Star,
+//   Scissors,
+//   ArrowRight,
+//   Gift,
+//   Smartphone,
+// } from "lucide-react";
 // import Link from "next/link";
 
-// // Inline Button component
+// // 🎨 Reusable Button
 // const Button = forwardRef(
-//   ({ className = "", variant = "default", size = "default", children, ...props }, ref) => {
+//   (
+//     { className = "", variant = "default", size = "default", children, ...props },
+//     ref
+//   ) => {
 //     const base =
-//       "inline-flex items-center justify-center font-medium transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+//       "inline-flex items-center justify-center font-medium transition-all rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
 
 //     const variants = {
-//       default: "bg-gradient-to-r from-teal-500 to-teal-600 text-black hover:from-teal-600 hover:to-teal-700 shadow-lg hover:shadow-xl transform hover:scale-105",
-//       outline: "border border-teal-500/50 text-teal-300 hover:bg-teal-500/10 transition",
-//       secondary: "bg-gray-700/50 text-white hover:bg-gray-600 transition border border-gray-600/50",
+//       default:
+//         "bg-gradient-to-r from-cyan-500 to-teal-500 text-black hover:from-cyan-600 hover:to-teal-600 shadow-lg hover:shadow-cyan-500/50 transform hover:scale-105",
+//       outline:
+//         "border border-cyan-400/50 text-cyan-200 hover:bg-cyan-500/10 transition",
 //       ghost: "hover:bg-white/10 text-white",
-//       link: "text-teal-400 underline-offset-4 hover:underline",
 //     };
 
 //     const sizes = {
@@ -371,215 +625,379 @@ export default Home;
 // );
 // Button.displayName = "Button";
 
-// const ScrollFade = ({ children, className = "" }) => {
-//   const ref = useRef();
-//   const [visible, setVisible] = useState(false);
+// // 💫 Custom Cursor
+// function FuturisticCursor() {
+//   const cursorRef = useRef(null);
+//   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+//   const [isVisible, setIsVisible] = useState(false);
+//   const [hovering, setHovering] = useState(false);
 
 //   useEffect(() => {
-//     const observer = new IntersectionObserver(
-//       ([entry]) => {
-//         if (entry.isIntersecting) {
-//           setVisible(true);
-//           observer.unobserve(ref.current);
-//         }
-//       },
-//       { threshold: 0.1 }
-//     );
+//     const handleMouseMove = (e) => {
+//       setCursorPos({ x: e.clientX, y: e.clientY });
+//       setIsVisible(true);
+//     };
 
-      
+//     const handleMouseLeave = () => {
+//       setIsVisible(false);
+//     };
 
-//     if (ref.current) observer.observe(ref.current);
-//     return () => observer.disconnect();
+//     window.addEventListener("mousemove", handleMouseMove);
+//     document.addEventListener("mouseleave", handleMouseLeave);
+
+//     return () => {
+//       window.removeEventListener("mousemove", handleMouseMove);
+//       document.removeEventListener("mouseleave", handleMouseLeave);
+//     };
 //   }, []);
 
+//   useEffect(() => {
+//     document.body.style.cursor = "none";
+//     return () => {
+//       document.body.style.cursor = "auto";
+//     };
+//   }, []);
 
+//   useEffect(() => {
+//     const handleMouseEnter = () => setHovering(true);
+//     const handleMouseLeave = () => setHovering(false);
+
+//     const elements = document.querySelectorAll(
+//       "button, a, [tabindex]:not([tabindex='-1']), input, textarea, label"
+//     );
+
+//     elements.forEach((el) => {
+//       el.addEventListener("mouseenter", handleMouseEnter);
+//       el.addEventListener("mouseleave", handleMouseLeave);
+//     });
+
+//     return () => {
+//       elements.forEach((el) => {
+//         el.removeEventListener("mouseenter", handleMouseEnter);
+//         el.removeEventListener("mouseleave", handleMouseLeave);
+//       });
+//     };
+//   }, []);
 
 //   return (
 //     <div
-//       ref={ref}
-//       className={`${className} transition-all duration-700 ease-out transform ${
-//         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-//       }`}
+//       ref={cursorRef}
+//       className="fixed top-0 left-0 z-[10000] pointer-events-none"
+//       style={{
+//         transform: `translate(calc(${cursorPos.x}px - 50%), calc(${cursorPos.y}px - 50%))`,
+//         opacity: isVisible ? 1 : 0,
+//         transition: "opacity 0.2s ease-out",
+//       }}
 //     >
-//       {children}
+//       <div
+//         className={`w-5 h-5 rounded-full border-2 transition-all duration-150 ${
+//           hovering
+//             ? "border-cyan-300 bg-cyan-200/40 shadow-lg shadow-cyan-400/60"
+//             : "border-cyan-500 bg-cyan-400/30 shadow-lg shadow-cyan-400/40"
+//         }`}
+//         style={{
+//           boxShadow: hovering
+//             ? "0 0 25px 8px rgba(34,211,238,0.6), 0 0 50px 15px rgba(34,211,238,0.3)"
+//             : "0 0 20px 6px rgba(34,211,238,0.5), 0 0 40px 12px rgba(34,211,238,0.2)",
+//         }}
+//       />
+//     </div>
+//   );
+// }
+
+// // 🎬 Hero Slider with HTML IMG (Direct Loading)
+// const HeroSlider = () => {
+//   const [index, setIndex] = useState(0);
+//   const [imageLoaded, setImageLoaded] = useState({});
+//   const [imageError, setImageError] = useState({});
+//   // Base filenames (place your files in public/images/ or public/)
+//   const imageNames = ["hero1.jpg", "hero2.png", "hero3.jpg", "hero4.jpg"];
+//   // resolved[index] => string path if found, null if none found, undefined = probing
+//   const [resolved, setResolved] = useState({});
+
+//   // Try candidates sequentially for each image: /images/<name> then /<name>
+//   useEffect(() => {
+//     if (typeof window === "undefined") return;
+//     imageNames.forEach((name, idx) => {
+//       const candidates = [`/images/${name}`, `/${name}`];
+//       const tryLoad = (i) => {
+//         if (i >= candidates.length) {
+//           setResolved((prev) => ({ ...prev, [idx]: null }));
+//           return;
+//         }
+//         const probe = new window.Image();
+//         probe.onload = () => setResolved((prev) => ({ ...prev, [idx]: candidates[i] }));
+//         probe.onerror = () => tryLoad(i + 1);
+//         probe.src = candidates[i];
+//       };
+//       tryLoad(0);
+//     });
+//   }, []); // run once on mount
+
+  
+//   useEffect(() => {
+//     const timer = setInterval(
+//       () => setIndex((prev) => (prev + 1) % imageNames.length),
+//       4000
+//     );
+//     return () => clearInterval(timer);
+//   }, []);
+
+//   const handleImageLoad = (idx) => {
+//     console.log("✅ Image loaded:", imageNames[idx]);
+//     setImageLoaded((prev) => ({ ...prev, [idx]: true }));
+//   };
+
+//   const handleImageError = (idx) => {
+//     console.error("❌ Image failed to load:", imageNames[idx]);
+//     setImageError((prev) => ({ ...prev, [idx]: true }));
+//   };
+
+//   return (
+//     <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden rounded-3xl mt-6 shadow-2xl">
+//       <AnimatePresence>
+//         <motion.div
+//           key={index}
+//           initial={{ opacity: 0, scale: 1.05 }}
+//           animate={{ opacity: 1, scale: 1 }}
+//           exit={{ opacity: 0, scale: 0.95 }}
+//           transition={{ duration: 1.3, ease: "easeInOut" }}
+//           className="absolute inset-0 w-full h-full"
+//         >
+//             {resolved[index] === undefined ? (
+//               // still probing candidate URLs
+//               <div className="w-full h-full bg-black/60 flex items-center justify-center">
+//                 <span className="text-gray-300">Checking image path...</span>
+//               </div>
+//             ) : resolved[index] === null ? (
+//               // no candidate found
+//               <div className="w-full h-full bg-gradient-to-br from-cyan-900 via-black to-teal-950 flex flex-col items-center justify-center">
+//                 <Scissors className="w-24 h-24 text-cyan-300 mb-4 opacity-40" />
+//                 <span className="text-cyan-200 opacity-70 text-lg font-semibold">
+//                   Image Not Found
+//                 </span>
+//                 <small className="text-xs text-cyan-400 mt-3 text-center px-4">
+//                   📁 Tried: <code className="bg-black/40 px-2 py-1 rounded">{`/images/${imageNames[index]}`}</code> and <code className="bg-black/40 px-2 py-1 rounded">{`/${imageNames[index]}`}</code>
+//                   <br />
+//                   ✅ Place the file in public/images or public/ and restart the dev server
+//                 </small>
+//               </div>
+//             ) : (
+//               // resolved path found — render normally
+//               <img
+//                 src={resolved[index]}
+//                 alt={`Hero ${index + 1}`}
+//                 onLoad={() => handleImageLoad(index)}
+//                 onError={() => handleImageError(index)}
+//                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+//                 style={{ objectPosition: "center" }}
+//               />
+//             )}
+//         </motion.div>
+//       </AnimatePresence>
+
+//       {/* Overlay Text */}
+//       <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-center text-white px-4 z-20">
+//         <motion.h1
+//           className="text-4xl md:text-6xl font-bold mb-3 drop-shadow-2xl"
+//           initial={{ opacity: 0, y: -20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ delay: 0.2 }}
+//         >
+//           Welcome to{" "}
+//           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">
+//             The Barber Studio
+//           </span>
+//         </motion.h1>
+//         <motion.p
+//           className="text-gray-200 max-w-2xl mb-8 text-lg drop-shadow-lg"
+//           initial={{ opacity: 0, y: -10 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ delay: 0.4 }}
+//         >
+//           Redefining grooming with modern style and precision.
+//         </motion.p>
+//         <motion.div
+//           initial={{ opacity: 0, scale: 0.8 }}
+//           animate={{ opacity: 1, scale: 1 }}
+//           transition={{ delay: 0.6 }}
+//         >
+//           <Link href="/booking" legacyBehavior>
+//             <Button size="lg">
+//               Book Your Style <ArrowRight className="ml-2" />
+//             </Button>
+//           </Link>
+//         </motion.div>
+//       </div>
+
+//       {/* Slide Indicators */}
+//       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-30">
+//         {imageNames.map((_, i) => (
+//           <motion.button
+//             key={i}
+//             onClick={() => setIndex(i)}
+//             className={`h-2 rounded-full transition-all ${
+//               i === index ? "bg-cyan-400 w-8" : "bg-gray-400 w-2"
+//             }`}
+//             whileHover={{ scale: 1.2 }}
+//           />
+//         ))}
+//       </div>
+
+//       {/* Debug Info */}
+//       <div className="absolute top-4 right-4 text-xs text-cyan-300 bg-black/60 px-3 py-2 rounded z-30">
+//         <div>📸 Image: {index + 1}/4</div>
+//         <div>
+//           {imageLoaded[index]
+//             ? "✅ Loaded"
+//             : imageError[index]
+//             ? "❌ Error"
+//             : "⏳ Loading..."}
+//         </div>
+//       </div>
 //     </div>
 //   );
 // };
 
-// const Home = () => {
+// // 🌟 Shimmer Placeholder
+// const ShimmerPlaceholder = () => (
+//   <div className="relative h-44 bg-gray-900/60 rounded-2xl border border-gray-800/50 overflow-hidden">
+//     <div className="absolute inset-0 shimmer-effect" />
+//   </div>
+// );
+
+// // 🏠 Home Page
+// export default function Home() {
+//   const [loading, setLoading] = useState(true);
+//   const [cards, setCards] = useState([]);
+
+//   useEffect(() => {
+//     const t = setTimeout(() => {
+//       setCards([
+//         {
+//           icon: Scissors,
+//           title: "Expert Barbers",
+//           description: "Professionally trained barbers for every style.",
+//         },
+//         {
+//           icon: CalendarClock,
+//           title: "Instant Booking",
+//           description: "Book your seat anytime, no waiting hassle.",
+//         },
+//         {
+//           icon: Star,
+//           title: "Top Rated",
+//           description: "4.9 stars with 1000+ happy clients.",
+//         },
+//         {
+//           icon: Clock,
+//           title: "Quick Service",
+//           description: "Get styled in just 15 minutes average.",
+//         },
+//         {
+//           icon: Gift,
+//           title: "Loyalty Rewards",
+//           description: "Earn points and redeem exciting offers.",
+//         },
+//         {
+//           icon: Smartphone,
+//           title: "Smart Reminders",
+//           description: "Never miss your appointment again.",
+//         },
+//       ]);
+//       setLoading(false);
+//     }, 1500);
+//     return () => clearTimeout(t);
+//   }, []);
+
 //   return (
-//     <div className="relative min-h-screen text-white overflow-hidden">
-//       {/* Background Image with Overlay */}
-//       <div
-//         className="absolute inset-0 bg-cover bg-center"
-//         style={{
-//           backgroundImage:
-//             "url('https://plus.unsplash.com/premium_photo-1661420297394-a8a9590e93a8?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-//           backgroundAttachment: "fixed",
-//         }}
-//       ></div>
+//     <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden">
+//       <FuturisticCursor />
 
-//       {/* Dark Gradient Overlay */}
-//       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80"></div>
+//       {/* Ambient Background */}
+//       <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl" />
+//       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />
 
-//       {/* Main Content */}
-//       <div className="relative z-10">
-//         {/* Hero Section */}
-//         <section className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-12">
-//           {/* Logo/Brand */}
-          
+//       <div className="relative z-10 max-w-6xl mx-auto px-4">
+//         <HeroSlider />
 
-//           {/* Main Headline */}
-//           <ScrollFade className="mb-8">
-//             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-center max-w-4xl">
-//               Professional Barber
-//               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-teal-300 to-teal-400">
-//                 Services At Your Convenience
-//               </span>
-//             </h1>
-//           </ScrollFade>
-
-//           {/* Subheading */}
-//           <ScrollFade className="mb-10">
-//             <p className="text-gray-300 max-w-3xl text-lg sm:text-xl text-center leading-relaxed">
-//               Book appointments with top-rated barbers in your area. Experience premium grooming 
-//               services with easy online scheduling and professional care.
-//             </p>
-//           </ScrollFade>
-
-//           {/* CTA Buttons */}
-//           <ScrollFade className="flex flex-col sm:flex-row gap-4 justify-center mb-16 w-full sm:w-auto">
-//             <Link href="/booking" className="w-full sm:w-auto">
-//               <Button size="lg" className="w-full sm:w-auto">
-//                 <CalendarClock className="mr-2 h-5 w-5" />
-//                 Book Appointment
-//                 <ArrowRight className="ml-2 h-5 w-5" />
-//               </Button>
-//             </Link>
-//             <Link href="/services" className="w-full sm:w-auto">
-//               <Button variant="outline" size="lg" className="w-full sm:w-auto">
-//                 View Services
-//               </Button>
-//             </Link>
-//           </ScrollFade>
-
-//           {/* Stats Section */}
-//           <ScrollFade className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto w-full">
-//             {/* Stat 1: Rating */}
-//             <div className="flex flex-col items-center text-center p-6 bg-gray-900/40 backdrop-blur-md border border-gray-800/50 rounded-2xl hover:border-teal-500/50 transition">
-//               <div className="flex items-center justify-center mb-3 space-x-2">
-//                 <Star className="h-6 w-6 text-yellow-400 fill-yellow-400" />
-//                 <span className="text-3xl sm:text-4xl font-bold text-white">4.9</span>
-//               </div>
-//               <p className="text-gray-400 text-sm">Average Rating</p>
-//               <p className="text-gray-500 text-xs mt-1">From 1000+ reviews</p>
-//             </div>
-
-//             {/* Stat 2: Wait Time */}
-//             <div className="flex flex-col items-center text-center p-6 bg-gray-900/40 backdrop-blur-md border border-gray-800/50 rounded-2xl hover:border-teal-500/50 transition">
-//               <div className="flex items-center justify-center mb-3 space-x-2">
-//                 <Clock className="h-6 w-6 text-blue-400" />
-//                 <span className="text-3xl sm:text-4xl font-bold text-white">15</span>
-//                 <span className="text-lg text-gray-400">min</span>
-//               </div>
-//               <p className="text-gray-400 text-sm">Average Wait Time</p>
-//               <p className="text-gray-500 text-xs mt-1">Fast & convenient</p>
-//             </div>
-
-//             {/* Stat 3: Customers */}
-//             <div className="flex flex-col items-center text-center p-6 bg-gray-900/40 backdrop-blur-md border border-gray-800/50 rounded-2xl hover:border-teal-500/50 transition">
-//               <div className="flex items-center justify-center mb-3 space-x-2">
-//                 <CalendarClock className="h-6 w-6 text-green-400" />
-//                 <span className="text-3xl sm:text-4xl font-bold text-white">1000</span>
-//                 <span className="text-lg text-gray-400">+</span>
-//               </div>
-//               <p className="text-gray-400 text-sm">Happy Customers</p>
-//               <p className="text-gray-500 text-xs mt-1">Trusted by many</p>
-//             </div>
-//           </ScrollFade>
+//         {/* Feature Cards */}
+//         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+//           {loading
+//             ? [1, 2, 3].map((k) => <ShimmerPlaceholder key={k} />)
+//             : cards.map(({ icon: Icon, title, description }, idx) => (
+//                 <motion.div
+//                   key={title}
+//                   className="group p-7 rounded-2xl bg-gray-900/50 border border-gray-800/50 shadow-xl hover:border-cyan-500/60 hover:shadow-cyan-400/20 transition relative overflow-hidden"
+//                   initial={{ opacity: 0, y: 30 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ duration: 0.45, delay: idx * 0.13 }}
+//                 >
+//                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 p-3 mb-4 flex items-center justify-center shadow-lg">
+//                     <Icon className="w-full h-full text-white" />
+//                   </div>
+//                   <h3 className="text-xl font-bold mb-2 group-hover:text-cyan-300 transition-colors">
+//                     {title}
+//                   </h3>
+//                   <p className="text-gray-400 text-sm">{description}</p>
+//                 </motion.div>
+//               ))}
 //         </section>
 
-//         {/* Features Section */}
-//         <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent via-gray-950/50 to-black">
-//           <div className="max-w-6xl mx-auto">
-//             <ScrollFade className="text-center mb-12">
-//               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-//                 Why Choose BarberBook?
-//               </h2>
-//               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-//                 We make professional barber services accessible and convenient
-//               </p>
-//             </ScrollFade>
-
-//             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//               {/* Feature 1 */}
-//               <ScrollFade className="p-6 bg-gray-900/50 backdrop-blur-md border border-gray-800/50 rounded-2xl hover:border-teal-500/50 transition">
-//                 <div className="w-12 h-12 bg-teal-500/20 rounded-lg flex items-center justify-center mb-4">
-//                   <Scissors className="w-6 h-6 text-teal-400" />
-//                 </div>
-//                 <h3 className="text-xl font-bold text-white mb-2">Expert Barbers</h3>
-//                 <p className="text-gray-400">
-//                   Verified and professional barbers with years of experience
-//                 </p>
-//               </ScrollFade>
-
-//               {/* Feature 2 */}
-//               <ScrollFade className="p-6 bg-gray-900/50 backdrop-blur-md border border-gray-800/50 rounded-2xl hover:border-teal-500/50 transition">
-//                 <div className="w-12 h-12 bg-teal-500/20 rounded-lg flex items-center justify-center mb-4">
-//                   <CalendarClock className="w-6 h-6 text-teal-400" />
-//                 </div>
-//                 <h3 className="text-xl font-bold text-white mb-2">Easy Booking</h3>
-//                 <p className="text-gray-400">
-//                   Simple and fast online appointment scheduling anytime, anywhere
-//                 </p>
-//               </ScrollFade>
-
-//               {/* Feature 3 */}
-//               <ScrollFade className="p-6 bg-gray-900/50 backdrop-blur-md border border-gray-800/50 rounded-2xl hover:border-teal-500/50 transition">
-//                 <div className="w-12 h-12 bg-teal-500/20 rounded-lg flex items-center justify-center mb-4">
-//                   <Star className="w-6 h-6 text-teal-400" />
-//                 </div>
-//                 <h3 className="text-xl font-bold text-white mb-2">Quality Service</h3>
-//                 <p className="text-gray-400">
-//                   Premium grooming experience with guaranteed customer satisfaction
-//                 </p>
-//               </ScrollFade>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* Bottom CTA */}
-//         <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-//           <ScrollFade className="max-w-4xl mx-auto bg-gradient-to-r from-teal-500/10 via-teal-500/5 to-teal-600/10 border border-teal-500/30 rounded-2xl p-8 sm:p-12 text-center">
-//             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-//               Ready to Book Your Appointment?
-//             </h2>
-//             <p className="text-gray-300 text-lg mb-8">
-//               Join thousands of satisfied customers and experience premium barber services
-//             </p>
-//             <Link href="/booking">
-//               <Button size="lg">
-//                 Get Started Now
-//                 <ArrowRight className="ml-2 h-5 w-5" />
-//               </Button>
-//             </Link>
-//           </ScrollFade>
-//         </section>
+//         {/* CTA */}
+//         <motion.section
+//           className="max-w-3xl mx-auto text-center py-20"
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.7, delay: 0.5 }}
+//         >
+//           <h2 className="text-3xl sm:text-4xl font-bold mb-3">
+//             Experience <span className="text-cyan-400">Luxury</span> in Every Cut
+//           </h2>
+//           <p className="text-gray-300 text-lg mb-8">
+//             Book your next transformation today.
+//           </p>
+//           <Link href="/booking" legacyBehavior>
+//             <Button size="lg">
+//               Get Started <ArrowRight className="ml-2" />
+//             </Button>
+//           </Link>
+//         </motion.section>
 //       </div>
 
-//       <style jsx>{`
-//         @keyframes fadeIn {
+//       {/* Styles */}
+//       <style jsx global>{`
+//         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+//         * {
+//           font-family: "Poppins", sans-serif;
+//         }
+//         html, body {
+//           cursor: none !important;
+//           overflow-x: hidden;
+//         }
+//         @keyframes shimmer {
 //           0% {
-//             opacity: 0;
+//             transform: translateX(-100%);
 //           }
 //           100% {
-//             opacity: 1;
+//             transform: translateX(100%);
 //           }
+//         }
+//         .shimmer-effect::before {
+//           content: "";
+//           position: absolute;
+//           inset: 0;
+//           background: linear-gradient(
+//             90deg,
+//             transparent,
+//             rgba(34, 211, 238, 0.12),
+//             transparent
+//           );
+//           animation: shimmer 2s infinite;
 //         }
 //       `}</style>
 //     </div>
 //   );
-// };
+// }
 
-// export default Home;
 
