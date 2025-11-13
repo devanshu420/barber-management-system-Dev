@@ -29,7 +29,8 @@
     "nodemailer": "^6.10.1",
     "razorpay": "^2.9.2",
     "redis": "^4.6.8",
-    "socket.io": "^4.7.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "stripe": "^13.5.0",
     "twilio": "^4.15.0"
   },

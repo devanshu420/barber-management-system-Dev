@@ -9,130 +9,95 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Building2, Star, Bell } from "lucide-react";
+import { io } from "socket.io-client";
+
 
 export default function BarberDashboardPage() {
   const router = useRouter();
   const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // 🔔 Notification states
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+
   const cursorRef = useRef(null);
   const glowRef = useRef(null);
 
   const barberId =
     typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
-  // Redirect if not logged in
-  // useEffect(() => {
-  //   if (!barberId) {
-  //     router.push("/auth/barber-login");
-  //     return;
-  //   }
-
-  //   let mounted = true;
-
-  //   async function fetchShops() {
-  //     setLoading(true);
-  //     try {
-  //       const { data } = await axios.get(
-  //         `http://localhost:5000/api/barbers/barbershops?barberId=${barberId}`
-  //         // `http://localhost:5000/api/barbers/my-shops/${barberId}`
-
-  //       );
-  //       if (mounted) setShops(data.success ? data.shops : []);
-  //     } catch (error) {
-  //       console.error("Failed to fetch shops:", error);
-  //       setShops([]);
-  //     } finally {
-  //       if (mounted) setLoading(false);
-  //     }
-  //   }
-
-  //   fetchShops();
-  //   return () => {
-  //     mounted = false;
-  //   };
-  // }, [barberId, router]);
+  // =============================
+  // 🔥 Fetch all shops of barber
+  // =============================
   useEffect(() => {
-  if (!barberId) {
-    router.push("/auth/barber-login");
-    return;
-  }
-
-  let mounted = true;
-
-  async function fetchShops() {
-    setLoading(true);
-    try {
-      // 🔹 Use route param instead of query param
-      const { data } = await axios.get(
-        `http://localhost:5000/api/barbers/barbershops/${barberId}`
-      );
-
-      if (mounted) setShops(data.success ? data.data : []); // data.data because backend sends { success, data }
-    } catch (error) {
-      console.error("Failed to fetch shops:", error);
-      setShops([]);
-    } finally {
-      if (mounted) setLoading(false);
+    if (!barberId) {
+      router.push("/auth/barber-login");
+      return;
     }
-  }
 
-  fetchShops();
-  return () => {
-    mounted = false;
-  };
-}, [barberId, router]);
+    let mounted = true;
 
-  // 🔔 Polling to check for new bookings
-
-useEffect(() => {
-  if (!shops.length) return;
-
-  const interval = setInterval(async () => {
-    try {
-      const allNotifications = [];
-
-      for (const shop of shops) {
+    async function fetchShops() {
+      setLoading(true);
+      try {
         const { data } = await axios.get(
-          `http://localhost:5000/api/bookings/shop/${shop._id}`
+          `http://localhost:5000/api/barbers/barbershops/${barberId}`
         );
 
-        // ✅ Safely handle any API shape
-        const bookings = Array.isArray(data.bookings)
-          ? data.bookings
-          : Array.isArray(data)
-          ? data
-          : [];
-
-        const newBookings = bookings.filter(
-          (b) =>
-            b.createdAt &&
-            new Date(b.createdAt) >
-              new Date(Date.now() - 1000 * 60 * 5) // last 5 minutes
-        );
-
-        newBookings.forEach((b) =>
-          allNotifications.push({
-            message: `New booking received at ${shop.shopName}`,
-            time: new Date(b.createdAt).toLocaleTimeString(),
-          })
-        );
+        if (mounted) setShops(data.success ? data.data : []);
+      } catch (error) {
+        console.error("Failed to fetch shops:", error);
+        setShops([]);
+      } finally {
+        if (mounted) setLoading(false);
       }
-
-      if (allNotifications.length) {
-        setNotifications((prev) => [...allNotifications, ...prev]);
-      }
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
     }
-  }, 15000);
 
-  return () => clearInterval(interval);
-}, [shops]);
+    fetchShops();
+    return () => {
+      mounted = false;
+    };
+  }, [barberId, router]);
 
 
-  // Cursor + glow effect
+
+
+
+  
+  // 🔥 SOCKET.IO REAL-TIME NOTIFICATIONS
+useEffect(() => {
+  if (!barberId) return;
+
+  const socket = io("http://localhost:5000", {
+    transports: ["websocket"],
+    withCredentials: true,
+  });
+
+  socket.on("connect", () => {
+    console.log("Socket connected:", socket.id);
+    socket.emit("joinBarberRoom", barberId);
+  });
+
+  socket.on("newBooking", (data) => {
+    console.log("📩 New booking received:", data);
+
+    setNotifications((prev) => [
+      {
+        message: `New booking at ${data.shopName} for ${data.service}`,
+        time: new Date().toLocaleTimeString(),
+      },
+      ...prev,
+    ]);
+  });
+
+  return () => socket.disconnect();
+}, [barberId]);
+
+
+  // =============================
+  // Cursor Glow UI
+  // =============================
   useEffect(() => {
     const cursor = cursorRef.current;
     const glow = glowRef.current;
@@ -183,33 +148,32 @@ useEffect(() => {
       </Head>
 
       <div
-        className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] px-4 sm:px-6 lg:px-8 py-12 font-sans"
-        style={{ fontFamily: "Poppins, ui-sans-serif, system-ui" }}
+        className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] px-4 sm:px-6 lg:px-8 py-12"
       >
-        {/* Floating glow */}
+
+        {/* Glow Cursor */}
         <div
           ref={glowRef}
           className="pointer-events-none fixed z-20 w-40 h-40 rounded-full blur-3xl opacity-40 bg-gradient-to-tr from-cyan-400/40 to-teal-500/20 mix-blend-screen"
         />
-        {/* Custom cursor */}
         <div
           ref={cursorRef}
           className="pointer-events-none fixed z-30 w-4 h-4 rounded-full bg-teal-400 shadow-[0_0_12px_rgba(20,200,180,0.6)]"
         />
 
         <div className="max-w-7xl mx-auto">
-          {/* Header Section */}
+          {/* Header */}
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative">
             <div>
               <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
                 My Shops
               </h1>
               <p className="mt-2 text-sm text-gray-400 max-w-xl">
-                Manage your barber shops — edit details, view services, and check ratings.
+                Manage your barber shops — edit details, view services & ratings.
               </p>
             </div>
 
-            {/* Notification Icon */}
+            {/* 🔔 Notification Icon */}
             <div className="relative flex items-center gap-4">
               <motion.div
                 whileHover={{ scale: 1.1 }}
@@ -224,12 +188,13 @@ useEffect(() => {
                 )}
               </motion.div>
 
-              {/* Notification Dropdown */}
+              {/* 🔔 Notification Dropdown */}
               {showNotifications && (
                 <div className="absolute top-10 right-0 bg-gray-900 border border-gray-700 rounded-lg shadow-lg w-72 z-50">
                   <div className="p-3 border-b border-gray-700 text-gray-300 font-semibold">
                     Notifications
                   </div>
+
                   <div className="max-h-60 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <div className="p-3 text-sm text-gray-400 text-center">
@@ -293,7 +258,7 @@ useEffect(() => {
                   className="group"
                 >
                   <Link href={`/barber-shop/${shop._id}`}>
-                    <Card className="overflow-hidden border border-gray-700 rounded-2xl bg-gradient-to-br from-[#0b1114]/60 to-[#061011]/40 backdrop-blur-md shadow-lg transition-transform hover:shadow-[0_20px_60px_rgba(20,220,200,0.08)] cursor-pointer">
+                    <Card className="overflow-hidden border border-gray-700 rounded-2xl bg-gradient-to-br from-[#0b1114]/60 to-[#061011]/40 backdrop-blur-md shadow-lg hover:shadow-[0_20px_60px_rgba(20,220,200,0.08)]">
                       <CardHeader className="flex items-center justify-between p-4">
                         <div className="flex items-center gap-4">
                           <Building2 className="w-10 h-10 text-cyan-300" />
@@ -317,27 +282,11 @@ useEffect(() => {
 
                       <CardContent className="p-4 pt-0 text-gray-300">
                         <p className="mb-3 text-sm line-clamp-3">
-                          {shop.description || "No description provided."}
+                          {shop.description || "No description available"}
                         </p>
-                        <p className="text-xs text-gray-400 mb-2">
-                          <strong className="text-gray-200">Address:</strong>{" "}
-                          {shop.location?.address || "N/A"}
+                        <p className="text-xs text-gray-400">
+                          <strong>Address:</strong> {shop.location?.address}
                         </p>
-                        <p className="text-xs text-gray-400 mb-4">
-                          <strong className="text-gray-200">Services:</strong>{" "}
-                          {shop.services?.map((s) => s.name).join(", ") || "—"}
-                        </p>
-
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm text-gray-300">
-                            {shop.ratings?.count || 0} reviews
-                          </div>
-                          <motion.div whileHover={{ scale: 1.03 }}>
-                            <button className="px-3 py-1 rounded-full border border-gray-700 text-sm text-gray-200 hover:border-cyan-400 hover:shadow-[0_8px_24px_rgba(20,220,200,0.06)] transition">
-                              View
-                            </button>
-                          </motion.div>
-                        </div>
                       </CardContent>
                     </Card>
                   </Link>
@@ -347,7 +296,6 @@ useEffect(() => {
           )}
         </div>
 
-        {/* Global styles */}
         <style jsx global>{`
           .line-clamp-3 {
             display: -webkit-box;
@@ -370,4 +318,3 @@ useEffect(() => {
     </>
   );
 }
-
