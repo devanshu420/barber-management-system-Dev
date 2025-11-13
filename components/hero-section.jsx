@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import io from "socket.io-client";
+import { useRouter } from "next/navigation";
 
 
 // ========== BUTTON COMPONENT ==========
@@ -76,24 +77,7 @@ function FuturisticCursor() {
   }, []);
 
 
-  // ========= SOCKET.IO FOR USER NOTIFICATIONS ==========
-
-  useEffect(() => {
-  const userId = localStorage.getItem("userId");
-
-  if (!userId) return; // user not logged in → no notifications
-
-  const socket = io("http://localhost:5000");
-
-  socket.emit("joinUserRoom", userId);
-
-  socket.on("bookingUpdate", (data) => {
-    alert(data.message); // temporary popup
-    console.log("New user notification:", data);
-  });
-
-  return () => socket.disconnect();
-}, []);
+ 
 
 
   useEffect(() => {
@@ -160,6 +144,44 @@ function HeroSlider() {
   const [autoPlay, setAutoPlay] = useState(true);
   const [notifications, setNotifications] = useState([]);
 const [showNotifications, setShowNotifications] = useState(false);
+const router = useRouter();
+
+// REDIRECT BARBER TO DASHBOARD IF THEY ACCESS USER SITE
+
+useEffect(() => {
+    const role = localStorage.getItem("userRole");
+
+    // If BARBER tries to access user website → Redirect to barber dashboard
+    if (role === "barber") {
+      router.replace("http://localhost:3000/barber-shop");
+    }
+  }, []);
+
+ // ========= SOCKET.IO FOR USER NOTIFICATIONS ==========
+
+  useEffect(() => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) return; // user not logged in → no notifications
+
+  const socket = io("http://localhost:5000");
+
+  socket.emit("joinUserRoom", userId);
+
+  socket.on("bookingUpdate", (data) => {
+    alert(data.message); // temporary popup
+    console.log("New user notification:", data);
+  });
+
+  return () => socket.disconnect();
+}, []);
+
+
+
+
+
+
+
 
 
   useEffect(() => {

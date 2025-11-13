@@ -27,136 +27,131 @@ export default function MyBookingsPage() {
   const [showDetails, setShowDetails] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-//   useEffect(() => {
-//     async function fetchBookings() {
-//       setLoading(true);
-//       setError("");
-//       try {
-//         const token = localStorage.getItem("token");
-//         if (!token) {
-//           router.push("/auth/login");
-//           return;
-//         }
+  //   useEffect(() => {
+  //     async function fetchBookings() {
+  //       setLoading(true);
+  //       setError("");
+  //       try {
+  //         const token = localStorage.getItem("token");
+  //         if (!token) {
+  //           router.push("/auth/login");
+  //           return;
+  //         }
 
-//         const response = await axios.get("/api/bookings/user", {
-//   headers: {
-//     Authorization: `Bearer ${token}`,
-//   },
-// });
-// console.log("API Response:", response);
-// console.log("API Response Data:", response.data);
-// if (!response.data.success) {
-//   console.error("API responded with failure:", response.data);
-//   setError("Failed to load bookings");
-//   setLoading(false);
-//   return;
-// }
-        
+  //         const response = await axios.get("/api/bookings/user", {
+  //   headers: {
+  //     Authorization: `Bearer ${token}`,
+  //   },
+  // });
+  // console.log("API Response:", response);
+  // console.log("API Response Data:", response.data);
+  // if (!response.data.success) {
+  //   console.error("API responded with failure:", response.data);
+  //   setError("Failed to load bookings");
+  //   setLoading(false);
+  //   return;
+  // }
 
-//         if (response.data.success) {
-//           const transformedBookings = response.data.data.map((booking) => ({
-//             id: booking._id,
-//             shopName: booking.shopId?.shopName || "Unknown Shop",
-//             shopLocation: booking.shopId?.location?.address || "Unknown Location",
-//             date: new Date(booking.bookingDate).toLocaleDateString("en-GB"),
-//             time: booking.bookingTime,
-//             service: booking.serviceName,
-//             price: `₹${booking.finalAmount || booking.amount}`,
-//             status: booking.status,
-//             paymentStatus: booking.paymentStatus,
-//             rating: booking.rating,
-//             review: booking.review,
-//             isReviewed: booking.isReviewed,
-//             createdAt: booking.createdAt,
-//             bookingData: booking,
-//           }));
+  //         if (response.data.success) {
+  //           const transformedBookings = response.data.data.map((booking) => ({
+  //             id: booking._id,
+  //             shopName: booking.shopId?.shopName || "Unknown Shop",
+  //             shopLocation: booking.shopId?.location?.address || "Unknown Location",
+  //             date: new Date(booking.bookingDate).toLocaleDateString("en-GB"),
+  //             time: booking.bookingTime,
+  //             service: booking.serviceName,
+  //             price: `₹${booking.finalAmount || booking.amount}`,
+  //             status: booking.status,
+  //             paymentStatus: booking.paymentStatus,
+  //             rating: booking.rating,
+  //             review: booking.review,
+  //             isReviewed: booking.isReviewed,
+  //             createdAt: booking.createdAt,
+  //             bookingData: booking,
+  //           }));
 
-//           setBookings(transformedBookings);
-//         } else {
-//           setError("Failed to load bookings");
-//         }
-//       } catch (err) {
-//         if (err.response?.status === 401) {
-//           router.push("/auth/login");
-//         } else {
-//           setError("Unable to load bookings. Please try again.");
-//           console.error("Fetch bookings error:", err);
-//         }
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
+  //           setBookings(transformedBookings);
+  //         } else {
+  //           setError("Failed to load bookings");
+  //         }
+  //       } catch (err) {
+  //         if (err.response?.status === 401) {
+  //           router.push("/auth/login");
+  //         } else {
+  //           setError("Unable to load bookings. Please try again.");
+  //           console.error("Fetch bookings error:", err);
+  //         }
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }
 
-//     fetchBookings();
-//   }, [router]);
+  //     fetchBookings();
+  //   }, [router]);
 
   useEffect(() => {
-  const fetchBookings = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/auth/login");
-        return;
-      }
-      console.log("Token:", token);
-      const response = await axios.get("/api/bookings/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-      console.log("API Response:", response);
-      const { success, data } = response.data;
-      const bookingLength = data.length;
-      console.log("Number of bookings fetched:", bookingLength);
-      const booking = localStorage.setItem("userBookings", bookingLength);
+    const fetchBookings = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          router.push("/auth/login");
+          return;
+        }
+        console.log("Token:", token);
+        const response = await axios.get("/api/bookings/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+        console.log("API Response:", response);
+        const { success, data } = response.data;
+        const bookingLength = data.length;
+        console.log("Number of bookings fetched:", bookingLength);
+        const booking = localStorage.setItem("userBookings", bookingLength);
 
-      
+        if (!success) {
+          setError("Failed to load bookings");
+          setLoading(false);
+          return;
+        }
 
-      if (!success) {
-        setError("Failed to load bookings");
+        const transformedBookings = data.map((booking) => ({
+          id: booking._id,
+          shopName: booking.shopId?.shopName || "Unknown Shop",
+          shopLocation: booking.shopId?.location?.address || "Unknown Location",
+          date: new Date(booking.bookingDate).toLocaleDateString("en-GB"),
+          time: booking.bookingTime,
+          service: booking.serviceName,
+          price: `₹${booking.finalAmount || booking.amount}`,
+          status: booking.status,
+          paymentStatus: booking.paymentStatus,
+          rating: booking.rating,
+          review: booking.review,
+          isReviewed: booking.isReviewed,
+          createdAt: booking.createdAt,
+          bookingData: booking,
+        }));
+
+        setBookings(transformedBookings);
+      } catch (err) {
+        if (err.response?.status === 401) {
+          router.push("/auth/login");
+        } else {
+          setError("Unable to load bookings. Please try again.");
+          console.error("Fetch bookings error:", err);
+        }
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const transformedBookings = data.map((booking) => ({
-        id: booking._id,
-        shopName: booking.shopId?.shopName || "Unknown Shop",
-        shopLocation: booking.shopId?.location?.address || "Unknown Location",
-        date: new Date(booking.bookingDate).toLocaleDateString("en-GB"),
-        time: booking.bookingTime,
-        service: booking.serviceName,
-        price: `₹${booking.finalAmount || booking.amount}`,
-        status: booking.status,
-        paymentStatus: booking.paymentStatus,
-        rating: booking.rating,
-        review: booking.review,
-        isReviewed: booking.isReviewed,
-        createdAt: booking.createdAt,
-        bookingData: booking,
-      }));
-
-      setBookings(transformedBookings);
-    } catch (err) {
-      if (err.response?.status === 401) {
-        router.push("/auth/login");
-      } else {
-        setError("Unable to load bookings. Please try again.");
-        console.error("Fetch bookings error:", err);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchBookings();
-}, [router]);
-
-
+    };
+    fetchBookings();
+  }, [router]);
 
   const handleViewDetails = (booking) => {
-    setSelectedBooking(booking);
+    setSelectedBooking(booking.bookingData);
     setShowDetails(true);
   };
 
@@ -165,7 +160,41 @@ export default function MyBookingsPage() {
     setSelectedBooking(null);
   };
 
-  const handleCancel = async (bookingId) => {
+  // const handleCancel = async (bookingId) => {
+  //   const reason = prompt("Please enter cancellation reason:");
+  //   if (!reason) return;
+
+  //   setActionLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const response = await axios.put(
+  //       `/api/bookings/${bookingId}/cancel`,
+  //       { cancellationReason: reason },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (response.data.success) {
+  //       setBookings(
+  //         bookings.map((b) =>
+  //           b.id === bookingId ? { ...b, status: "cancelled" } : b
+  //         )
+  //       );
+  //       handleCloseDetails();
+  //       alert("Booking cancelled successfully");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error cancelling booking:", err);
+  //     alert("Failed to cancel booking");
+  //   } finally {
+  //     setActionLoading(false);
+  //   }
+  // };
+
+  const handleCancel = async (booking) => {
     const reason = prompt("Please enter cancellation reason:");
     if (!reason) return;
 
@@ -173,7 +202,7 @@ export default function MyBookingsPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        `/api/bookings/${bookingId}/cancel`,
+        `/api/bookings/${booking.id}/cancel`,
         { cancellationReason: reason },
         {
           headers: {
@@ -183,37 +212,45 @@ export default function MyBookingsPage() {
       );
 
       if (response.data.success) {
-        setBookings(
-          bookings.map((b) =>
-            b.id === bookingId ? { ...b, status: "cancelled" } : b
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === booking.id ? { ...b, status: "cancelled" } : b
           )
         );
-        handleCloseDetails();
-        alert("Booking cancelled successfully");
+        alert("Booking cancelled");
+        setShowDetails(false);
       }
     } catch (err) {
-      console.error("Error cancelling booking:", err);
+      console.error("Cancel error:", err);
       alert("Failed to cancel booking");
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleReschedule = async (bookingId) => {
+  const handleReschedule = async (booking) => {
     const newDate = prompt("Enter new date (YYYY-MM-DD):");
     if (!newDate) return;
 
-    const newTime = prompt("Enter new time (HH:MM AM/PM):");
-    if (!newTime) return;
+    const startTime = prompt("Enter new start time (HH:MM AM/PM):");
+    if (!startTime) return;
+
+    const endTime = prompt("Enter new end time (HH:MM AM/PM):");
+    if (!endTime) return;
 
     const reason = prompt("Enter reschedule reason:");
 
     setActionLoading(true);
     try {
       const token = localStorage.getItem("token");
+
       const response = await axios.put(
-        `/api/bookings/${bookingId}/reschedule`,
-        { newDate, newTime, reason },
+        `/api/bookings/${booking.id}/reschedule`,
+        {
+          newDate,
+          newTime: { startTime, endTime },
+          reason,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -222,16 +259,50 @@ export default function MyBookingsPage() {
       );
 
       if (response.data.success) {
-        alert("Booking rescheduled successfully");
+        alert("Booking rescheduled");
         window.location.reload();
       }
     } catch (err) {
-      console.error("Error rescheduling booking:", err);
-      alert("Failed to reschedule booking");
+      console.error("Reschedule error:", err);
+      alert("Failed to reschedule");
     } finally {
       setActionLoading(false);
     }
   };
+
+  // const handleReschedule = async (bookingId) => {
+  //   const newDate = prompt("Enter new date (YYYY-MM-DD):");
+  //   if (!newDate) return;
+
+  //   const newTime = prompt("Enter new time (HH:MM AM/PM):");
+  //   if (!newTime) return;
+
+  //   const reason = prompt("Enter reschedule reason:");
+
+  //   setActionLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const response = await axios.put(
+  //       `/api/bookings/${bookingId}/reschedule`,
+  //       { newDate, newTime, reason },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (response.data.success) {
+  //       alert("Booking rescheduled successfully");
+  //       window.location.reload();
+  //     }
+  //   } catch (err) {
+  //     console.error("Error rescheduling booking:", err);
+  //     alert("Failed to reschedule booking");
+  //   } finally {
+  //     setActionLoading(false);
+  //   }
+  // };
 
   const handleAddReview = async (bookingId) => {
     const rating = prompt("Enter rating (1-5):");
@@ -379,8 +450,9 @@ export default function MyBookingsPage() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <Clock className="w-4 h-4 text-teal-400" />
-                            <span>{booking.time.startTime} - {booking.time.endTime}</span>
-
+                            <span>
+                              {booking.time.startTime} - {booking.time.endTime}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -400,7 +472,7 @@ export default function MyBookingsPage() {
                       {booking.price}
                     </span>
 
-                    <div className="flex gap-2 w-full sm:w-auto">
+                    {/* <div className="flex gap-2 w-full sm:w-auto">
                       <Button
                         onClick={() => handleViewDetails(booking)}
                         className="flex-1 sm:flex-none bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/50 text-sm px-3 py-2 rounded-lg"
@@ -426,6 +498,37 @@ export default function MyBookingsPage() {
                           Cancel
                         </Button>
                       )}
+                    </div> */}
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <Button
+                        onClick={() => handleViewDetails(booking)}
+                        className="flex-1 sm:flex-none bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/50 text-sm px-3 py-2 rounded-lg"
+                      >
+                        Details
+                      </Button>
+
+                      {/* 🔹 Reschedule allowed only for pending + confirmed */}
+                      {(booking.status === "pending" ||
+                        booking.status === "confirmed") && (
+                        <Button
+                          onClick={() => handleReschedule(booking)}
+                          disabled={actionLoading}
+                          className="flex-1 sm:flex-none bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
+                        >
+                          Reschedule
+                        </Button>
+                      )}
+
+                      {/* 🔹 Cancel allowed only for pending */}
+                      {booking.status === "pending" && (
+                        <Button
+                          onClick={() => handleCancel(booking)}
+                          disabled={actionLoading}
+                          className="flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
+                        >
+                          Cancel
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -435,181 +538,172 @@ export default function MyBookingsPage() {
         )}
 
         {showDetails && selectedBooking && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-6 animate-fadeIn">
-            <div className="bg-gradient-to-br from-gray-900 via-gray-950 to-black border border-gray-800 rounded-2xl shadow-2xl p-8 max-w-md w-full relative">
-              <button
-                className="absolute top-4 right-4 p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white transition"
-                onClick={handleCloseDetails}
-              >
-                <X className="w-5 h-5" />
-              </button>
+  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-6 animate-fadeIn">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-950 to-black border border-gray-800 rounded-2xl shadow-2xl p-10 max-w-3xl w-full relative">
 
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Booking Details
-              </h2>
-              <p className="text-gray-400 text-sm mb-6">
-                Confirmation #{selectedBooking.id.slice(-8)}
-              </p>
+      {/* ❌ Close Button */}
+      <button
+        className="absolute top-4 right-4 p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white transition"
+        onClick={handleCloseDetails}
+      >
+        <X className="w-5 h-5" />
+      </button>
 
-              <div className="w-12 h-1 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full mb-6"></div>
+      {/* Title */}
+      <h2 className="text-3xl font-bold text-white mb-2">Booking Details</h2>
+      <p className="text-gray-400 text-sm mb-6">
+        Confirmation #{selectedBooking._id?.toString().slice(-8)}
+      </p>
 
-              <div className="space-y-4 mb-8">
-                <div className="flex items-start gap-3">
-                  <Scissors className="w-5 h-5 text-teal-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Service</p>
-                    <p className="text-white font-semibold">{selectedBooking.service}</p>
-                  </div>
-                </div>
+      {/* Section Divider */}
+      <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full mb-8"></div>
 
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-teal-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Shop</p>
-                    <p className="text-white font-semibold">{selectedBooking.shopName}</p>
-                  </div>
-                </div>
+      {/* ⭐ Horizontal Layout Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-teal-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Location</p>
-                    <p className="text-white font-semibold">{selectedBooking.shopLocation}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-teal-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Date</p>
-                    <p className="text-white font-semibold">{selectedBooking.date}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-teal-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-gray-400 text-sm">Time</p>
-                    <p className="text-white font-semibold">{selectedBooking.time}</p>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-800">
-                  <p className="text-gray-400 text-sm">Total Amount</p>
-                  <p className="text-2xl font-bold text-teal-400">{selectedBooking.price}</p>
-                </div>
-
-                <div className="pt-4 border-t border-gray-800">
-                  <p className="text-gray-400 text-sm">Status</p>
-                  <p
-                    className={`text-sm font-semibold capitalize ${
-                      selectedBooking.status === "confirmed"
-                        ? "text-green-400"
-                        : selectedBooking.status === "completed"
-                        ? "text-blue-400"
-                        : selectedBooking.status === "cancelled"
-                        ? "text-red-400"
-                        : "text-yellow-400"
-                    }`}
-                  >
-                    {selectedBooking.status}
-                  </p>
-                </div>
-
-                {selectedBooking.isReviewed && (
-                  <div className="pt-4 border-t border-gray-800">
-                    <p className="text-gray-400 text-sm">Your Review</p>
-                    <p className="text-yellow-400 text-sm mb-1">
-                      ⭐ {selectedBooking.rating}/5
-                    </p>
-                    <p className="text-white text-sm">{selectedBooking.review}</p>
-                  </div>
-                )}
-              </div>
-
-              <div
-                className={`p-3 rounded-lg flex items-start gap-2 mb-6 ${
-                  selectedBooking.status === "confirmed"
-                    ? "bg-green-500/10 border border-green-500/30"
-                    : selectedBooking.status === "completed"
-                    ? "bg-blue-500/10 border border-blue-500/30"
-                    : selectedBooking.status === "cancelled"
-                    ? "bg-red-500/10 border border-red-500/30"
-                    : "bg-yellow-500/10 border border-yellow-500/30"
-                }`}
-              >
-                <AlertCircle
-                  className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                    selectedBooking.status === "confirmed"
-                      ? "text-green-400"
-                      : selectedBooking.status === "completed"
-                      ? "text-blue-400"
-                      : selectedBooking.status === "cancelled"
-                      ? "text-red-400"
-                      : "text-yellow-400"
-                  }`}
-                />
-                <p
-                  className={`text-sm ${
-                    selectedBooking.status === "confirmed"
-                      ? "text-green-300"
-                      : selectedBooking.status === "completed"
-                      ? "text-blue-300"
-                      : selectedBooking.status === "cancelled"
-                      ? "text-red-300"
-                      : "text-yellow-300"
-                  }`}
-                >
-                  {selectedBooking.status === "confirmed" &&
-                    "Your booking is confirmed! Please arrive 5 minutes early."}
-                  {selectedBooking.status === "completed" && "Thank you for using our service!"}
-                  {selectedBooking.status === "cancelled" && "This booking has been cancelled."}
-                  {selectedBooking.status === "pending" && "Your booking is pending confirmation."}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                {selectedBooking.status === "completed" && !selectedBooking.isReviewed && (
-                  <Button
-                    onClick={() => handleAddReview(selectedBooking.id)}
-                    disabled={actionLoading}
-                    className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
-                  >
-                    Add Review
-                  </Button>
-                )}
-
-                {selectedBooking.status !== "cancelled" &&
-                  selectedBooking.status !== "completed" && (
-                    <>
-                      <Button
-                        onClick={() => handleReschedule(selectedBooking.id)}
-                        disabled={actionLoading}
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
-                      >
-                        Reschedule Booking
-                      </Button>
-                      <Button
-                        onClick={() => handleCancel(selectedBooking.id)}
-                        disabled={actionLoading}
-                        className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50 font-semibold py-2 rounded-lg transition disabled:opacity-50"
-                      >
-                        Cancel Booking
-                      </Button>
-                    </>
-                  )}
-
-                <Button
-                  onClick={handleCloseDetails}
-                  variant="outline"
-                  className="w-full bg-gray-800/50 hover:bg-gray-800 text-gray-300 font-semibold py-2 rounded-lg transition"
-                >
-                  Close
-                </Button>
-              </div>
+        {/* Left Column */}
+        <div className="space-y-5">
+          {/* Service */}
+          <div className="flex items-center gap-3">
+            <Scissors className="w-6 h-6 text-teal-400" />
+            <div>
+              <p className="text-gray-400 text-sm">Service</p>
+              <p className="text-white font-semibold">{selectedBooking.serviceName}</p>
             </div>
           </div>
+
+          {/* Shop Name */}
+          <div className="flex items-center gap-3">
+            <MapPin className="w-6 h-6 text-teal-400" />
+            <div>
+              <p className="text-gray-400 text-sm">Shop</p>
+              <p className="text-white font-semibold">{selectedBooking.shopId?.shopName}</p>
+            </div>
+          </div>
+
+          {/* Address */}
+          <div className="flex items-center gap-3">
+            <MapPin className="w-6 h-6 text-teal-400" />
+            <div>
+              <p className="text-gray-400 text-sm">Location</p>
+              <p className="text-white font-semibold">
+                {selectedBooking.shopId?.location?.address}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-5">
+          {/* Date */}
+          <div className="flex items-center gap-3">
+            <Calendar className="w-6 h-6 text-teal-400" />
+            <div>
+              <p className="text-gray-400 text-sm">Date</p>
+              <p className="text-white font-semibold">
+                {new Date(selectedBooking.bookingDate).toLocaleDateString("en-GB")}
+              </p>
+            </div>
+          </div>
+
+          {/* Time */}
+          <div className="flex items-center gap-3">
+            <Clock className="w-6 h-6 text-teal-400" />
+            <div>
+              <p className="text-gray-400 text-sm">Time</p>
+              <p className="text-white font-semibold">
+                {selectedBooking.bookingTime.startTime} – {selectedBooking.bookingTime.endTime}
+              </p>
+            </div>
+          </div>
+
+          {/* Amount */}
+          <div className="border-t border-gray-800 pt-4">
+            <p className="text-gray-400 text-sm">Total Amount</p>
+            <p className="text-3xl font-bold text-teal-400">
+              ₹{selectedBooking.finalAmount || selectedBooking.amount}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Status Box */}
+      <div
+        className={`mt-8 p-4 rounded-lg flex items-start gap-3 ${
+          selectedBooking.status === "confirmed"
+            ? "bg-green-500/10 border border-green-500/30"
+            : selectedBooking.status === "completed"
+            ? "bg-blue-500/10 border border-blue-500/30"
+            : selectedBooking.status === "cancelled"
+            ? "bg-red-500/10 border border-red-500/30"
+            : "bg-yellow-500/10 border border-yellow-500/30"
+        }`}
+      >
+        <AlertCircle
+          className={`w-6 h-6 flex-shrink-0 ${
+            selectedBooking.status === "confirmed"
+              ? "text-green-400"
+              : selectedBooking.status === "completed"
+              ? "text-blue-400"
+              : selectedBooking.status === "cancelled"
+              ? "text-red-400"
+              : "text-yellow-400"
+          }`}
+        />
+        <p className="text-sm text-gray-300">
+          {selectedBooking.status === "confirmed" &&
+            "Your booking is confirmed! Please arrive 5 minutes early."}
+          {selectedBooking.status === "completed" &&
+            "Thank you for using our service!"}
+          {selectedBooking.status === "cancelled" &&
+            "This booking has been cancelled."}
+          {selectedBooking.status === "pending" &&
+            "Your booking is pending confirmation."}
+        </p>
+      </div>
+
+      {/* Button Section */}
+      <div className="flex flex-wrap md:flex-nowrap gap-3 mt-6">
+        {(selectedBooking.status === "completed" && !selectedBooking.isReviewed) && (
+          <Button
+            onClick={() => handleAddReview(selectedBooking._id)}
+            className="flex-1 bg-purple-500 hover:bg-purple-600 text-white"
+          >
+            Add Review
+          </Button>
         )}
+
+        {(selectedBooking.status === "pending" ||
+          selectedBooking.status === "confirmed") && (
+          <Button
+            onClick={() => handleReschedule(selectedBooking)}
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Reschedule
+          </Button>
+        )}
+
+        {selectedBooking.status === "pending" && (
+          <Button
+            onClick={() => handleCancel(selectedBooking)}
+            className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50"
+          >
+            Cancel
+          </Button>
+        )}
+
+        <Button
+          onClick={handleCloseDetails}
+          variant="outline"
+          className="flex-1 bg-gray-800/50 hover:bg-gray-700"
+        >
+          Close
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
 
       <style jsx>{`
@@ -745,7 +839,7 @@ export default function MyBookingsPage() {
 //                     {/* Details */}
 //                     <div className="flex-1">
 //                       <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{booking.service}</h3>
-                      
+
 //                       <div className="space-y-2 text-sm text-gray-400">
 //                         <div className="flex items-center space-x-2">
 //                           <User className="w-4 h-4 text-teal-400" />
