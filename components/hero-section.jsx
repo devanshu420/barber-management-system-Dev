@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import io from "socket.io-client";
 
 
 // ========== BUTTON COMPONENT ==========
@@ -73,6 +74,27 @@ function FuturisticCursor() {
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, []);
+
+
+  // ========= SOCKET.IO FOR USER NOTIFICATIONS ==========
+
+  useEffect(() => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) return; // user not logged in → no notifications
+
+  const socket = io("http://localhost:5000");
+
+  socket.emit("joinUserRoom", userId);
+
+  socket.on("bookingUpdate", (data) => {
+    alert(data.message); // temporary popup
+    console.log("New user notification:", data);
+  });
+
+  return () => socket.disconnect();
+}, []);
+
 
   useEffect(() => {
     document.body.style.cursor = "none";
@@ -136,6 +158,9 @@ function HeroSlider() {
   const [index, setIndex] = useState(0);
   const [imageErrors, setImageErrors] = useState({});
   const [autoPlay, setAutoPlay] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+const [showNotifications, setShowNotifications] = useState(false);
+
 
   useEffect(() => {
     if (!autoPlay) return;

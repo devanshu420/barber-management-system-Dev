@@ -1,307 +1,4 @@
-// "use client";
 
-// import { useEffect, useState } from "react";
-// import Link from "next/link";
-// import Image from "next/image";
-// import { useRouter } from "next/navigation";
-// import { motion, AnimatePresence } from "framer-motion";
-// import {
-//   Menu,
-//   X,
-//   Scissors,
-//   Wallet,
-//   User,
-//   LogOut,
-//   ChevronDown,
-// } from "lucide-react";
-// import { Button } from "@/components/ui/button";
-
-// export function Navbar() {
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const [isProfileOpen, setIsProfileOpen] = useState(false);
-//   const [isAuthenticated, setIsAuthenticated] = useState(false);
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [userName, setUserName] = useState("");
-//   const router = useRouter();
-
-//   const navLinks = [
-//     { name: "Services", href: "/services" },
-//     { name: "About", href: "/about" },
-//     { name: "Contact", href: "/contact" },
-//     { name: "Bookings", href: "/my-booking" },
-//   ];
-
-//   // Load login state from localStorage
-//   useEffect(() => {
-//     try {
-//       const token = localStorage.getItem("token");
-//       const storedName = localStorage.getItem("userName");
-//       setIsAuthenticated(!!token);
-//       setUserName(storedName || "User");
-//     } catch (error) {
-//       console.error("Error reading localStorage:", error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   }, []);
-
-//   const handleLogout = () => {
-//     localStorage.clear();
-//     setIsAuthenticated(false);
-//     setUserName("");
-//     setIsMenuOpen(false);
-//     setIsProfileOpen(false);
-//     router.push("/");
-//   };
-
-//   const handleSignIn = () => {
-//     setIsMenuOpen(false);
-//     router.push("/auth/login");
-//   };
-
-//   // Close dropdown when clicking outside
-//   useEffect(() => {
-//     const handleClickOutside = (e) => {
-//       if (!e.target.closest(".profile-dropdown")) setIsProfileOpen(false);
-//     };
-//     document.addEventListener("click", handleClickOutside);
-//     return () => document.removeEventListener("click", handleClickOutside);
-//   }, []);
-
-//   // Show shimmer while loading
-//   if (isLoading) {
-//     return (
-//       <nav className="bg-gradient-to-r from-gray-900 via-gray-950 to-black text-gray-200 shadow-xl sticky top-0 z-50 border-b border-gray-800/80 overflow-hidden">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="flex justify-between items-center h-16">
-//             <Link href="/" className="flex items-center space-x-2 group">
-//               <div className="p-2 bg-teal-500/20 rounded-lg group-hover:bg-teal-500/40 transition">
-//                 <Scissors className="h-6 w-6 text-teal-400" />
-//               </div>
-//               <span className="text-white font-bold text-lg hidden sm:block">
-//                 BarberBook
-//               </span>
-//             </Link>
-//             <div className="animate-shimmer h-8 w-44 rounded bg-gray-900/70 relative overflow-hidden"></div>
-//           </div>
-//         </div>
-
-//         <style jsx>{`
-//           @keyframes shimmer {
-//             0% {
-//               background-position: -150px 0;
-//             }
-//             100% {
-//               background-position: 150px 0;
-//             }
-//           }
-//           .animate-shimmer {
-//             background: linear-gradient(90deg, #27272a 15%, #2dd4bf 32%, #27272a 60%);
-//             background-size: 200px 100%;
-//             animation: shimmer 1.2s infinite;
-//           }
-//         `}</style>
-//       </nav>
-//     );
-//   }
-
-//   return (
-//     <nav className="bg-gradient-to-r from-gray-900 via-gray-950 to-black text-gray-200 shadow-2xl sticky top-0 z-50 border-b border-gray-800/70 overflow-hidden">
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//         <div className="flex justify-between items-center h-16">
-//           {/* Logo */}
-//           <Link href="/" className="flex items-center space-x-2 group flex-shrink-0">
-//             <Image
-//               src="/barberbook-logo.png"
-//               alt="BarberBook Logo"
-//               width={40}
-//               height={40}
-//               className="object-contain transition-transform duration-300 group-hover:scale-110"
-//               priority
-//             />
-//             <span className="text-white font-bold text-lg hidden sm:block group-hover:text-teal-400 transition">
-//               BarberBook
-//             </span>
-//           </Link>
-
-//           {/* Desktop Nav Links */}
-//           <div className="hidden lg:flex items-center space-x-2">
-//             {navLinks.map((link) => (
-//               <motion.div
-//                 key={link.name}
-//                 whileHover={{ y: -3, color: "#2dd4bf" }}
-//                 transition={{ type: "spring", stiffness: 330, damping: 18 }}
-//               >
-//                 <Link href={link.href}>
-//                   <span className="px-3 py-2 rounded-md text-md font-semibold text-gray-300 hover:text-teal-400 hover:bg-gray-800/50 transition-colors duration-200 cursor-pointer">
-//                     {link.name}
-//                   </span>
-//                 </Link>
-//               </motion.div>
-//             ))}
-//           </div>
-
-//           {/* Authentication Section */}
-//           <div className="hidden md:flex items-center space-x-2">
-//             {isAuthenticated ? (
-//               <>
-//                 <Link href="/payment">
-//                   <motion.button
-//                     whileHover={{ scale: 1.07 }}
-//                     className="flex items-center bg-transparent border border-teal-400/30 text-gray-300 hover:text-teal-400 hover:bg-gray-800/40 px-4 py-2 rounded transition-all duration-200 cursor-pointer"
-//                   >
-//                     <Wallet className="w-4 h-4 mr-2" />
-//                     <span className="hidden sm:inline">Wallet</span>
-//                   </motion.button>
-//                 </Link>
-
-//                 {/* Profile Dropdown */}
-//                 <div className="relative profile-dropdown">
-//                   <motion.button
-//                     whileHover={{ scale: 1.06 }}
-//                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-//                     className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/40 transition duration-200 group cursor-pointer"
-//                   >
-//                     <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-xs font-bold text-black">
-//                       {userName.charAt(0).toUpperCase()}
-//                     </div>
-//                     <span className="text-sm font-semibold text-gray-300 hidden sm:block group-hover:text-teal-400">
-//                       {userName}
-//                     </span>
-//                     <ChevronDown
-//                       className={`w-4 h-4 text-gray-400 ${isProfileOpen ? "rotate-180" : ""} transition-transform duration-200`}
-//                     />
-//                   </motion.button>
-
-//                   {/* ✅ Fixed Dropdown */}
-//                   <AnimatePresence>
-//                     {isProfileOpen && (
-//                       <motion.div
-//                         initial={{ opacity: 0, y: -8 }}
-//                         animate={{ opacity: 1, y: 0 }}
-//                         exit={{ opacity: 0, y: -8 }}
-//                         className="absolute right-0 mt-2 w-48 bg-gray-900 border border-cyan-600/30 rounded-xl shadow-xl py-2 z-10"
-//                       >
-//                         <button
-//                           onClick={() => {
-//                             setIsProfileOpen(false);
-//                             router.push("/dashboard/customer");
-//                           }}
-//                           className="w-full text-left px-4 py-2 rounded text-sm text-gray-300 hover:text-teal-400 hover:bg-gray-800/50 flex items-center space-x-2 transition cursor-pointer"
-//                         >
-//                           <User className="w-4 h-4" />
-//                           <span>Dashboard</span>
-//                         </button>
-
-//                         <button
-//                           onClick={handleLogout}
-//                           className="w-full text-left px-4 py-2 rounded text-sm text-gray-300 hover:text-red-300 hover:bg-gray-800/50 flex items-center space-x-2 transition border-t border-gray-800 cursor-pointer"
-//                         >
-//                           <LogOut className="w-4 h-4" />
-//                           <span>Sign Out</span>
-//                         </button>
-//                       </motion.div>
-//                     )}
-//                   </AnimatePresence>
-//                 </div>
-//               </>
-//             ) : (
-//               <motion.button
-//                 whileHover={{ scale: 1.1, backgroundColor: "#2dd4bf" }}
-//                 onClick={handleSignIn}
-//                 className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition duration-200 transform cursor-pointer"
-//               >
-//                 Sign In
-//               </motion.button>
-//             )}
-//           </div>
-
-//           {/* Mobile Toggle */}
-//           <button
-//             onClick={() => setIsMenuOpen(!isMenuOpen)}
-//             className="md:hidden p-2 rounded-md hover:bg-gray-800/40 transition cursor-pointer focus:outline-none"
-//           >
-//             {isMenuOpen ? <X className="h-6 w-6 text-teal-400" /> : <Menu className="h-6 w-6 text-gray-300" />}
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Mobile Menu */}
-//       <AnimatePresence>
-//         {isMenuOpen && (
-//           <motion.div
-//             initial={{ height: 0, opacity: 0 }}
-//             animate={{ height: "auto", opacity: 1 }}
-//             exit={{ height: 0, opacity: 0 }}
-//             className="md:hidden bg-gray-900/95 backdrop-blur-md border-t border-gray-800/50 shadow-2xl"
-//           >
-//             <div className="px-2 pt-2 pb-3 space-y-1">
-//               {navLinks.map((link) => (
-//                 <Link key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)}>
-//                   <span className="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-teal-400 hover:bg-gray-800/60 transition cursor-pointer">
-//                     {link.name}
-//                   </span>
-//                 </Link>
-//               ))}
-
-//               <div className="border-t border-gray-800 pt-3 mt-3 space-y-2">
-//                 {isAuthenticated ? (
-//                   <>
-//                     <div className="px-3 py-2">
-//                       <div className="flex items-center space-x-3 mb-3">
-//                         <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-sm font-bold text-black">
-//                           {userName.charAt(0).toUpperCase()}
-//                         </div>
-//                         <span className="text-sm font-semibold text-gray-200">{userName}</span>
-//                       </div>
-//                     </div>
-
-//                     <button
-//                       onClick={() => {
-//                         setIsMenuOpen(false);
-//                         router.push("/dashboard/customer");
-//                       }}
-//                       className="w-full text-left px-3 py-2 rounded-md text-base font-bold text-gray-300 hover:text-teal-400 hover:bg-gray-800/50 flex items-center space-x-2 transition cursor-pointer"
-//                     >
-//                       <User className="w-5 h-5" />
-//                       <span>Dashboard</span>
-//                     </button>
-
-//                     <button
-//                       onClick={handleLogout}
-//                       className="w-full text-left px-3 py-2 rounded-md text-base font-bold text-gray-300 hover:text-red-400 hover:bg-gray-800/40 flex items-center space-x-2 border-t border-gray-800 cursor-pointer"
-//                     >
-//                       <LogOut className="w-5 h-5" />
-//                       <span>Sign Out</span>
-//                     </button>
-//                   </>
-//                 ) : (
-//                   <button
-//                     onClick={handleSignIn}
-//                     className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold py-2 rounded-lg shadow-lg transition cursor-pointer"
-//                   >
-//                     Sign In
-//                   </button>
-//                 )}
-//               </div>
-//             </div>
-//           </motion.div>
-//         )}
-//       </AnimatePresence>
-
-//       {/* Global Styles */}
-//       <style jsx global>{`
-//         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-//         * {
-//           font-family: "Poppins", sans-serif;
-//         }
-//         body, .cursor-none, .cursor-none * {
-//           cursor: none !important;
-//         }
-//       `}</style>
-//     </nav>
-//   );
-// }
 
 "use client";
 
@@ -318,7 +15,9 @@ import {
   User,
   LogOut,
   ChevronDown,
+  Bell
 } from "lucide-react";
+import {io} from "socket.io-client";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -326,6 +25,10 @@ export function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState("");
+const [notifications, setNotifications] = useState([]);
+const [showNotifications, setShowNotifications] = useState(false);
+
+
   const router = useRouter();
 
   const navLinks = [
@@ -348,6 +51,32 @@ export function Navbar() {
       setIsLoading(false);
     }
   }, []);
+
+// 🔹 Setup Socket.IO for notifications
+
+  useEffect(() => {
+  const userId = localStorage.getItem("userId");
+  if (!userId) return;  // Only users get notifications
+
+  const socket = io("http://localhost:5000");
+
+  // User joins private room
+  socket.emit("joinUserRoom", userId);
+
+  // Listen for booking update
+  socket.on("bookingUpdate", (data) => {
+    setNotifications((prev) => [
+      {
+        message: data.message,
+        time: new Date().toLocaleTimeString(),
+      },
+      ...prev,
+    ]);
+  });
+
+  return () => socket.disconnect();
+}, [isAuthenticated]);
+
 
   // 🔹 Handle logout
   const handleLogout = () => {
@@ -441,6 +170,7 @@ export function Navbar() {
             ))}
           </div>
 
+
           {/* 🔹 Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-2">
             {isAuthenticated ? (
@@ -456,6 +186,48 @@ export function Navbar() {
                     <span className="hidden sm:inline">Wallet</span>
                   </Button>
                 </Link>
+                
+          {/* 🔔 Notification Bell */}
+<div
+  className="relative cursor-pointer mr-3"
+  onClick={() => setShowNotifications(!showNotifications)}
+>
+  <Bell className="w-6 h-6 text-cyan-400" />
+
+  {notifications.length > 0 && (
+    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+      {notifications.length}
+    </span>
+  )}
+
+  {/* Notification Dropdown */}
+  {showNotifications && (
+    <div className="absolute right-0 mt-3 w-72 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50">
+      <div className="p-3 border-b border-gray-700 text-gray-300 font-semibold">
+        Notifications
+      </div>
+
+      <div className="max-h-64 overflow-y-auto">
+        {notifications.length === 0 ? (
+          <div className="p-3 text-sm text-gray-400 text-center">
+            No notifications
+          </div>
+        ) : (
+          notifications.map((n, i) => (
+            <div
+              key={i}
+              className="p-3 border-b border-gray-800 text-gray-300 text-sm"
+            >
+              {n.message}
+              <div className="text-xs text-gray-500 mt-1">{n.time}</div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  )}
+</div>
+
 
                 {/* Profile Dropdown */}
                 <div className="relative profile-dropdown">

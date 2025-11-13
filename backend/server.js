@@ -35,6 +35,13 @@ io.on("connection", (socket) => {
     console.log(`Barber joined room: ${barberId}`);
   });
 
+  // USER joins their own room
+socket.on("joinUserRoom", (userId) => {
+  socket.join(userId);
+  console.log(`User joined room: ${userId}`);
+});
+
+
   socket.on("disconnect", () => {
     console.log("❌ Client disconnected:", socket.id);
   });

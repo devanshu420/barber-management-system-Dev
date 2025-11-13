@@ -243,6 +243,52 @@ exports.getBookingById = async (req, res) => {
 };
 
 // Update booking status
+// exports.updateBookingStatus = async (req, res) => {
+//   try {
+//     const { status } = req.body;
+
+//     const validStatuses = [
+//       "pending",
+//       "confirmed",
+//       "in-progress",
+//       "completed",
+//       "cancelled",
+//       "no-show",
+//     ];
+//     if (!validStatuses.includes(status)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid status",
+//       });
+//     }
+
+//     const booking = await Booking.findByIdAndUpdate(
+//       req.params.id,
+//       { status },
+//       { new: true }
+//     );
+
+//     if (!booking) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Booking not found",
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Booking status updated",
+//       data: booking,
+//     });
+//   } catch (error) {
+//     console.error("Error updating booking:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to update booking",
+//       error: error.message,
+//     });
+//   }
+// };
 exports.updateBookingStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -266,7 +312,7 @@ exports.updateBookingStatus = async (req, res) => {
       req.params.id,
       { status },
       { new: true }
-    );
+    ).populate("userId", "name");
 
     if (!booking) {
       return res.status(404).json({
@@ -274,6 +320,18 @@ exports.updateBookingStatus = async (req, res) => {
         message: "Booking not found",
       });
     }
+
+    // 🔥 SEND REAL-TIME NOTIFICATION TO USER
+    global.io.to(booking.userId._id.toString()).emit("bookingUpdate", {
+      bookingId: booking._id,
+      status,
+      message:
+        status === "confirmed"
+          ? "Your booking has been confirmed 🎉"
+          : `Your booking status updated: ${status}`,
+    });
+
+    console.log("📢 Notification sent to user:", booking.userId._id.toString());
 
     res.status(200).json({
       success: true,
@@ -289,6 +347,7 @@ exports.updateBookingStatus = async (req, res) => {
     });
   }
 };
+
 
 // Reschedule booking
 exports.rescheduleBooking = async (req, res) => {
