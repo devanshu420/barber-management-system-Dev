@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 💈 Barber Booking & Management System
 
-## Getting Started
+A full-stack MERN application designed to digitalize barber shop operations by enabling online appointment booking, service management, and real-time notifications through a modern and responsive interface.
 
-First, run the development server:
+---
+
+## 📌 Project Overview
+
+The **Barber Booking & Management System** simplifies the traditional barber shop workflow by allowing customers to book appointments online while providing barbers/admins with a centralized dashboard to manage services, schedules, and bookings efficiently.
+
+---
+
+## ✨ Key Features
+
+### 👤 User Features
+- 📅 Online appointment booking
+- ⏰ View available time slots
+- 🔔 Real-time booking notifications
+- 📄 Appointment history tracking
+- 🔐 Secure authentication (JWT)
+
+### 🧑‍💼 Admin / Barber Features
+- ✂️ Manage services & pricing
+- 🗓️ Manage bookings & schedules
+- 👥 User management
+- 📊 Dashboard for shop insights
+- 🔔 Real-time updates using Socket.io
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- ⚛️ React.js
+- 🎨 Tailwind CSS
+- 🧠 Redux Toolkit
+- 📡 Axios
+
+### Backend
+- 🟢 Node.js
+- 🚂 Express.js
+- 🍃 MongoDB
+- 🔑 JWT Authentication
+- 🔌 Socket.io (Real-time Notifications)
+
+---
+
+## 📂 Project Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Barber-Booking-System/
+│
+├── frontend/
+│   ├── components/
+│   ├── pages/
+│   ├── redux/
+│   └── App.jsx
+│
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── config/
+│   └── server.js
+│
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Installation
+```bash
+# Clone the repository
+git clone https://github.com/devanshu420/barber-booking-system.git
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+# Backend setup
+cd backend
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Frontend setup
+cd ../frontend
+npm install
 
-## Learn More
+# Start backend server
+cd backend
+npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+# Start frontend server
+cd frontend
+npm start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
 
-## Deploy on Vercel
+## 🎯 Problem It Solves
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Eliminates manual appointment booking
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Reduces scheduling conflicts
+
+- Improves customer experience
+
+- Helps barbers manage business digitally
+
+## 📈 Future Enhancements
+
+- 🤖 AI-based appointment recommendations
+
+- 📱 Mobile app integration
+
+- 💳 Online payment gateway
+
+- ⭐ Customer ratings & reviews
+
+- 📊 Advanced analytics dashboard
