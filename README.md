@@ -45,26 +45,6 @@ The **Barber Booking & Management System** simplifies the traditional barber sho
 
 ---
 
-## 📂 Project Structure
-
-```bash
-Barber-Booking-System/
-│
-├── frontend/
-│   ├── components/
-│   ├── pages/
-│   ├── redux/
-│   └── App.jsx
-│
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── config/
-│   └── server.js
-│
-└── README.md
-```
 
 ## 🔧 Installation
 ```bash
