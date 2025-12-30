@@ -18,16 +18,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-/**
- * ShopDetailClient
- *
- * - Shows shop details fetched from backend
- * - "View Bookings" toggles bookings panel and hides shop details
- * - Confirm, Cancel, Complete actions available on each booking
- * - Cancel is disabled when booking is confirmed or completed
- * - Complete button only shown when booking is confirmed
- * - Uses PUT /api/bookings/:id/status to update status
- */
+
 
 export default function ShopDetailClient() {
   const params = useParams();
