@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useReducer, useEffect } from "react"
-import { apiService } from "@/lib/api"
+import { createContext, useContext, useReducer, useEffect } from "react";
+import apiService, { login as apiLogin, register as apiRegister, logout as apiLogout, updateProfile as apiUpdateProfile, getProfile } from "@/lib/api";
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN_START":
-      return { ...state, loading: true, error: null }
+      return { ...state, loading: true, error: null };
     case "LOGIN_SUCCESS":
       return {
         ...state,
@@ -17,7 +17,7 @@ const authReducer = (state, action) => {
         user: action.payload.user,
         token: action.payload.token,
         error: null,
-      }
+      };
     case "LOGIN_FAILURE":
       return {
         ...state,
@@ -26,7 +26,7 @@ const authReducer = (state, action) => {
         user: null,
         token: null,
         error: action.payload,
-      }
+      };
     case "LOGOUT":
       return {
         ...state,
@@ -35,16 +35,16 @@ const authReducer = (state, action) => {
         token: null,
         loading: false,
         error: null,
-      }
+      };
     case "UPDATE_PROFILE":
       return {
         ...state,
         user: { ...state.user, ...action.payload },
-      }
+      };
     default:
-      return state
+      return state;
   }
-}
+};
 
 const initialState = {
   isAuthenticated: false,
@@ -52,85 +52,84 @@ const initialState = {
   token: null,
   loading: true,
   error: null,
-}
+};
 
 export function AuthProvider({ children }) {
-  const [state, dispatch] = useReducer(authReducer, initialState)
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-     if (typeof window === "undefined") return  // skip SSR
-    // Check for existing token on app load
-    const token = localStorage.getItem("token")
+    if (typeof window === "undefined") return;
+
+    const token = localStorage.getItem("token");
     if (token) {
-      apiService
-        .getProfile()
-        .then((response) => {
+      getProfile()
+        .then((user) => {
           dispatch({
             type: "LOGIN_SUCCESS",
-            payload: { user: response.user, token },
-          })
+            payload: { user, token },
+          });
         })
         .catch(() => {
-          localStorage.removeItem("token")
-          dispatch({ type: "LOGOUT" })
-        })
+          localStorage.removeItem("token");
+          dispatch({ type: "LOGOUT" });
+        });
     } else {
-      dispatch({ type: "LOGOUT" })
+      dispatch({ type: "LOGOUT" });
     }
-  }, [])
+  }, []);
 
   const login = async (credentials) => {
-    dispatch({ type: "LOGIN_START" })
+    dispatch({ type: "LOGIN_START" });
     try {
-      const response = await apiService.login(credentials)
-      localStorage.setItem("token", response.token)
+      const response = await apiLogin(credentials);
+      localStorage.setItem("token", response.token);
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: { user: response.user, token: response.token },
-      })
-      return response
+      });
+      return response;
     } catch (error) {
-      dispatch({ type: "LOGIN_FAILURE", payload: error.message })
-      throw error
+      dispatch({ type: "LOGIN_FAILURE", payload: error.message });
+      throw error;
     }
-  }
+  };
 
   const register = async (userData) => {
-    dispatch({ type: "LOGIN_START" })
+    dispatch({ type: "LOGIN_START" });
     try {
-      const response = await apiService.register(userData)
-      localStorage.setItem("token", response.token)
+      const response = await apiRegister(userData);
+      localStorage.setItem("token", response.token);
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: { user: response.user, token: response.token },
-      })
-      return response
+      });
+      return response;
     } catch (error) {
-      dispatch({ type: "LOGIN_FAILURE", payload: error.message })
-      throw error
+      dispatch({ type: "LOGIN_FAILURE", payload: error.message });
+      throw error;
     }
-  }
+  };
 
   const logout = async () => {
     try {
-      await apiService.logout()
+      await apiLogout();
     } catch (error) {
-      console.error("Logout error:", error)
+      console.error("Logout error:", error);
     } finally {
-      localStorage.removeItem("token")
-      dispatch({ type: "LOGOUT" })
+      localStorage.removeItem("token");
+      dispatch({ type: "LOGOUT" });
     }
-  }
+  };
 
   const updateProfile = async (profileData) => {
     try {
-      const response = await apiService.updateProfile(profileData)
-      dispatch({ type: "UPDATE_PROFILE", payload: response.user })
-      return response
+      const response = await apiUpdateProfile(profileData);
+      dispatch({ type: "UPDATE_PROFILE", payload: response.user });
+      return response;
     } catch (error) {
-      throw error
+      throw error;
     }
-  }
+  };
 
   return (
     <AuthContext.Provider
@@ -144,13 +143,13 @@ export function AuthProvider({ children }) {
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export const useAuth = () => {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
-}
+  return context;
+};
