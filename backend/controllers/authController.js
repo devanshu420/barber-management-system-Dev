@@ -4,7 +4,7 @@
 const { generateToken, generateRefreshToken, verifyRefreshToken } = require("../utils/token")
 const { encrypt, decrypt } = require("../utils/encryption")
 const userModel = require("../models/User")
-const sendEmail = require('../nodemailer/services/email');
+
 // Register user
 
 exports.register = async (req, res) => {
