@@ -58,6 +58,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState)
 
   useEffect(() => {
+     if (typeof window === "undefined") return  // skip SSR
     // Check for existing token on app load
     const token = localStorage.getItem("token")
     if (token) {
