@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { CheckCircle, Calendar, Clock, MapPin, AlertCircle, Loader } from "lucide-react";
+import {
+  CheckCircle,
+  Calendar,
+  Clock,
+  MapPin,
+  AlertCircle,
+  Loader,
+} from "lucide-react";
 
 axios.defaults.baseURL = "http://localhost:5000";
 
@@ -33,26 +40,24 @@ export function BookingConfirmation({ bookingData, onBack }) {
         return;
       }
 
-console.log("Booking Data:", bookingData);
-console.log("Service Object:", bookingData.service);
-console.log("Service ID:", bookingData.service?._id);
-
+      console.log("Booking Data:", bookingData);
+      console.log("Service Object:", bookingData.service);
+      console.log("Service ID:", bookingData.service?._id);
 
       const payload = {
-  shopId: bookingData.shop?._id,  
- serviceId: bookingData.service?._id,
+        shopId: bookingData.shop?._id,
+        serviceId: bookingData.service?._id,
 
-  serviceName: bookingData.service?.name,
-  bookingDate: new Date(bookingData.date).toISOString(),
-  bookingTime: {
-    startTime: bookingData.time?.startTime,
-    endTime: bookingData.time?.endTime,
-  },
-  amount: bookingData.service?.price,
-  paymentMethod: "razorpay",
-  notes: bookingData.notes || "",
-};
-
+        serviceName: bookingData.service?.name,
+        bookingDate: new Date(bookingData.date).toISOString(),
+        bookingTime: {
+          startTime: bookingData.time?.startTime,
+          endTime: bookingData.time?.endTime,
+        },
+        amount: bookingData.service?.price,
+        paymentMethod: "razorpay",
+        notes: bookingData.notes || "",
+      };
 
       // const payload = {
       //   shopId: bookingData.shop?.id || bookingData.shop?._id,
@@ -68,22 +73,24 @@ console.log("Service ID:", bookingData.service?._id);
       //   notes: bookingData.notes || "",
       // };
 
+      if (!bookingData.service?._id) {
+        setConfirmationMessage(
+          "❌ Service ID missing. Please reselect the service.",
+        );
+        setIsConfirming(false);
+        return;
+      }
 
-if (!bookingData.service?._id) {
-  setConfirmationMessage("❌ Service ID missing. Please reselect the service.");
-  setIsConfirming(false);
-  return;
-}
-
-
-
-
-      const response = await axios.post("/api/bookings/create-bookings", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        "/api/bookings/create-bookings",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (response.data.success) {
         setConfirmationMessage("✅ Booking confirmed successfully!");
@@ -91,12 +98,14 @@ if (!bookingData.service?._id) {
           router.push("/dashboard/customer");
         }, 2000);
       } else {
-        setConfirmationMessage(`❌ Failed to confirm booking: ${response.data.message || "Unknown error"}`);
+        setConfirmationMessage(
+          `❌ Failed to confirm booking: ${response.data.message || "Unknown error"}`,
+        );
         setIsConfirming(false);
       }
     } catch (error) {
       setConfirmationMessage(
-        `❌ Failed to confirm booking: ${error.response?.data?.message || error.message || "Unknown error"}`
+        `❌ Failed to confirm booking: ${error.response?.data?.message || error.message || "Unknown error"}`,
       );
       setIsConfirming(false);
     }
@@ -110,10 +119,12 @@ if (!bookingData.service?._id) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-500/30 to-amber-500/30 rounded-full mb-4 border border-yellow-500/30">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-yellow-500/30 to-amber-500/30 rounded-full mb-4 border border-yellow-500/30">
           <CheckCircle className="w-8 h-8 text-yellow-400" />
         </div>
-        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">Confirm Your Booking</h3>
+        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+          Confirm Your Booking
+        </h3>
         <p className="text-gray-400">Please review your appointment details</p>
       </motion.div>
 
@@ -124,13 +135,17 @@ if (!bookingData.service?._id) {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl hover:border-blue-500/50 transition-all"
+            className="p-4 bg-linear-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl hover:border-blue-500/50 transition-all"
           >
             <div className="flex items-start space-x-3">
-              <MapPin className="w-5 h-5 text-blue-400 flex-shrink-0 mt-1" />
+              <MapPin className="w-5 h-5 text-blue-400 shrink-0 mt-1" />
               <div>
-                <p className="text-blue-300 text-sm font-semibold mb-1">📍 Your Location</p>
-                <p className="text-white font-medium">{bookingData.userLocation.address}</p>
+                <p className="text-blue-300 text-sm font-semibold mb-1">
+                  📍 Your Location
+                </p>
+                <p className="text-white font-medium">
+                  {bookingData.userLocation.address}
+                </p>
               </div>
             </div>
           </motion.div>
@@ -142,17 +157,21 @@ if (!bookingData.service?._id) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="p-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/30 rounded-xl hover:border-indigo-500/50 transition-all"
+            className="p-4 bg-linear-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/30 rounded-xl hover:border-indigo-500/50 transition-all"
           >
             <div className="flex items-start space-x-3">
               <img
                 src={bookingData.shop.image || "/placeholder.svg"}
                 alt={bookingData.shop.name}
-                className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                className="w-12 h-12 rounded-lg object-cover shrink-0"
               />
               <div>
-                <p className="text-indigo-300 text-sm font-semibold mb-1">🏪 Barbershop</p>
-                <p className="text-white font-medium">{bookingData.shop.name}</p>
+                <p className="text-indigo-300 text-sm font-semibold mb-1">
+                  🏪 Barbershop
+                </p>
+                <p className="text-white font-medium">
+                  {bookingData.shop.name}
+                </p>
                 <p className="text-gray-400 text-sm">
                   {bookingData.shop.distance?.toFixed(1) || "N/A"} km away
                 </p>
@@ -167,12 +186,16 @@ if (!bookingData.service?._id) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-xl hover:border-orange-500/50 transition-all"
+            className="p-4 bg-linear-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-xl hover:border-orange-500/50 transition-all"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <p className="text-orange-300 text-sm font-semibold mb-2">✂️ Service</p>
-                <h4 className="text-white font-bold text-lg">{bookingData.service.name}</h4>
+                <p className="text-orange-300 text-sm font-semibold mb-2">
+                  ✂️ Service
+                </p>
+                <h4 className="text-white font-bold text-lg">
+                  {bookingData.service.name}
+                </h4>
                 <div className="flex items-center space-x-4 mt-2 text-sm">
                   <div className="flex items-center space-x-1 text-gray-400">
                     <Clock className="w-4 h-4" />
@@ -182,7 +205,9 @@ if (!bookingData.service?._id) {
               </div>
               <div className="text-right">
                 <p className="text-gray-400 text-sm">Price</p>
-                <p className="text-2xl font-bold text-orange-400">₹{bookingData.service.price}</p>
+                <p className="text-2xl font-bold text-orange-400">
+                  ₹{bookingData.service.price}
+                </p>
               </div>
             </div>
           </motion.div>
@@ -194,16 +219,20 @@ if (!bookingData.service?._id) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hover:border-green-500/50 transition-all"
+            className="p-4 bg-linear-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hover:border-green-500/50 transition-all"
           >
             <div className="space-y-3">
-              <p className="text-green-300 text-sm font-semibold">📅 Date & Time</p>
+              <p className="text-green-300 text-sm font-semibold">
+                📅 Date & Time
+              </p>
               <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-green-400 flex-shrink-0" />
-                <span className="text-white font-medium">{formatDate(bookingData.date)}</span>
+                <Calendar className="w-5 h-5 text-green-400 shrink-0" />
+                <span className="text-white font-medium">
+                  {formatDate(bookingData.date)}
+                </span>
               </div>
               <div className="flex items-center space-x-3">
-                <Clock className="w-5 h-5 text-green-400 flex-shrink-0" />
+                <Clock className="w-5 h-5 text-green-400 shrink-0" />
                 <span className="text-white font-medium">
                   {bookingData.time.startTime} - {bookingData.time.endTime}
                 </span>
@@ -223,7 +252,9 @@ if (!bookingData.service?._id) {
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Service Fee</span>
-            <span className="text-white font-semibold">₹{bookingData.service?.price || 0}</span>
+            <span className="text-white font-semibold">
+              ₹{bookingData.service?.price || 0}
+            </span>
           </div>
           <div className="flex justify-between items-center text-sm text-gray-400">
             <span>Taxes & Fees</span>
@@ -231,7 +262,9 @@ if (!bookingData.service?._id) {
           </div>
           <div className="border-t border-gray-700 pt-3 flex justify-between items-center">
             <span className="text-white font-bold">Total Amount</span>
-            <span className="text-3xl font-bold text-teal-400">₹{bookingData.service?.price || 0}</span>
+            <span className="text-3xl font-bold text-teal-400">
+              ₹{bookingData.service?.price || 0}
+            </span>
           </div>
         </div>
       </motion.div>
@@ -243,10 +276,13 @@ if (!bookingData.service?._id) {
         transition={{ delay: 0.5 }}
         className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-start space-x-3"
       >
-        <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+        <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
         <div className="text-sm text-blue-300">
           <p className="font-semibold mb-1">Important:</p>
-          <p>Please arrive 5 minutes early. Cancellations must be made 24 hours before the appointment.</p>
+          <p>
+            Please arrive 5 minutes early. Cancellations must be made 24 hours
+            before the appointment.
+          </p>
         </div>
       </motion.div>
 
@@ -286,7 +322,7 @@ if (!bookingData.service?._id) {
           whileTap={{ scale: 0.95 }}
           onClick={handleConfirmBooking}
           disabled={isConfirming}
-          className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-black font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 bg-linear-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-black font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isConfirming ? (
             <>
@@ -306,7 +342,9 @@ if (!bookingData.service?._id) {
         transition={{ delay: 0.7 }}
         className="p-4 bg-gray-800/30 border border-gray-700/50 rounded-lg text-center"
       >
-        <p className="text-gray-400 text-sm mb-2">Confirmation details will be sent to your email</p>
+        <p className="text-gray-400 text-sm mb-2">
+          Confirmation details will be sent to your email
+        </p>
         <p className="text-gray-500 text-xs">
           Booking Ref: #{Math.random().toString(36).substr(2, 9).toUpperCase()}
         </p>

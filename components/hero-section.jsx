@@ -108,7 +108,7 @@ function FuturisticCursor() {
   return (
     <div
       ref={cursorRef}
-      className="fixed top-0 left-0 z-[10000] pointer-events-none"
+      className="fixed top-0 left-0 z-10000 pointer-events-none"
       style={{
         transform: `translate(calc(${cursorPos.x}px - 50%), calc(${cursorPos.y}px - 50%))`,
         opacity: isVisible ? 1 : 0,
@@ -229,7 +229,7 @@ useEffect(() => {
               quality={85}
             />
           ) : (
-            <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-cyan-900 via-black to-teal-900">
+            <div className="flex items-center justify-center w-full h-full bg-linear-to-br from-cyan-900 via-black to-teal-900">
               <div className="text-center">
                 <Scissors className="w-16 h-16 mx-auto mb-4 text-cyan-300 opacity-40" />
                 <p className="text-cyan-300 font-semibold">Image Not Available</p>
@@ -241,7 +241,7 @@ useEffect(() => {
           )}
 
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/60" />
         </motion.div>
       </AnimatePresence>
 
@@ -295,7 +295,7 @@ useEffect(() => {
   >
     <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight text-white drop-shadow-2xl mb-4">
       Elevate Your{" "}
-      <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 animate-pulse">
+      <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 via-teal-300 to-cyan-400 animate-pulse">
         Barber Business
       </span>
     </h1>
@@ -319,11 +319,11 @@ useEffect(() => {
     className="flex flex-col sm:flex-row gap-4"
   >
     <Link href="/booking" legacyBehavior>
-      <a>
+    
         <Button size="lg" className="shadow-2xl">
           Get Started <ArrowRight className="ml-2" />
         </Button>
-      </a>
+     
     </Link>
     <Button size="lg" variant="outline">
       Learn More
@@ -389,16 +389,16 @@ function FeatureCard({ Icon, title, description, delay }) {
         scale: 1.08,
         boxShadow: "0 0 30px rgba(34,211,238,0.5)",
       }}
-      className="group relative bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-xl border border-cyan-400/20 rounded-2xl p-8 overflow-hidden transition-all cursor-default"
+      className="group relative bg-linear-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-xl border border-cyan-400/20 rounded-2xl p-8 overflow-hidden transition-all cursor-default"
     >
       {/* Gradient Background on Hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute inset-0 bg-linear-to-br from-cyan-500/10 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
       {/* Icon */}
       <motion.div
         whileHover={{ rotate: 360, scale: 1.15 }}
         transition={{ duration: 0.6 }}
-        className="mb-5 w-16 h-16 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-cyan-500/50"
+        className="mb-5 w-16 h-16 bg-linear-to-br from-cyan-400 to-teal-400 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-cyan-500/50"
       >
         <Icon className="w-8 h-8 text-white" strokeWidth={1.5} />
       </motion.div>
@@ -410,14 +410,14 @@ function FeatureCard({ Icon, title, description, delay }) {
       <p className="text-gray-400 leading-relaxed">{description}</p>
 
       {/* Bottom Accent Line */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-cyan-400 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
     </motion.div>
   );
 }
 
 // ========== SHIMMER PLACEHOLDER ==========
 const ShimmerPlaceholder = () => (
-  <div className="relative h-60 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 overflow-hidden">
+  <div className="relative h-60 bg-linear-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 overflow-hidden">
     <div className="absolute inset-0 shimmer-effect" />
   </div>
 );
@@ -467,7 +467,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-950 to-cyan-950 text-white overflow-x-hidden select-none">
+    <div className="relative min-h-screen bg-linear-to-br from-black via-gray-950 to-cyan-950 text-white overflow-x-hidden select-none">
       <FuturisticCursor />
 
       {/* Animated Background Blobs */}
@@ -506,7 +506,7 @@ export default function Home() {
           >
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
               Why Choose{" "}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-teal-400">
+              <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-teal-400">
                 The Barber Studio
               </span>
             </h2>
@@ -536,11 +536,11 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="mt-32 sm:mt-40 lg:mt-48 mb-16 px-6 sm:px-12 py-16 sm:py-24 bg-gradient-to-r from-cyan-900/30 to-teal-900/30 backdrop-blur-xl border border-cyan-400/20 rounded-3xl text-center"
+          className="mt-32 sm:mt-40 lg:mt-48 mb-16 px-6 sm:px-12 py-16 sm:py-24 bg-linear-to-r from-cyan-900/30 to-teal-900/30 backdrop-blur-xl border border-cyan-400/20 rounded-3xl text-center"
         >
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
             Experience{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 via-teal-300 to-cyan-400">
               Luxury
             </span>{" "}
             in Every Cut
@@ -549,11 +549,11 @@ export default function Home() {
             Book your next transformation today and join thousands of satisfied clients.
           </p>
           <Link href="/booking" legacyBehavior>
-            <a>
+           
               <Button size="lg" className="shadow-2xl">
                 Get Started <ArrowRight className="ml-2" />
               </Button>
-            </a>
+            
           </Link>
         </motion.section>
       </main>

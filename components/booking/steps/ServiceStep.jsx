@@ -114,7 +114,7 @@ const transformedServices = fetchedServices.map((service) => ({
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500/30 to-amber-500/30 rounded-full mb-4 border border-orange-500/30">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-orange-500/30 to-amber-500/30 rounded-full mb-4 border border-orange-500/30">
           <Scissors className="w-8 h-8 text-orange-400" />
         </div>
         <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">Select Service</h3>
@@ -134,7 +134,7 @@ const transformedServices = fetchedServices.map((service) => ({
           animate={{ opacity: 1 }}
           className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start space-x-3"
         >
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
           <p className="text-red-300 text-sm">{error}</p>
         </motion.div>
       )}
@@ -166,7 +166,7 @@ const transformedServices = fetchedServices.map((service) => ({
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-4 flex-1">
                   {/* Icon Badge */}
-                  <div className="w-14 h-14 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-14 h-14 bg-orange-500/20 rounded-lg flex items-center justify-center shrink-0">
                     <Scissors className="w-7 h-7 text-orange-400" />
                   </div>
 
@@ -179,12 +179,12 @@ const transformedServices = fetchedServices.map((service) => ({
                     {/* Stats */}
                     <div className="flex flex-wrap items-center gap-4 mt-3 text-sm">
                       <div className="flex items-center space-x-1 text-gray-400">
-                        <Clock className="w-4 h-4 flex-shrink-0" />
+                        <Clock className="w-4 h-4 shrink-0" />
                         <span>{service.duration} min</span>
                       </div>
 
                       <div className="flex items-center space-x-1 text-teal-400 font-semibold">
-                        <IndianRupee className="w-4 h-4 flex-shrink-0" />
+                        <IndianRupee className="w-4 h-4 shrink-0" />
                         <span>₹{service.price}</span>
                       </div>
 
@@ -199,7 +199,7 @@ const transformedServices = fetchedServices.map((service) => ({
 
                 {/* Checkmark */}
                 {isSelected(service) && (
-                  <div className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center flex-shrink-0 ml-4 mt-1">
+                  <div className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center shrink-0 ml-4 mt-1">
                     <span className="text-white text-sm font-bold">✓</span>
                   </div>
                 )}
@@ -235,7 +235,7 @@ const transformedServices = fetchedServices.map((service) => ({
         whileTap={{ scale: 0.95 }}
         onClick={handleContinue}
         disabled={selectedServices.length === 0}
-        className="w-full py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition transform shadow-lg hover:shadow-teal-500/30"
+        className="w-full py-3 bg-linear-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition transform shadow-lg hover:shadow-teal-500/30"
       >
         {selectedServices.length === 0 ? "Select a Service" : "Continue to Time Selection"}
       </motion.button>

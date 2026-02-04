@@ -1,3 +1,21 @@
+
+// const jwt = require("jsonwebtoken");
+
+// const JWT_SECRET = "your_jwt_secret"; // replace with .env
+// const JWT_REFRESH_SECRET = "your_refresh_secret";
+
+// exports.generateToken = (userId, role) => {
+//   return jwt.sign({ id: userId, role }, JWT_SECRET, { expiresIn: "1h" });
+// };
+
+// exports.generateRefreshToken = (userId) => {
+//   return jwt.sign({ id: userId }, JWT_REFRESH_SECRET, { expiresIn: "7d" });
+// };
+
+// exports.verifyRefreshToken = (token) => {
+//   return jwt.verify(token, JWT_REFRESH_SECRET);
+// };
+
 const jwt = require("jsonwebtoken")
 
 // Generate access token

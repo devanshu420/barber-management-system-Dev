@@ -184,7 +184,7 @@ export function LoginForm({ role = "customer" }) {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full py-3 bg-gradient-to-r from-teal-500 via-teal-500 to-teal-600 hover:from-teal-600 hover:via-teal-600 hover:to-teal-700 text-black font-semibold rounded-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-lg hover:shadow-xl"
+        className="w-full py-3 bg-linear-to-r from-teal-500 via-teal-500 to-teal-600 hover:from-teal-600 hover:via-teal-600 hover:to-teal-700 text-black font-semibold rounded-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-lg hover:shadow-xl"
       >
         {loading ? "Signing In..." : "Sign In"}
       </Button>

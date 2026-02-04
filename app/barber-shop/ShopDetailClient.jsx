@@ -359,7 +359,7 @@ useEffect(() => {
   // Loading / Error screens
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] text-cyan-300 font-poppins">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#071012] via-[#0b0e13] to-[#030405] text-cyan-300 font-poppins">
         <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }}>
           Loading shop details...
         </motion.div>
@@ -369,14 +369,14 @@ useEffect(() => {
 
   if (error || !shop) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] text-gray-400 font-poppins px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-[#071012] via-[#0b0e13] to-[#030405] text-gray-400 font-poppins px-4">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-red-400">⚠️ Error</h1>
           <p className="text-lg">{error || "Shop not found"}</p>
           <p className="text-sm text-gray-500">
             Shop ID: <span className="text-cyan-400">{shopId}</span>
           </p>
-          <Button onClick={() => router.back()} className="mt-4 bg-gradient-to-r from-cyan-500 to-teal-400 text-black font-semibold px-6 py-2 rounded-full">
+          <Button onClick={() => router.back()} className="mt-4 bg-linear-to-r from-cyan-500 to-teal-400 text-black font-semibold px-6 py-2 rounded-full">
             Go Back
           </Button>
         </div>
@@ -392,7 +392,7 @@ useEffect(() => {
       {/* Cursor element */}
       <div
         ref={cursorRef}
-        className="fixed top-0 left-0 z-[10000] pointer-events-none"
+        className="fixed top-0 left-0 z-10000 pointer-events-none"
         style={{
           transform: `translate(calc(${cursorPos.x}px - 50%), calc(${cursorPos.y}px - 50%))`,
           opacity: isVisible ? 1 : 0,
@@ -408,12 +408,12 @@ useEffect(() => {
 
       {/* Toast */}
       {toast && (
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className={`fixed top-4 right-4 z-[9999] px-6 py-3 rounded-full font-semibold shadow-lg flex items-center gap-2 ${toast.type === "success" ? "bg-green-500/20 text-green-300 border border-green-500/30" : "bg-red-500/20 text-red-300 border border-red-500/30"}`}>
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className={`fixed top-4 right-4 z-9999 px-6 py-3 rounded-full font-semibold shadow-lg flex items-center gap-2 ${toast.type === "success" ? "bg-green-500/20 text-green-300 border border-green-500/30" : "bg-red-500/20 text-red-300 border border-red-500/30"}`}>
           <span className="whitespace-nowrap">{toast.message}</span>
         </motion.div>
       )}
 
-      <div className="min-h-screen relative bg-gradient-to-br from-[#050a0c] via-[#0b0e13] to-[#030405] text-gray-200 px-6 py-12 font-poppins overflow-auto">
+      <div className="min-h-screen relative bg-linear-to-br from-[#050a0c] via-[#0b0e13] to-[#030405] text-gray-200 px-6 py-12 font-poppins overflow-auto">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-center mb-10">

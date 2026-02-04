@@ -10,7 +10,7 @@ const bookingSchema = new mongoose.Schema(
     },
     shopId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "BarberShop", // ✅ Must match model name exactly
+      ref: "BarberShop", 
       required: true,
     },
     serviceId: {
@@ -56,7 +56,6 @@ const bookingSchema = new mongoose.Schema(
     },
     finalAmount: {
       type: Number,
-      required: true,
     },
     paymentMethod: {
       type: String,
@@ -125,9 +124,12 @@ bookingSchema.index({ shopId: 1, bookingDate: -1 });
 bookingSchema.index({ status: 1, bookingDate: 1 });
 
 // Pre-save hook
-bookingSchema.pre("save", function (next) {
-  this.finalAmount = this.amount - this.discount;
-  next();
+bookingSchema.pre("save", async function () {
+  const amount = this.amount || 0;
+  const discount = this.discount || 0;
+
+  this.finalAmount = Math.max(amount - discount, 0);
 });
+
 
 module.exports = mongoose.model("booking", bookingSchema);

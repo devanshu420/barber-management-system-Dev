@@ -61,7 +61,7 @@ function FuturisticCursor() {
   return (
     <>
       <div
-        className="fixed top-0 left-0 z-[10000] pointer-events-none mix-blend-screen"
+        className="fixed top-0 left-0 z-10000 pointer-events-none"
         style={{
           transform: `translate(${mouse.current.x}px,${mouse.current.y}px) translate(-50%,-50%) scale(${hovering ? 1.8 : 1})`,
           transition: "transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
@@ -77,7 +77,7 @@ function FuturisticCursor() {
         />
       </div>
       <div
-        className="fixed top-0 left-0 z-[9999] pointer-events-none mix-blend-screen"
+        className="fixed top-0 left-0 z-9999 pointer-events-none"
         style={{
           transform: `translate(${trail.current.x}px,${trail.current.y}px) translate(-50%,-50%)`,
         }}
@@ -101,7 +101,7 @@ function StepProgress({ currentStep, steps }) {
               animate={{ scale: 1 }}
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
                 idx <= stepIndex
-                  ? "bg-gradient-to-r from-cyan-500 to-teal-500 text-black shadow-lg shadow-cyan-500/50"
+                  ? "bg-linear-to-r from-cyan-500 to-teal-500 text-black shadow-lg shadow-cyan-500/50"
                   : "bg-gray-700 text-gray-400"
               }`}
             >
@@ -113,7 +113,7 @@ function StepProgress({ currentStep, steps }) {
                 animate={{ scaleX: 1 }}
                 className={`flex-1 h-1 mx-2 ${
                   idx < stepIndex
-                    ? "bg-gradient-to-r from-cyan-500 to-teal-500"
+                    ? "bg-linear-to-r from-cyan-500 to-teal-500"
                     : "bg-gray-700"
                 }`}
               />
@@ -165,13 +165,13 @@ export function BookingFlow() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen bg-linear-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
       <FuturisticCursor />
 
       {/* Ambient Glows */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-cyan-950/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/80 to-cyan-950/80 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
@@ -181,7 +181,7 @@ export function BookingFlow() {
           transition={{ duration: 0.6 }}
           className="mb-12 text-center"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-3 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-3 bg-linear-to-r from-cyan-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
             Book Your Appointment
           </h1>
           <p className="text-gray-300 text-lg">
@@ -202,7 +202,7 @@ export function BookingFlow() {
           className="bg-gray-900/60 backdrop-blur-md border border-gray-800/50 rounded-2xl p-8 sm:p-12 shadow-2xl relative overflow-hidden"
         >
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-teal-500/5 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-br from-cyan-500/5 via-transparent to-teal-500/5 pointer-events-none" />
 
           <div className="relative z-10">
             <AnimatePresence mode="wait">
@@ -259,11 +259,13 @@ export function BookingFlow() {
         )}
       </div>
 
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        * { font-family: "Poppins", sans-serif; }
-        body, .cursor-none, .cursor-none * { cursor: none !important; }
-      `}</style>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+          * { font-family: "Poppins", sans-serif; }
+          body, .cursor-none, .cursor-none * { cursor: none !important; }
+        `
+      }} />
     </div>
   );
 }

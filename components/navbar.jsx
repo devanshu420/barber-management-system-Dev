@@ -119,7 +119,7 @@ const [showNotifications, setShowNotifications] = useState(false);
 
   if (isLoading) {
     return (
-      <nav className="bg-gradient-to-r from-gray-900 via-gray-950 to-black text-gray-200 shadow-2xl sticky top-0 z-50 border-b border-gray-800">
+      <nav className="bg-linear-to-r from-gray-900 via-gray-950 to-black text-gray-200 shadow-2xl sticky top-0 z-50 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2 group">
@@ -137,13 +137,13 @@ const [showNotifications, setShowNotifications] = useState(false);
   }
 
   return (
-    <nav className="bg-gradient-to-r from-gray-900 via-gray-950 to-black text-gray-200 shadow-2xl sticky top-0 z-50 border-b border-gray-800/50">
+    <nav className="bg-linear-to-r from-gray-900 via-gray-950 to-black text-gray-200 shadow-2xl sticky top-0 z-50 border-b border-gray-800/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* 🔹 Logo */}
        <Link
   href="/"
-  className="flex items-center space-x-2 group flex-shrink-0"
+  className="flex items-center space-x-2 group shrink-0"
 >
   <Image
     src="/barberbook-logo.png"
@@ -235,7 +235,7 @@ const [showNotifications, setShowNotifications] = useState(false);
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition duration-300 group cursor-pointer"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-xs font-bold text-black">
+                    <div className="w-8 h-8 bg-linear-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-xs font-bold text-black">
                       {userName.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-gray-300 hidden sm:block group-hover:text-teal-400">
@@ -270,7 +270,7 @@ const [showNotifications, setShowNotifications] = useState(false);
             ) : (
               <Button
                 onClick={handleSignIn}
-                className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 cursor-pointer"
+                className="bg-linear-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 cursor-pointer"
               >
                 Sign In
               </Button>
@@ -315,7 +315,7 @@ const [showNotifications, setShowNotifications] = useState(false);
                   {/* User Profile Card */}
                   <div className="px-3 py-2">
                     <div className="flex items-center space-x-3 mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-sm font-bold text-black">
+                      <div className="w-10 h-10 bg-linear-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-sm font-bold text-black">
                         {userName.charAt(0).toUpperCase()}
                       </div>
                       <span className="text-sm font-medium text-gray-200">
@@ -362,7 +362,7 @@ const [showNotifications, setShowNotifications] = useState(false);
               ) : (
                 <button
                   onClick={handleSignIn}
-                  className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold py-2 rounded-lg shadow-lg transition cursor-pointer"
+                  className="w-full bg-linear-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold py-2 rounded-lg shadow-lg transition cursor-pointer"
                 >
                   Sign In
                 </button>

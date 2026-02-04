@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState("customer");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black flex flex-col items-center justify-center px-4 py-12">
       {/* 🔹 Header with Logo */}
       <div className="mb-12 text-center">
         <Link href="/" className="inline-flex items-center space-x-3 group mb-8">
@@ -30,7 +30,7 @@ export default function LoginPage() {
 
       {/* 🔹 Role Description */}
       <div className="w-full max-w-md mb-6">
-        <div className="p-3 bg-gradient-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
+        <div className="p-3 bg-linear-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
           <p className="text-teal-300 text-sm font-medium text-center">
             {selectedRole === "customer"
               ? "👤 Sign in to book appointments with professional barbers"

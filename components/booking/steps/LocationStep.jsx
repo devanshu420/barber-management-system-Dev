@@ -86,7 +86,7 @@ export function LocationSelection({ onSelect }) {
       </div>
 
       {/* 🔹 GPS Option */}
-      <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/30 rounded-xl">
+      <div className="p-6 sm:p-8 bg-linear-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/30 rounded-xl">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-500/20 rounded-lg mb-4">
             <Navigation className="w-7 h-7 text-blue-400" />
@@ -98,7 +98,7 @@ export function LocationSelection({ onSelect }) {
           <Button
             onClick={handleGPSLocation}
             disabled={loading}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Navigation className="w-4 h-4 mr-2" />
             {loading ? "Getting Location..." : "Use GPS Location"}
@@ -108,13 +108,13 @@ export function LocationSelection({ onSelect }) {
 
       {/* 🔹 Divider */}
       <div className="flex items-center space-x-4">
-        <div className="flex-1 h-0.5 bg-gradient-to-r from-gray-800 to-transparent"></div>
+        <div className="flex-1 h-0.5 bg-linear-to-r from-gray-800 to-transparent"></div>
         <span className="text-gray-500 text-xs font-semibold uppercase">OR</span>
-        <div className="flex-1 h-0.5 bg-gradient-to-l from-gray-800 to-transparent"></div>
+        <div className="flex-1 h-0.5 bg-linear-to-l from-gray-800 to-transparent"></div>
       </div>
 
       {/* 🔹 Manual Location Option */}
-      <div className="p-6 sm:p-8 bg-gradient-to-br from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-xl">
+      <div className="p-6 sm:p-8 bg-linear-to-br from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-xl">
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-teal-500/20 rounded-lg mb-4">
             <Search className="w-7 h-7 text-teal-400" />
@@ -146,7 +146,7 @@ export function LocationSelection({ onSelect }) {
           <Button
             onClick={handleManualLocation}
             disabled={loading || !manualLocation.trim()}
-            className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold py-2.5 rounded-lg transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-linear-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-black font-semibold py-2.5 rounded-lg transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Search className="w-4 h-4 mr-2" />
             {loading ? "Finding Location..." : "Find Barbershops"}
@@ -157,7 +157,7 @@ export function LocationSelection({ onSelect }) {
       {/* 🔹 Error Message */}
       {error && (
         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start space-x-3">
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
           <p className="text-red-300 text-sm">{error}</p>
         </div>
       )}
