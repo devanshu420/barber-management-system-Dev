@@ -423,12 +423,12 @@ useEffect(() => {
             </motion.button>
 
             <div className="flex gap-3">
-              <motion.button whileHover={{ scale: 1.05 }} onClick={handleToggleBookings} className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-400 text-white font-semibold shadow-xl">
+              <motion.button whileHover={{ scale: 1.05 }} onClick={handleToggleBookings} className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-purple-500 to-pink-400 text-white font-semibold shadow-xl">
                 <Calendar className="w-5 h-5" />
                 {showBookings ? "Hide Bookings" : "View Bookings"}
               </motion.button>
 
-              <motion.button whileHover={{ scale: 1.05 }} onClick={() => setEditing((s) => !s)} className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-teal-400 text-black font-semibold shadow-xl">
+              <motion.button whileHover={{ scale: 1.05 }} onClick={() => setEditing((s) => !s)} className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-cyan-500 to-teal-400 text-black font-semibold shadow-xl">
                 {editing ? <X className="w-5 h-5" /> : <Edit2 className="w-5 h-5" />}
                 {editing ? "Cancel Edit" : "Edit Shop"}
               </motion.button>
@@ -437,7 +437,7 @@ useEffect(() => {
 
           {/* Shop Info - HIDDEN when showBookings === true */}
           {!showBookings && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg p-8 mb-10">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="rounded-2xl border border-gray-800 bg-linear-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg p-8 mb-10">
               <CardHeader>
                 <CardTitle className="text-3xl font-semibold text-white tracking-wide">{shop.shopName}</CardTitle>
               </CardHeader>
@@ -499,7 +499,7 @@ useEffect(() => {
                     </div>
 
                     <div className="flex gap-4 pt-4">
-                      <Button type="submit" disabled={updating} className="flex-1 bg-gradient-to-r from-cyan-500 to-teal-400 text-black font-semibold rounded-full shadow-md hover:scale-105 transition disabled:opacity-50">
+                      <Button type="submit" disabled={updating} className="flex-1 bg-linear-to-r from-cyan-500 to-teal-400 text-black font-semibold rounded-full shadow-md hover:scale-105 transition disabled:opacity-50">
                         <Save className="w-5 h-5 mr-2" />
                         {updating ? "Saving..." : "Save Changes"}
                       </Button>
@@ -516,7 +516,7 @@ useEffect(() => {
 
           {/* Bookings Section */}
           {showBookings && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg p-8 mb-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="rounded-2xl border border-gray-800 bg-linear-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg p-8 mb-10">
               <div className="flex items-center gap-2 mb-6">
                 <Calendar className="w-5 h-5 text-purple-400" />
                 <h2 className="text-white text-2xl font-semibold">Bookings</h2>
@@ -586,7 +586,7 @@ useEffect(() => {
           )}
 
           {/* Staff Section (kept as before) */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg p-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl border border-gray-800 bg-linear-to-br from-[#0b1114]/70 to-[#061011]/50 backdrop-blur-xl shadow-lg p-8">
             <div className="flex items-center gap-2 mb-6">
               <Users className="w-5 h-5 text-cyan-400" />
               <h2 className="text-white text-2xl font-semibold">Staff Members</h2>
