@@ -71,6 +71,7 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/ai", require("./routes/aiRoutes"));
 
 // START SERVER
 const PORT = process.env.PORT || 5000;
