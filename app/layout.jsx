@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import AuthProviderWrapper from "@/contexts/AuthProviderWrapper"
+import Script from "next/script";
 
 export const metadata = {
   title: "Barber Booking",
@@ -20,6 +21,11 @@ export default function RootLayout({ children }) {
           {children}
         </AuthProviderWrapper>
         <Analytics />
+
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   )

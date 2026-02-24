@@ -45,7 +45,7 @@
   return (
     <div
       ref={cursorRef}
-      className="fixed top-0 left-0 z-[10000] pointer-events-none mix-blend-screen transition-transform duration-75"
+      className="fixed top-0 left-0 z-10000 pointer-events-none mix-blend-screen transition-transform duration-75"
     >
       <div
         className={`w-4 h-4 rounded-full border-2 ${

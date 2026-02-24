@@ -19,7 +19,7 @@ import {
   Scissors,
   CreditCard,
 } from "lucide-react";
-import { PaymentForm } from "@/components/payment/payment-form";
+import { PaymentForm } from "@/components/payment/PaymentForm";
 
 export default function ConfirmBookingPage() {
   const router = useRouter();

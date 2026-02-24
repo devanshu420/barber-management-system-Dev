@@ -6,7 +6,7 @@ import { LocationSelection } from "./steps/LocationStep";
 import { ShopSelection } from "./steps/ShopStep";
 import { ServiceSelection } from "./steps/ServiceStep";
 import { TimeSelection } from "./steps/TimeStep";
-import { BookingConfirmation } from "./steps/ConfirmationStep";
+import  BookingConfirmation  from "./steps/ConfirmationStep";
 
 // Futuristic Animated Cursor
 function FuturisticCursor() {

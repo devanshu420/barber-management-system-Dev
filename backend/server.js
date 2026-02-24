@@ -69,7 +69,7 @@ app.use('/api/barbers', require('./routes/barber-shop-registration'));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
-app.use("/api/payments", require("./routes/paymentRoutes"));
+app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
 // START SERVER
