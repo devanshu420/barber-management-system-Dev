@@ -56,41 +56,67 @@ exports.getBarberById = async (req, res) => {
 // Get nearby barbers
 exports.getNearbyBarbers = async (req, res) => {
   try {
-    const { latitude, longitude, radius = 5 } = req.query
+    const { latitude, longitude, radius = 5 } = req.query;
 
     if (!latitude || !longitude) {
       return res.status(400).json({
         success: false,
         message: "Latitude and longitude are required",
-      })
+      });
     }
 
-    const barbers = await Barber.find({
-      isActive: true,
-      "location.coordinates": {
-        $near: {
-          $geometry: {
+    const barbers = await BarberShopModel.aggregate([
+      {
+        $geoNear: {
+          near: {
             type: "Point",
-            coordinates: [Number.parseFloat(longitude), Number.parseFloat(latitude)],
+            coordinates: [
+              parseFloat(longitude),
+              parseFloat(latitude),
+            ],
           },
-          $maxDistance: radius * 1000, // Convert km to meters
+          distanceField: "distance",
+          distanceMultiplier: 0.001, // meters to km
+          maxDistance: radius * 1000,
+          spherical: true,
         },
       },
-    })
-      .populate("barberId", "name phone profilePhoto")
-      .limit(10)
+      {
+        $match: {
+          isActive: true,
+          isVerified: true,
+        },
+      },
+      {
+        $project: {
+          shopName: 1,
+          description: 1,
+          "location.address": 1,
+          "location.city": 1,
+          "location.coordinates": 1,
+          "ratings.average": 1,
+          distance: { $round: ["$distance", 2] },
+        },
+      },
+      {
+        $sort: { distance: 1 },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
 
     res.status(200).json({
       success: true,
+      count: barbers.length,
       data: barbers,
-    })
+    });
   } catch (error) {
-    console.error("Error fetching nearby barbers:", error)
+    console.error("Error fetching nearby barbers:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch nearby barbers",
-      error: error.message,
-    })
+    });
   }
-}
+};
 

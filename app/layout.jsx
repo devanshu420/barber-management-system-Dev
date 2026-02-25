@@ -9,8 +9,8 @@ import Script from "next/script";
 export const metadata = {
   title: "Barber Booking",
   description: "Created by Devanshu",
-  // manifest: "/manifest.json",
-  // themeColor: "#1F2937"
+  manifest: "/manifest.json",
+  themeColor: "#1F2937"
 }
 
 export default function RootLayout({ children }) {

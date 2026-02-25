@@ -10,19 +10,19 @@ const barberShopSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true
+      index: true,
     },
     shopName: {
       type: String,
       required: [true, "Shop name is required"],
       trim: true,
       maxlength: [100, "Shop name cannot exceed 100 characters"],
-      index: true
+      index: true,
     },
     description: {
       type: String,
       trim: true,
-      maxlength: [500, "Description cannot exceed 500 characters"]
+      maxlength: [500, "Description cannot exceed 500 characters"],
     },
 
     // ============================================
@@ -34,9 +34,16 @@ const barberShopSchema = new mongoose.Schema(
       state: { type: String, required: true, trim: true },
       zipCode: { type: String, trim: true },
       coordinates: {
-        latitude: { type: Number, min: -90, max: 90, default: 0 },
-        longitude: { type: Number, min: -180, max: 180, default: 0 }
-      }
+        type: {
+          type: String,
+          enum: ["Point"],
+          default: "Point",
+        },
+        coordinates: {
+          type: [Number], // [longitude, latitude]
+          required: true,
+        },
+      },
     },
 
     // ============================================
@@ -49,8 +56,8 @@ const barberShopSchema = new mongoose.Schema(
         path: { type: String, required: true },
         size: { type: Number, required: true },
         mimetype: { type: String, default: "image/jpeg" },
-        uploadedAt: { type: Date, default: Date.now }
-      }
+        uploadedAt: { type: Date, default: Date.now },
+      },
     ],
     certificates: [String],
 
@@ -66,24 +73,52 @@ const barberShopSchema = new mongoose.Schema(
         category: {
           type: String,
           enum: ["haircut", "beard", "styling", "treatment", "other", "wash"],
-          default: "haircut"
+          default: "haircut",
         },
         description: String,
-        isActive: { type: Boolean, default: true }
-      }
+        isActive: { type: Boolean, default: true },
+      },
     ],
 
     // ============================================
     // WORKING HOURS
     // ============================================
     workingHours: {
-      monday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      tuesday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      wednesday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      thursday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      friday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      saturday: { start: String, end: String, isOpen: { type: Boolean, default: true } },
-      sunday: { start: String, end: String, isOpen: { type: Boolean, default: false } }
+      monday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      tuesday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      wednesday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      thursday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      friday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      saturday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: true },
+      },
+      sunday: {
+        start: String,
+        end: String,
+        isOpen: { type: Boolean, default: false },
+      },
     },
 
     // ============================================
@@ -97,13 +132,13 @@ const barberShopSchema = new mongoose.Schema(
           type: String,
           trim: true,
           enum: ["barber", "assistant", "manager", "other"],
-          default: "barber"
+          default: "barber",
         },
         phone: { type: String, match: [/^[0-9]{10}$/, "Invalid phone number"] },
         specialization: [String],
         joinDate: { type: Date, default: Date.now },
-        isActive: { type: Boolean, default: true }
-      }
+        isActive: { type: Boolean, default: true },
+      },
     ],
 
     // ============================================
@@ -117,10 +152,10 @@ const barberShopSchema = new mongoose.Schema(
             startTime: String,
             endTime: String,
             isBooked: { type: Boolean, default: false },
-            bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" }
-          }
-        ]
-      }
+            bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
+          },
+        ],
+      },
     ],
 
     // ============================================
@@ -132,10 +167,10 @@ const barberShopSchema = new mongoose.Schema(
         {
           month: Number,
           year: Number,
-          amount: Number
-        }
+          amount: Number,
+        },
       ],
-      pending: { type: Number, default: 0 }
+      pending: { type: Number, default: 0 },
     },
 
     // ============================================
@@ -143,26 +178,30 @@ const barberShopSchema = new mongoose.Schema(
     // ============================================
     ratings: {
       average: { type: Number, default: 0, min: 0, max: 5 },
-      count: { type: Number, default: 0 }
+      count: { type: Number, default: 0 },
     },
     reviews: [
       {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
         rating: { type: Number, required: true, min: 1, max: 5 },
         comment: { type: String, maxlength: 500 },
-        createdAt: { type: Date, default: Date.now }
-      }
+        createdAt: { type: Date, default: Date.now },
+      },
     ],
 
     // ============================================
     // STATUS
     // ============================================
     isVerified: { type: Boolean, default: true },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 // ============================================
@@ -185,11 +224,11 @@ barberShopSchema.virtual("fullAddress").get(function () {
 // INSTANCE METHODS
 // ============================================
 barberShopSchema.methods.getActiveServices = function () {
-  return this.services.filter(service => service.isActive);
+  return this.services.filter((service) => service.isActive);
 };
 
 barberShopSchema.methods.getActiveStaff = function () {
-  return this.staff.filter(member => member.isActive);
+  return this.staff.filter((member) => member.isActive);
 };
 
 barberShopSchema.methods.addImage = function (imageData) {
@@ -198,7 +237,7 @@ barberShopSchema.methods.addImage = function (imageData) {
 };
 
 barberShopSchema.methods.removeImage = function (imageId) {
-  this.images = this.images.filter(img => img._id.toString() !== imageId);
+  this.images = this.images.filter((img) => img._id.toString() !== imageId);
   return this.save();
 };
 
@@ -208,7 +247,7 @@ barberShopSchema.methods.addService = function (serviceData) {
 };
 
 barberShopSchema.methods.removeService = function (serviceId) {
-  this.services = this.services.filter(s => s._id.toString() !== serviceId);
+  this.services = this.services.filter((s) => s._id.toString() !== serviceId);
   return this.save();
 };
 
@@ -218,7 +257,7 @@ barberShopSchema.methods.addStaffMember = function (staffData) {
 };
 
 barberShopSchema.methods.removeStaffMember = function (staffId) {
-  this.staff = this.staff.filter(s => s._id.toString() !== staffId);
+  this.staff = this.staff.filter((s) => s._id.toString() !== staffId);
   return this.save();
 };
 
@@ -237,18 +276,29 @@ barberShopSchema.methods.calculateAverageRating = function () {
 // STATIC METHODS
 // ============================================
 barberShopSchema.statics.findByCity = function (city) {
-  return this.find({ "location.city": city, isActive: true, isVerified: true }).sort({
-    "ratings.average": -1
+  return this.find({
+    "location.city": city,
+    isActive: true,
+    isVerified: true,
+  }).sort({
+    "ratings.average": -1,
   });
 };
 
-barberShopSchema.statics.findNearby = function (longitude, latitude, maxDistance = 5000) {
+barberShopSchema.statics.findNearby = function (
+  longitude,
+  latitude,
+  maxDistance = 5000,
+) {
   return this.find({
     "location.coordinates": {
-      $near: { $geometry: { type: "Point", coordinates: [longitude, latitude] }, $maxDistance: maxDistance }
+      $near: {
+        $geometry: { type: "Point", coordinates: [longitude, latitude] },
+        $maxDistance: maxDistance,
+      },
     },
     isActive: true,
-    isVerified: true
+    isVerified: true,
   }).sort({ "ratings.average": -1 });
 };
 

@@ -1,23 +1,21 @@
-
 // Complete routes for barber shop registration and management
-const mongoose = require('mongoose');
-const express = require('express');
+const mongoose = require("mongoose");
+const express = require("express");
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const { body, validationResult } = require('express-validator');
-const BarberShop = require('../models/barbershopnewmodel');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const { body, validationResult } = require("express-validator");
+const BarberShop = require("../models/barbershopnewmodel");
 
 // ============================================
 // MULTER CONFIGURATION
 // ============================================
 
-
-const uploadsDir = path.join(__dirname, '../uploads/shops');
+const uploadsDir = path.join(__dirname, "../uploads/shops");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log('✓ Created uploads/shops directory');
+  console.log("✓ Created uploads/shops directory");
 }
 
 const storage = multer.diskStorage({
@@ -25,13 +23,13 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, 'shop-' + uniqueSuffix + path.extname(file.originalname));
-  }
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, "shop-" + uniqueSuffix + path.extname(file.originalname));
+  },
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  const allowedMimes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -44,66 +42,108 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
-  }
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
 });
 
 // ============================================
 // VALIDATION MIDDLEWARE
 // ============================================
 
+// const validateShopRegistration = [
+//   body('shopName')
+//     .trim()
+//     .notEmpty().withMessage('Shop name is required')
+//     .isLength({ min: 2, max: 100 }).withMessage('Shop name must be 2-100 characters'),
+
+//   body('description')
+//     .trim()
+//     .optional()
+//     .isLength({ max: 500 }).withMessage('Description cannot exceed 500 characters'),
+
+//   body('address')
+//     .trim()
+//     .notEmpty().withMessage('Address is required')
+//     .isLength({ min: 5, max: 200 }).withMessage('Address must be 5-200 characters'),
+
+//   body('city')
+//     .trim()
+//     .notEmpty().withMessage('City is required'),
+
+//   body('state')
+//     .trim()
+//     .notEmpty().withMessage('State is required'),
+
+//   body('zipCode')
+//     .trim()
+//     .optional()
+//     .matches(/^[0-9]{5,6}$/).withMessage('Invalid zip code format'),
+
+//   body('latitude')
+//     .optional()
+//     .isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude'),
+
+//   body('longitude')
+//     .optional()
+//     .isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude'),
+// ];
 const validateShopRegistration = [
-  body('shopName')
+  body("shopName")
     .trim()
-    .notEmpty().withMessage('Shop name is required')
-    .isLength({ min: 2, max: 100 }).withMessage('Shop name must be 2-100 characters'),
-  
-  body('description')
-    .trim()
-    .optional()
-    .isLength({ max: 500 }).withMessage('Description cannot exceed 500 characters'),
-  
-  body('address')
-    .trim()
-    .notEmpty().withMessage('Address is required')
-    .isLength({ min: 5, max: 200 }).withMessage('Address must be 5-200 characters'),
-  
-  body('city')
-    .trim()
-    .notEmpty().withMessage('City is required'),
-  
-  body('state')
-    .trim()
-    .notEmpty().withMessage('State is required'),
-  
-  body('zipCode')
+    .notEmpty()
+    .withMessage("Shop name is required")
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Shop name must be 2-100 characters"),
+
+  body("description")
     .trim()
     .optional()
-    .matches(/^[0-9]{5,6}$/).withMessage('Invalid zip code format'),
-  
-  body('latitude')
+    .isLength({ max: 500 })
+    .withMessage("Description cannot exceed 500 characters"),
+
+  body("location.address")
+    .trim()
+    .notEmpty()
+    .withMessage("Address is required")
+    .isLength({ min: 5, max: 200 })
+    .withMessage("Address must be 5-200 characters"),
+
+  body("location.city").trim().notEmpty().withMessage("City is required"),
+
+  body("location.state").trim().notEmpty().withMessage("State is required"),
+
+  body("location.zipCode")
     .optional()
-    .isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude'),
-  
-  body('longitude')
-    .optional()
-    .isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude'),
+    .matches(/^[0-9]{5,6}$/)
+    .withMessage("Invalid zip code format"),
+
+  body("location.coordinates.coordinates")
+    .isArray({ min: 2 })
+    .withMessage("Coordinates are required"),
+
+  body("location.coordinates.coordinates.0")
+    .isFloat({ min: -180, max: 180 })
+    .withMessage("Invalid longitude"),
+
+  body("location.coordinates.coordinates.1")
+    .isFloat({ min: -90, max: 90 })
+    .withMessage("Invalid latitude"),
 ];
 
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     if (req.files) {
-      req.files.forEach(file => {
+      req.files.forEach((file) => {
         fs.unlink(file.path, (err) => {
-          if (err) console.error('Error deleting file:', err);
+          if (err) console.error("Error deleting file:", err);
         });
       });
     }
     return res.status(400).json({
       success: false,
-      message: 'Validation failed',
-      errors: errors.array()
+      message: "Validation failed",
+      errors: errors.array(),
     });
   }
   next();
@@ -114,12 +154,13 @@ const handleValidationErrors = (req, res, next) => {
 // ============================================
 
 router.post(
-  '/register-shop',
-  upload.single('image'), // only single file
+  "/register-shop",
+  upload.single("image"), // only single file
   validateShopRegistration,
   handleValidationErrors,
   async (req, res) => {
     try {
+      console.log("BODY:", req.body);
       // Parse JSON fields
       let services = [];
       let workingHours = {};
@@ -127,22 +168,45 @@ router.post(
 
       try {
         // services = JSON.parse(req.body.services || '[]');
-        services = JSON.parse(req.body.services || '[]').map(s => ({
-  _id: new mongoose.Types.ObjectId(),   
-  name: s.name,
-  price: s.price,
-  duration: s.duration,
-  category: s.category || "General",
-  isActive: true
-}));
-        workingHours = JSON.parse(req.body.workingHours || '{}');
-        staff = JSON.parse(req.body.staff || '[]');
+        //         services = (req.body.services || '[]').map(s => ({
+        //   _id: new mongoose.Types.ObjectId(),
+        //   name: s.name,
+        //   price: s.price,
+        //   duration: s.duration,
+        //   category: s.category || "General",
+        //   isActive: true
+        // }));
+        services =
+          typeof req.body.services === "string"
+            ? JSON.parse(req.body.services)
+            : req.body.services || [];
+
+        services = services.map((s) => ({
+          _id: new mongoose.Types.ObjectId(),
+          name: s.name,
+          price: s.price,
+          duration: s.duration,
+          category: s.category || "General",
+          isActive: true,
+        }));
+        // workingHours = (req.body.workingHours || '{}');
+        // staff = (req.body.staff || '[]');
+
+        workingHours =
+          typeof req.body.workingHours === "string"
+            ? JSON.parse(req.body.workingHours)
+            : req.body.workingHours || {};
+
+        staff =
+          typeof req.body.staff === "string"
+            ? JSON.parse(req.body.staff)
+            : req.body.staff || [];
       } catch (parseError) {
         // Delete uploaded file on parse error
         if (req.file) fs.unlink(req.file.path, () => {});
         return res.status(400).json({
           success: false,
-          message: 'Invalid JSON format in services, working hours, or staff'
+          message: "Invalid JSON format in services, working hours, or staff",
         });
       }
 
@@ -151,40 +215,73 @@ router.post(
         if (req.file) fs.unlink(req.file.path, () => {});
         return res.status(400).json({
           success: false,
-          message: 'At least one service is required'
+          message: "At least one service is required",
         });
       }
 
       // Prepare image data
-      const imagePaths = req.file ? [{
-        filename: req.file.filename,
-        path: `/uploads/shops/${req.file.filename}`,
-        size: req.file.size,
-        mimetype: req.file.mimetype,
-        uploadedAt: new Date()
-      }] : [];
+      const imagePaths = req.file
+        ? [
+            {
+              filename: req.file.filename,
+              path: `/uploads/shops/${req.file.filename}`,
+              size: req.file.size,
+              mimetype: req.file.mimetype,
+              uploadedAt: new Date(),
+            },
+          ]
+        : [];
 
       // Create shop object
+      //       const shopData = {
+      //         shopName: req.body.shopName,
+      //         description: req.body.description || '',
+      //         location: {
+      //           address: req.body.address,
+      //           city: req.body.city,
+      //           state: req.body.state,
+      //           zipCode: req.body.zipCode || '',
+      //           coordinates: {
+      //   type: "Point",
+      //   coordinates: [
+      //     parseFloat(req.body.longitude),
+      //     parseFloat(req.body.latitude)
+      //   ]
+      // }
+      //         },
+      //         images: imagePaths,
+      //         services,
+      //         workingHours,
+      //         staff: staff.filter(s => s.name && s.name.trim()),
+      //         barberOwner: req.body.barberOwner,
+      //         isActive: true,
+      //         isVerified: true
+      //       };
+      // Create shop object
       const shopData = {
+        barberOwner: req.body.barberOwner, // 👈 ADD THIS
+
         shopName: req.body.shopName,
-        description: req.body.description || '',
+        description: req.body.description || "",
         location: {
-          address: req.body.address,
-          city: req.body.city,
-          state: req.body.state,
-          zipCode: req.body.zipCode || '',
+          address: req.body.location.address,
+          city: req.body.location.city,
+          state: req.body.location.state,
+          zipCode: req.body.location.zipCode || "",
           coordinates: {
-            latitude: parseFloat(req.body.latitude) || 0,
-            longitude: parseFloat(req.body.longitude) || 0
-          }
+            type: "Point",
+            coordinates: [
+              parseFloat(req.body.location.coordinates.coordinates[0]),
+              parseFloat(req.body.location.coordinates.coordinates[1]),
+            ],
+          },
         },
         images: imagePaths,
         services,
         workingHours,
-        staff: staff.filter(s => s.name && s.name.trim()),
-        barberOwner: req.body.barberOwner,
+        staff,
         isActive: true,
-        isVerified: true
+        isVerified: true,
       };
 
       const newShop = new BarberShop(shopData);
@@ -192,7 +289,7 @@ router.post(
 
       return res.status(201).json({
         success: true,
-        message: 'Shop registered successfully',
+        message: "Shop registered successfully",
         data: {
           shopId: savedShop._id,
           shopName: savedShop.shopName,
@@ -200,28 +297,26 @@ router.post(
           images: imagePaths,
           servicesCount: services.length,
           staffCount: staff.length,
-          location: savedShop.location
-        }
+          location: savedShop.location,
+        },
       });
-
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       if (req.file) fs.unlink(req.file.path, () => {});
       return res.status(500).json({
         success: false,
-        message: 'Failed to register shop',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        message: "Failed to register shop",
+        error:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
       });
     }
-  }
+  },
 );
-
-
 
 /**
  * GET /api/barber/shops
  * Get all registered barber shops with pagination
- * 
+ *
  * Query Parameters:
  * - page (number, default 1)
  * - limit (number, default 20)
@@ -229,7 +324,7 @@ router.post(
  * - minRating (number, optional - filter by minimum rating)
  */
 
-router.get('/shops', async (req, res) => {
+router.get("/shops", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
@@ -239,12 +334,10 @@ router.get('/shops', async (req, res) => {
 
     // Build filter
     // let filter = { isActive: true, isVerified: true, rating: { $gte: minRating } };
-   let filter = { isActive: true, isVerified: true };
-
-
+    let filter = { isActive: true, isVerified: true };
 
     if (city) {
-      filter['location.city'] = { $regex: city, $options: 'i' };
+      filter["location.city"] = { $regex: city, $options: "i" };
     }
 
     // Get total count
@@ -252,7 +345,7 @@ router.get('/shops', async (req, res) => {
 
     // Get shops
     const shops = await BarberShop.find(filter)
-      .select('-__v')
+      .select("-__v")
       .sort({ rating: -1, createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -264,14 +357,13 @@ router.get('/shops', async (req, res) => {
       total: total,
       page: page,
       pages: Math.ceil(total / limit),
-      data: shops
+      data: shops,
     });
-
   } catch (error) {
-    console.error('Get shops error:', error);
+    console.error("Get shops error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch shops'
+      message: "Failed to fetch shops",
     });
   }
 });
@@ -283,32 +375,31 @@ router.get('/shops', async (req, res) => {
 /**
  * GET /api/barber/shops/:id
  * Get shop details by ID
- * 
+ *
  * Parameters:
  * - id (string, required - Shop ID)
  */
 
-router.get('/shops/:id', async (req, res) => {
+router.get("/shops/:id", async (req, res) => {
   try {
-    const shop = await BarberShop.findById(req.params.id).select('-__v').lean();
+    const shop = await BarberShop.findById(req.params.id).select("-__v").lean();
 
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Shop not found'
+        message: "Shop not found",
       });
     }
 
     return res.json({
       success: true,
-      data: shop
+      data: shop,
     });
-
   } catch (error) {
-    console.error('Get shop error:', error);
+    console.error("Get shop error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch shop'
+      message: "Failed to fetch shop",
     });
   }
 });
@@ -320,21 +411,21 @@ router.get('/shops/:id', async (req, res) => {
 /**
  * GET /api/barber/shops-by-city/:city
  * Get shops by city
- * 
+ *
  * Parameters:
  * - city (string, required)
  */
 
-router.get('/shops-by-city/:city', async (req, res) => {
+router.get("/shops-by-city/:city", async (req, res) => {
   try {
     const city = req.params.city;
 
     const shops = await BarberShop.find({
-      'location.city': { $regex: city, $options: 'i' },
+      "location.city": { $regex: city, $options: "i" },
       isActive: true,
-      isVerified: true
+      isVerified: true,
     })
-      .select('-__v')
+      .select("-__v")
       .sort({ rating: -1 })
       .lean();
 
@@ -342,14 +433,13 @@ router.get('/shops-by-city/:city', async (req, res) => {
       success: true,
       count: shops.length,
       city: city,
-      data: shops
+      data: shops,
     });
-
   } catch (error) {
-    console.error('Search by city error:', error);
+    console.error("Search by city error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to search shops'
+      message: "Failed to search shops",
     });
   }
 });
@@ -361,7 +451,7 @@ router.get('/shops-by-city/:city', async (req, res) => {
 /**
  * GET /api/barber/nearby-shops
  * Find shops near given coordinates
- * 
+ *
  * Query Parameters:
  * - latitude (number, required)
  * - longitude (number, required)
@@ -369,7 +459,7 @@ router.get('/shops-by-city/:city', async (req, res) => {
  * - limit (number, optional - default 20)
  */
 
-router.get('/nearby-shops', async (req, res) => {
+router.get("/nearby-shops", async (req, res) => {
   try {
     const latitude = parseFloat(req.query.latitude);
     const longitude = parseFloat(req.query.longitude);
@@ -380,14 +470,19 @@ router.get('/nearby-shops', async (req, res) => {
     if (isNaN(latitude) || isNaN(longitude)) {
       return res.status(400).json({
         success: false,
-        message: 'Valid latitude and longitude required'
+        message: "Valid latitude and longitude required",
       });
     }
 
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+    if (
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid coordinates range'
+        message: "Invalid coordinates range",
       });
     }
 
@@ -396,41 +491,41 @@ router.get('/nearby-shops', async (req, res) => {
       {
         $geoNear: {
           near: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
+            type: "Point",
+            coordinates: [longitude, latitude],
           },
-          distanceField: 'distance',
+          distanceField: "distance",
           distanceMultiplier: 0.001, // meters to km
           maxDistance: maxDistance,
-          spherical: true
-        }
+          spherical: true,
+        },
       },
       {
         $match: {
           isActive: true,
-          isVerified: true
-        }
+          isVerified: true,
+        },
       },
       {
-        $sort: { distance: 1, rating: -1 }
+        $sort: { distance: 1, rating: -1 },
       },
       {
-        $limit: limit
+        $limit: limit,
       },
       {
         $project: {
           _id: 1,
           shopName: 1,
           description: 1,
-          'location.address': 1,
-          'location.city': 1,
-          'location.coordinates': 1,
-          rating: 1,
-          totalReviews: 1,
+          "location.address": 1,
+          "location.city": 1,
+          "location.coordinates": 1,
+          "ratings.average": 1,
+          "ratings.count": 1,
           images: 1,
-          distance: { $round: ['$distance', 2] }
-        }
-      }
+          distance: { $round: ["$distance", 2] },
+        },
+      },
     ]);
 
     return res.json({
@@ -438,15 +533,14 @@ router.get('/nearby-shops', async (req, res) => {
       count: shops.length,
       center: { latitude, longitude },
       maxDistance: parseFloat(req.query.maxDistance) || 5,
-      data: shops
+      data: shops,
     });
-
   } catch (error) {
-    console.error('Nearby shops error:', error);
+    console.error("Nearby shops error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to find nearby shops',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: "Failed to find nearby shops",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 });
@@ -458,10 +552,10 @@ router.get('/nearby-shops', async (req, res) => {
 /**
  * PUT /api/barber/shops/:id
  * Update shop details
- * 
+ *
  * Parameters:
  * - id (string, required - Shop ID)
- * 
+ *
  * Body:
  * - shopName (string, optional)
  * - description (string, optional)
@@ -472,7 +566,7 @@ router.get('/nearby-shops', async (req, res) => {
  * - workingHours (JSON string, optional)
  */
 
-router.put('/shops/:id', async (req, res) => {
+router.put("/shops/:id", async (req, res) => {
   try {
     const shopId = req.params.id;
 
@@ -485,30 +579,28 @@ router.put('/shops/:id', async (req, res) => {
       updateData.workingHours = JSON.parse(req.body.workingHours);
     }
 
-    const shop = await BarberShop.findByIdAndUpdate(
-      shopId,
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-__v');
+    const shop = await BarberShop.findByIdAndUpdate(shopId, updateData, {
+      new: true,
+      runValidators: true,
+    }).select("-__v");
 
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Shop not found'
+        message: "Shop not found",
       });
     }
 
     return res.json({
       success: true,
-      message: 'Shop updated successfully',
-      data: shop
+      message: "Shop updated successfully",
+      data: shop,
     });
-
   } catch (error) {
-    console.error('Update shop error:', error);
+    console.error("Update shop error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to update shop'
+      message: "Failed to update shop",
     });
   }
 });
@@ -520,80 +612,63 @@ router.put('/shops/:id', async (req, res) => {
 /**
  * DELETE /api/barber/shops/:id
  * Delete a shop
- * 
+ *
  * Parameters:
  * - id (string, required - Shop ID)
  */
 
-router.delete('/shops/:id', async (req, res) => {
+router.delete("/shops/:id", async (req, res) => {
   try {
     const shop = await BarberShop.findByIdAndDelete(req.params.id);
 
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Shop not found'
+        message: "Shop not found",
       });
     }
 
     return res.json({
       success: true,
-      message: 'Shop deleted successfully',
-      data: { id: shop._id }
+      message: "Shop deleted successfully",
+      data: { id: shop._id },
     });
-
   } catch (error) {
-    console.error('Delete shop error:', error);
+    console.error("Delete shop error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to delete shop'
+      message: "Failed to delete shop",
     });
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-router.get('/barbershops/:ownerId', async (req, res) => {
+router.get("/barbershops/:ownerId", async (req, res) => {
   try {
     const { ownerId } = req.params;
 
     const shops = await BarberShop.find({ barberOwner: ownerId })
-      .select('-__v')
+      .select("-__v")
       .sort({ createdAt: -1 })
       .lean();
 
     if (!shops || shops.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No shops found for this owner'
+        message: "No shops found for this owner",
       });
     }
 
     return res.json({
       success: true,
       count: shops.length,
-      data: shops
+      data: shops,
     });
-
   } catch (error) {
-    console.error('Fetch owner shops error:', error);
+    console.error("Fetch owner shops error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch shops',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: "Failed to fetch shops",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 });
@@ -631,47 +706,47 @@ router.get('/barbershops/:ownerId', async (req, res) => {
 /**
  * GET /api/barber/search
  * Search shops by name, city, or services
- * 
+ *
  * Query Parameters:
  * - q (string, required - search query)
  * - type (string, optional - 'name', 'city', 'service', default all)
  * - limit (number, optional - default 20)
  */
 
-router.get('/search', async (req, res) => {
+router.get("/search", async (req, res) => {
   try {
     const searchQuery = req.query.q;
-    const searchType = req.query.type || 'all';
+    const searchType = req.query.type || "all";
     const limit = parseInt(req.query.limit) || 20;
 
     if (!searchQuery || searchQuery.length < 2) {
       return res.status(400).json({
         success: false,
-        message: 'Search query must be at least 2 characters'
+        message: "Search query must be at least 2 characters",
       });
     }
 
     let filter = { isActive: true, isVerified: true };
-    const regex = { $regex: searchQuery, $options: 'i' };
+    const regex = { $regex: searchQuery, $options: "i" };
 
-    if (searchType === 'name') {
+    if (searchType === "name") {
       filter.shopName = regex;
-    } else if (searchType === 'city') {
-      filter['location.city'] = regex;
-    } else if (searchType === 'service') {
-      filter['services.name'] = regex;
+    } else if (searchType === "city") {
+      filter["location.city"] = regex;
+    } else if (searchType === "service") {
+      filter["services.name"] = regex;
     } else {
       // Search all
       filter.$or = [
         { shopName: regex },
-        { 'location.city': regex },
-        { 'services.name': regex },
-        { 'location.address': regex }
+        { "location.city": regex },
+        { "services.name": regex },
+        { "location.address": regex },
       ];
     }
 
     const shops = await BarberShop.find(filter)
-      .select('-__v')
+      .select("-__v")
       .sort({ rating: -1 })
       .limit(limit)
       .lean();
@@ -681,14 +756,13 @@ router.get('/search', async (req, res) => {
       count: shops.length,
       query: searchQuery,
       searchType: searchType,
-      data: shops
+      data: shops,
     });
-
   } catch (error) {
-    console.error('Search error:', error);
+    console.error("Search error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Search failed'
+      message: "Search failed",
     });
   }
 });
@@ -700,10 +774,10 @@ router.get('/search', async (req, res) => {
 /**
  * POST /api/barber/shops/:id/services
  * Add a new service to shop
- * 
+ *
  * Parameters:
  * - id (string, required - Shop ID)
- * 
+ *
  * Body:
  * - name (string, required)
  * - price (number, required)
@@ -711,14 +785,14 @@ router.get('/search', async (req, res) => {
  * - category (string, required)
  */
 
-router.post('/shops/:id/services', async (req, res) => {
+router.post("/shops/:id/services", async (req, res) => {
   try {
     const { name, price, duration, category } = req.body;
 
     if (!name || !price || !duration || !category) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: name, price, duration, category'
+        message: "Missing required fields: name, price, duration, category",
       });
     }
 
@@ -731,31 +805,30 @@ router.post('/shops/:id/services', async (req, res) => {
             price: Number(price),
             duration: Number(duration),
             category,
-            isActive: true
-          }
-        }
+            isActive: true,
+          },
+        },
       },
-      { new: true }
-    ).select('-__v');
+      { new: true },
+    ).select("-__v");
 
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Shop not found'
+        message: "Shop not found",
       });
     }
 
     return res.json({
       success: true,
-      message: 'Service added successfully',
-      data: shop
+      message: "Service added successfully",
+      data: shop,
     });
-
   } catch (error) {
-    console.error('Add service error:', error);
+    console.error("Add service error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to add service'
+      message: "Failed to add service",
     });
   }
 });
@@ -767,42 +840,41 @@ router.post('/shops/:id/services', async (req, res) => {
 /**
  * DELETE /api/barber/shops/:id/services/:serviceId
  * Remove a service from shop
- * 
+ *
  * Parameters:
  * - id (string, required - Shop ID)
  * - serviceId (string, required - Service ID)
  */
 
-router.delete('/shops/:id/services/:serviceId', async (req, res) => {
+router.delete("/shops/:id/services/:serviceId", async (req, res) => {
   try {
     const shop = await BarberShop.findByIdAndUpdate(
       req.params.id,
       {
         $pull: {
-          services: { _id: req.params.serviceId }
-        }
+          services: { _id: req.params.serviceId },
+        },
       },
-      { new: true }
-    ).select('-__v');
+      { new: true },
+    ).select("-__v");
 
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Shop not found'
+        message: "Shop not found",
       });
     }
 
     return res.json({
       success: true,
-      message: 'Service removed successfully',
-      data: shop
+      message: "Service removed successfully",
+      data: shop,
     });
-
   } catch (error) {
-    console.error('Remove service error:', error);
+    console.error("Remove service error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to remove service'
+      message: "Failed to remove service",
     });
   }
 });
@@ -814,13 +886,13 @@ router.delete('/shops/:id/services/:serviceId', async (req, res) => {
 /**
  * GET /api/barber/top-rated
  * Get top rated barber shops
- * 
+ *
  * Query Parameters:
  * - limit (number, optional - default 10)
  * - minRating (number, optional - minimum rating)
  */
 
-router.get('/top-rated', async (req, res) => {
+router.get("/top-rated", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
     const minRating = parseFloat(req.query.minRating) || 0;
@@ -828,9 +900,9 @@ router.get('/top-rated', async (req, res) => {
     const shops = await BarberShop.find({
       isActive: true,
       isVerified: true,
-      rating: { $gte: minRating }
+      rating: { $gte: minRating },
     })
-      .select('-__v')
+      .select("-__v")
       .sort({ rating: -1 })
       .limit(limit)
       .lean();
@@ -838,14 +910,13 @@ router.get('/top-rated', async (req, res) => {
     return res.json({
       success: true,
       count: shops.length,
-      data: shops
+      data: shops,
     });
-
   } catch (error) {
-    console.error('Top rated shops error:', error);
+    console.error("Top rated shops error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch top rated shops'
+      message: "Failed to fetch top rated shops",
     });
   }
 });
