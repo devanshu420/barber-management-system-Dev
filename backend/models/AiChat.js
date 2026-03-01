@@ -2,11 +2,18 @@ const mongoose = require("mongoose");
 
 const chatSchema = new mongoose.Schema(
   {
-    userId: { type: String, required: true },
-    message: { type: String, required: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Reference to User model
+      required: true,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
     role: {
       type: String,
-      enum: ["user", "assistant"], // valid roles for DB
+      enum: ["user", "assistant"],
       required: true,
     },
   },

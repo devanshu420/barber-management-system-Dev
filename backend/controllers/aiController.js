@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Training / context data
 const trainingData = [
   {
-    role: "model", // API me "model" role
+    role: "model",
     parts: [
       {
         text:
@@ -37,7 +37,106 @@ const trainingData = [
     parts: [
       {
         text:
-          "Handle FAQs about haircuts, beard trims, grooming services, available barbers, and shop locations.",
+          "If a user wants to book an appointment, ask for service type, preferred barber, date, and time.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "If a user asks about pricing, provide approximate price ranges and mention that final pricing may depend on hair length or style.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "If a requested time slot is unavailable, politely suggest alternative time slots.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "Support common services such as Haircut, Beard Trim, Hair Styling, Shaving, Hair Coloring, Facial, and Grooming Packages.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "Working hours are typically from 9:00 AM to 9:00 PM. Inform users if they try to book outside working hours.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "Always confirm appointment details before finalizing booking.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "Handle FAQs like shop location, contact number, payment methods, cancellation policy, and available barbers.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "If a user wants to cancel an appointment, ask for appointment date and time before confirming cancellation.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "If a user wants to reschedule, first verify existing appointment details and then suggest available slots.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "Be friendly and conversational but remain professional at all times.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "Do not provide information unrelated to the barber booking system.",
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text:
+          "If the user greets you, respond politely and ask how you can assist them with barber services.",
       },
     ],
   },
@@ -45,29 +144,36 @@ const trainingData = [
 
 const chatWithAI = async (req, res) => {
   try {
-    const { message, userId } = req.body;
+    const { message } = req.body;
+
+    // ✅ Check authentication
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const userId = req.user.id; 
 
     // Select the model
     const model = genAI.getGenerativeModel({
-      model: "models/gemini-2.5-flash", // Gemini 2.5 Flash
+      model: "models/gemini-2.5-flash",
       temperature: 0.5,
     });
 
-    // Get last 10 chats from DB for context
+    // Get last 10 chats from DB
     const history = await Chat.find({ userId })
       .sort({ createdAt: -1 })
       .limit(10);
 
     const formattedHistory = history.reverse().map((chat) => ({
-      role: "user", // user messages
+      role: chat.role === "assistant" ? "model" : "user",
       parts: [{ text: chat.message }],
     }));
 
     // Generate AI response
     const result = await model.generateContent({
       contents: [
-        ...trainingData,      // context / system prompts
-        ...formattedHistory,  // recent user chat history
+        ...trainingData,
+        ...formattedHistory,
         {
           role: "user",
           parts: [{ text: message }],
@@ -92,6 +198,7 @@ const chatWithAI = async (req, res) => {
     });
 
     res.json({ reply: response });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "AI request failed" });
@@ -99,6 +206,120 @@ const chatWithAI = async (req, res) => {
 };
 
 module.exports = { chatWithAI };
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const { GoogleGenerativeAI } = require("@google/generative-ai");
+// const Chat = require("../models/AiChat");
+
+// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// // Training / context data
+// const trainingData = [
+//   {
+//     role: "model", // API me "model" role
+//     parts: [
+//       {
+//         text:
+//           "You are an AI assistant for a Barber Booking System. Help users with booking appointments, available services, barber timings, and pricing.",
+//       },
+//     ],
+//   },
+//   {
+//     role: "model",
+//     parts: [
+//       {
+//         text:
+//           "Provide clear step-by-step instructions for booking, rescheduling, and cancelling barber appointments.",
+//       },
+//     ],
+//   },
+//   {
+//     role: "model",
+//     parts: [
+//       {
+//         text:
+//           "Give polite, professional, and concise responses to users regarding barber services, prices, or timings.",
+//       },
+//     ],
+//   },
+//   {
+//     role: "model",
+//     parts: [
+//       {
+//         text:
+//           "Handle FAQs about haircuts, beard trims, grooming services, available barbers, and shop locations.",
+//       },
+//     ],
+//   },
+// ];
+
+// const chatWithAI = async (req, res) => {
+//   try {
+//     const { message, userId } = req.body;
+
+//     // Select the model
+//     const model = genAI.getGenerativeModel({
+//       model: "models/gemini-2.5-flash", // Gemini 2.5 Flash
+//       temperature: 0.5,
+//     });
+
+//     // Get last 10 chats from DB for context
+//     const history = await Chat.find({ userId })
+//       .sort({ createdAt: -1 })
+//       .limit(10);
+
+//     const formattedHistory = history.reverse().map((chat) => ({
+//       role: "user", // user messages
+//       parts: [{ text: chat.message }],
+//     }));
+
+//     // Generate AI response
+//     const result = await model.generateContent({
+//       contents: [
+//         ...trainingData,      // context / system prompts
+//         ...formattedHistory,  // recent user chat history
+//         {
+//           role: "user",
+//           parts: [{ text: message }],
+//         },
+//       ],
+//     });
+
+//     const response = result.response.text();
+
+//     // Save user message
+//     await Chat.create({
+//       userId,
+//       message,
+//       role: "user",
+//     });
+
+//     // Save AI response
+//     await Chat.create({
+//       userId,
+//       message: response,
+//       role: "assistant",
+//     });
+
+//     res.json({ reply: response });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "AI request failed" });
+//   }
+// };
+
+// module.exports = { chatWithAI };
 
 
 

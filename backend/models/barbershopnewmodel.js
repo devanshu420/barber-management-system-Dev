@@ -49,17 +49,17 @@ const barberShopSchema = new mongoose.Schema(
     // ============================================
     // IMAGES & CERTIFICATES
     // ============================================
-    images: [
-      {
-        _id: mongoose.Schema.Types.ObjectId,
-        filename: { type: String, required: true },
-        path: { type: String, required: true },
-        size: { type: Number, required: true },
-        mimetype: { type: String, default: "image/jpeg" },
-        uploadedAt: { type: Date, default: Date.now },
-      },
-    ],
-    certificates: [String],
+    // images: [
+    //   {
+    //     _id: mongoose.Schema.Types.ObjectId,
+    //     filename: { type: String, required: true },
+    //     path: { type: String, required: true },
+    //     size: { type: Number, required: true },
+    //     mimetype: { type: String, default: "image/jpeg" },
+    //     uploadedAt: { type: Date, default: Date.now },
+    //   },
+    // ],
+    // certificates: [String],
 
     // ============================================
     // SERVICES

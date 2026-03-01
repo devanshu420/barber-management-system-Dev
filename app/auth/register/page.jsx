@@ -7,7 +7,7 @@ import { Scissors, User, CheckCircle, Zap } from "lucide-react";
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center px-4 py-8 lg:py-12">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center px-4 py-8 lg:py-12">
       {/* 🔹 Main Container - Horizontal Layout */}
       <div className="w-full max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
@@ -38,7 +38,7 @@ export default function RegisterPage() {
             <div className="space-y-4 pt-4">
               {/* Feature 1 */}
               <div className="flex items-start space-x-4 group">
-                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-teal-500/30 transition">
+                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-teal-500/30 transition">
                   <User className="w-5 h-5 text-teal-400" />
                 </div>
                 <div>
@@ -49,7 +49,7 @@ export default function RegisterPage() {
 
               {/* Feature 2 */}
               <div className="flex items-start space-x-4 group">
-                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-teal-500/30 transition">
+                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-teal-500/30 transition">
                   <Scissors className="w-5 h-5 text-teal-400" />
                 </div>
                 <div>
@@ -60,7 +60,7 @@ export default function RegisterPage() {
 
               {/* Feature 3 */}
               <div className="flex items-start space-x-4 group">
-                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-teal-500/30 transition">
+                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-teal-500/30 transition">
                   <CheckCircle className="w-5 h-5 text-teal-400" />
                 </div>
                 <div>
@@ -71,7 +71,7 @@ export default function RegisterPage() {
 
               {/* Feature 4 */}
               <div className="flex items-start space-x-4 group">
-                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-teal-500/30 transition">
+                <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-teal-500/30 transition">
                   <Zap className="w-5 h-5 text-teal-400" />
                 </div>
                 <div>
