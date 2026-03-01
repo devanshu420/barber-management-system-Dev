@@ -354,21 +354,16 @@ exports.rescheduleBooking = async (req, res) => {
   try {
     const { newDate, newTime, reason } = req.body;
 
-    if (!newDate || !newTime) {
+    if (!newDate || !newTime || !newTime.startTime || !newTime.endTime) {
       return res.status(400).json({
         success: false,
-        message: "New date and time are required",
+        message: "New date and full time range are required",
       });
     }
 
-    if (!newTime.startTime || !newTime.endTime) {
-      return res.status(400).json({
-        success: false,
-        message: "newTime must have startTime and endTime",
-      });
-    }
-
-    const booking = await Booking.findById(req.params.id);
+    const booking = await Booking.findById(req.params.id)
+      .populate("userId", "name")
+      .populate("shopId", "shopName barberOwner");
 
     if (!booking) {
       return res.status(404).json({
@@ -377,7 +372,6 @@ exports.rescheduleBooking = async (req, res) => {
       });
     }
 
-    // Check if new slot is available
     const newStartDate = new Date(newDate);
     newStartDate.setHours(0, 0, 0, 0);
 
@@ -386,10 +380,7 @@ exports.rescheduleBooking = async (req, res) => {
 
     const existingBooking = await Booking.findOne({
       shopId: booking.shopId,
-      bookingDate: {
-        $gte: newStartDate,
-        $lte: newEndDate,
-      },
+      bookingDate: { $gte: newStartDate, $lte: newEndDate },
       "bookingTime.startTime": newTime.startTime,
       status: { $in: ["pending", "confirmed"] },
       _id: { $ne: booking._id },
@@ -402,7 +393,6 @@ exports.rescheduleBooking = async (req, res) => {
       });
     }
 
-    // Add to reschedule history
     booking.rescheduleHistory.push({
       oldDate: booking.bookingDate,
       oldTime: booking.bookingTime,
@@ -422,24 +412,33 @@ exports.rescheduleBooking = async (req, res) => {
     };
 
     await booking.save();
-    console.log("Booking saved successfully:", booking);
 
+    // USER
+    if (booking.userId?._id) {
+      const room = booking.userId._id.toString();
+      global.io.to(room).emit("bookingUpdate", {
+        bookingId: booking._id.toString(),
+        type: "rescheduled",
+        newDate: booking.bookingDate,
+        newTime: booking.bookingTime,
+        message: "Your booking has been rescheduled 🔁",
+      });
+      console.log("📢 bookingUpdate (reschedule) to USER room:", room);
+    }
 
-    // ============= SEND REAL-TIME NOTIFICATION =============
-const shopData = await BarberShop.findById(shopId);
-
-if (shopData && shopData.barberOwner) {
-  io.to(shopData.barberOwner.toString()).emit("newBooking", {
-    shopName: shopData.shopName,
-    service: serviceName,
-    time: bookingTime,
-    bookingId: booking._id,
-  });
-
-  console.log("📢 Real-time notification sent to barber:", shopData.barberOwner.toString());
-}
-
-
+    // BARBER
+    if (booking.shopId?.barberOwner) {
+      const room = booking.shopId.barberOwner.toString();
+      global.io.to(room).emit("bookingUpdate", {
+        bookingId: booking._id.toString(),
+        type: "rescheduled",
+        newDate: booking.bookingDate,
+        newTime: booking.bookingTime,
+        service: booking.serviceName,
+        message: "A booking has been rescheduled",
+      });
+      console.log("📢 bookingUpdate (reschedule) to BARBER room:", room);
+    }
 
     res.status(200).json({
       success: true,
@@ -456,6 +455,10 @@ if (shopData && shopData.barberOwner) {
   }
 };
 
+
+// Cancel booking
+
+
 // Cancel booking
 exports.cancelBooking = async (req, res) => {
   try {
@@ -469,13 +472,40 @@ exports.cancelBooking = async (req, res) => {
         cancelledAt: new Date(),
       },
       { new: true }
-    );
+    )
+      .populate("userId", "name")
+      .populate("shopId", "shopName barberOwner");
 
     if (!booking) {
       return res.status(404).json({
         success: false,
         message: "Booking not found",
       });
+    }
+
+    // USER
+    if (booking.userId?._id) {
+      const room = booking.userId._id.toString();
+      global.io.to(room).emit("bookingUpdate", {
+        bookingId: booking._id.toString(),
+        type: "cancelled",
+        message: "Your booking has been cancelled ❌",
+        reason: cancellationReason,
+      });
+      console.log("📢 bookingUpdate sent to USER room:", room);
+    }
+
+    // BARBER
+    if (booking.shopId?.barberOwner) {
+      const room = booking.shopId.barberOwner.toString();
+      global.io.to(room).emit("bookingUpdate", {
+        bookingId: booking._id.toString(),
+        type: "cancelled",
+        customerName: booking.userId?.name,
+        message: "A booking has been cancelled",
+        reason: cancellationReason,
+      });
+      console.log("📢 bookingUpdate sent to BARBER room:", room);
     }
 
     res.status(200).json({
@@ -493,7 +523,11 @@ exports.cancelBooking = async (req, res) => {
   }
 };
 
+
+
 // Add review
+
+
 exports.addReview = async (req, res) => {
   try {
     const { rating, review } = req.body;
@@ -514,13 +548,37 @@ exports.addReview = async (req, res) => {
         reviewDate: new Date(),
       },
       { new: true }
-    );
+    )
+      .populate("userId", "name")
+      .populate("shopId", "shopName barberOwner");
 
     if (!booking) {
       return res.status(404).json({
         success: false,
         message: "Booking not found",
       });
+    }
+
+    if (booking.shopId?.barberOwner) {
+      const room = booking.shopId.barberOwner.toString();
+      global.io.to(room).emit("bookingUpdate", {
+        bookingId: booking._id.toString(),
+        type: "review",
+        rating,
+        review,
+        message: `New ${rating}⭐ review received`,
+      });
+      console.log("📢 bookingUpdate (review) to BARBER room:", room);
+    }
+
+    if (booking.userId?._id) {
+      const room = booking.userId._id.toString();
+      global.io.to(room).emit("bookingUpdate", {
+        bookingId: booking._id.toString(),
+        type: "review-confirmation",
+        message: "Your review has been submitted successfully ⭐",
+      });
+      console.log("📢 bookingUpdate (review confirm) to USER room:", room);
     }
 
     res.status(200).json({
@@ -537,6 +595,7 @@ exports.addReview = async (req, res) => {
     });
   }
 };
+
 
 // Get all bookings (admin)
 exports.getAllBookings = async (req, res) => {
