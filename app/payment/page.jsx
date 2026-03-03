@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
-export default function PaymentPage() {
+export default function Payment() {
   const searchParams = useSearchParams();
   // const bookingId = searchParams.get("bookingId");
-  const bookingId = "69885264a3b255778c48d9fe"
+  const bookingId = "69885264a3b255778c48d9fe"; // TODO: replace with searchParams.get("bookingId")
 
   const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("upi");
 
-  // ✅ Load Razorpay script
+  // ✅ Razorpay script load
   useEffect(() => {
     const loadScript = () => {
       return new Promise((resolve) => {
@@ -26,7 +29,27 @@ export default function PaymentPage() {
     loadScript();
   }, []);
 
-  const handlePayment = async () => {
+  // (optional) Booking amount fetch – agar backend se amount chahiye ho
+  useEffect(() => {
+    const fetchAmount = async () => {
+      try {
+        if (!bookingId) return;
+        // Agar tumhare paas booking detail api hai to waha se amount lao
+        // const { data } = await axios.get(
+        //   `http://localhost:5000/api/bookings/${bookingId}`,
+        //   { withCredentials: true }
+        // );
+        // setAmount(data?.booking?.finalAmount || data?.booking?.amount || "");
+      } catch (err) {
+        console.error("Error loading booking amount:", err);
+      }
+    };
+    fetchAmount();
+  }, [bookingId]);
+
+  const handlePayment = async (e) => {
+    e.preventDefault();
+
     if (!bookingId) {
       alert("Booking ID not found");
       return;
@@ -35,7 +58,7 @@ export default function PaymentPage() {
     try {
       setLoading(true);
 
-      // 1️⃣ Create Razorpay Order
+      // 1️⃣ Create Razorpay Order (same as your first code)
       const { data } = await axios.post(
         "http://localhost:5000/api/payment/create-order",
         { bookingId },
@@ -63,7 +86,7 @@ export default function PaymentPage() {
           );
 
           alert("Payment Successful 🎉");
-          window.location.href = "/my-bookings";
+          window.location.href = "/my-booking";
         },
 
         theme: {
@@ -73,7 +96,6 @@ export default function PaymentPage() {
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-
     } catch (error) {
       console.error(error);
       alert("Payment failed");
@@ -83,27 +105,185 @@ export default function PaymentPage() {
   };
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Complete Your Payment</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-6 text-center">Make Payment</h1>
 
-      <p><strong>Booking ID:</strong> {bookingId}</p>
+        <form onSubmit={handlePayment} className="space-y-4">
+          {/* Booking ID */}
+          <div>
+            <label className="block mb-1 font-medium">Booking ID</label>
+            <input
+              type="text"
+              value={bookingId || ""}
+              readOnly
+              className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+            />
+          </div>
 
-      <button
-        onClick={handlePayment}
-        disabled={loading}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "black",
-          color: "white",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        {loading ? "Processing..." : "Pay Now"}
-      </button>
+          {/* Amount (optional display only) */}
+          <div>
+            <label className="block mb-1 font-medium">Amount</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Auto from booking / optional"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Payment method (frontend only – Razorpay still handle actual) */}
+          <div>
+            <label className="block mb-1 font-medium">Payment Method</label>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="upi">UPI (Razorpay)</option>
+              <option value="card" disabled>
+                Card (via Razorpay)
+              </option>
+              <option value="netbanking" disabled>
+                Net Banking (via Razorpay)
+              </option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-black text-white font-semibold py-2 rounded hover:bg-gray-900 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? "Processing..." : "Pay Now"}
+          </button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <Link href="/my-booking" className="text-blue-500 hover:underline">
+            Cancel &amp; Go Back
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { useEffect, useState } from "react";
+// import { useSearchParams } from "next/navigation";
+// import axios from "axios";
+
+// export default function PaymentPage() {
+//   const searchParams = useSearchParams();
+//   // const bookingId = searchParams.get("bookingId");
+//   const bookingId = "69885264a3b255778c48d9fe"
+
+//   const [loading, setLoading] = useState(false);
+
+//   // ✅ Load Razorpay script
+//   useEffect(() => {
+//     const loadScript = () => {
+//       return new Promise((resolve) => {
+//         const script = document.createElement("script");
+//         script.src = "https://checkout.razorpay.com/v1/checkout.js";
+//         script.onload = () => resolve(true);
+//         script.onerror = () => resolve(false);
+//         document.body.appendChild(script);
+//       });
+//     };
+
+//     loadScript();
+//   }, []);
+
+//   const handlePayment = async () => {
+//     if (!bookingId) {
+//       alert("Booking ID not found");
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       // 1️⃣ Create Razorpay Order
+//       const { data } = await axios.post(
+//         "http://localhost:5000/api/payment/create-order",
+//         { bookingId },
+//         { withCredentials: true }
+//       );
+
+//       const { order, key } = data;
+
+//       const options = {
+//         key,
+//         amount: order.amount,
+//         currency: order.currency,
+//         order_id: order.id,
+//         name: "Barber Management System",
+//         description: "Service Booking Payment",
+
+//         handler: async function (response) {
+//           await axios.post(
+//             "http://localhost:5000/api/payment/verify-payment",
+//             {
+//               ...response,
+//               bookingId,
+//             },
+//             { withCredentials: true }
+//           );
+
+//           alert("Payment Successful 🎉");
+//           window.location.href = "/my-bookings";
+//         },
+
+//         theme: {
+//           color: "#000000",
+//         },
+//       };
+
+//       const rzp = new window.Razorpay(options);
+//       rzp.open();
+
+//     } catch (error) {
+//       console.error(error);
+//       alert("Payment failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div style={{ padding: "40px" }}>
+//       <h1>Complete Your Payment</h1>
+
+//       <p><strong>Booking ID:</strong> {bookingId}</p>
+
+//       <button
+//         onClick={handlePayment}
+//         disabled={loading}
+//         style={{
+//           padding: "10px 20px",
+//           backgroundColor: "black",
+//           color: "white",
+//           border: "none",
+//           cursor: "pointer",
+//         }}
+//       >
+//         {loading ? "Processing..." : "Pay Now"}
+//       </button>
+//     </div>
+//   );
+// }
 
 
 

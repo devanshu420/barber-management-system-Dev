@@ -5,13 +5,16 @@ const authController = require("../controllers/authController")
 // Public routes
 router.post("/register", authController.register)
 router.post("/login", authController.login)
-router.post("/refresh-token", authController.refreshToken)
-router.post('/send-otp', authController.sendOtp);
-router.post("/verify-otp", authController.verifyOtp)
-router.post("/forgot-password", authController.forgotPassword)
-router.post("/reset-password", authController.resetPassword)
 
-// Protected routes
+
+router.post("/refresh-token", authController.refreshToken)
+
+
+router.post("/forgot-password-otp", authController.forgotPasswordOtp);
+router.post("/verify-reset-otp", authController.verifyResetOtp); 
+router.post("/reset-password-otp", authController.resetPasswordWithOtp);
+
+
 router.post("/logout", authController.logout)
 
 module.exports = router

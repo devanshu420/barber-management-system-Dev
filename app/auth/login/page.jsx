@@ -3,45 +3,80 @@
 import { useState } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import Link from "next/link";
-import { Scissors, User } from "lucide-react";
+import { Scissors } from "lucide-react";
 
 export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState("customer");
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black flex flex-col items-center justify-center px-4 py-12">
-      {/* 🔹 Header with Logo */}
-      <div className="mb-12 text-center">
-        <Link href="/" className="inline-flex items-center space-x-3 group mb-8">
-          <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center group-hover:bg-teal-600 transition">
-            <Scissors className="h-6 w-6 text-white" />
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center px-4">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        {/* Left: Content */}
+        <div className="space-y-6 text-center lg:text-left">
+          <Link
+            href="/"
+            className="inline-flex items-center space-x-3 group mb-4 justify-center lg:justify-start"
+          >
+            <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center group-hover:bg-teal-600 transition">
+              <Scissors className="h-6 w-6 text-white" />
+            </div>
+            <span className="font-bold text-3xl text-white group-hover:text-teal-400 transition">
+              BarberBook
+            </span>
+          </Link>
+
+          <div className="space-y-3">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+              Welcome back to your{" "}
+              <span className="text-teal-400">barber hub</span>
+            </h1>
+            <p className="text-base sm:text-lg text-gray-400 max-w-xl mx-auto lg:mx-0">
+              Sign in to manage bookings, track your appointments, and keep your
+              grooming journey on point.
+            </p>
           </div>
-          <span className="font-bold text-3xl text-white group-hover:text-teal-400 transition">BarberBook</span>
-        </Link>
-        <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight mb-3">
-          Welcome Back
-        </h1>
-        <p className="text-lg text-gray-400 max-w-lg mx-auto">
-          Sign in to your account and continue your barber journey
-        </p>
-      </div>
 
-     
-
-      {/* 🔹 Role Description */}
-      <div className="w-full max-w-md mb-6">
-        <div className="p-3 bg-linear-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
-          <p className="text-teal-300 text-sm font-medium text-center">
-            {selectedRole === "customer"
-              ? "👤 Sign in to book appointments with professional barbers"
-              : "✂️ Sign in to manage your barber services and bookings"}
-          </p>
+          <div className="w-full max-w-md mx-auto lg:mx-0">
+            <div className="p-3 bg-linear-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
+              <p className="text-teal-300 text-sm font-medium text-center">
+                {selectedRole === "customer"
+                  ? "👤 Customers can book and manage appointments with top barbers."
+                  : "✂️ Barbers can manage schedules, clients, and services."}
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* 🔹 Form Container - Centered */}
-      <div className="w-full max-w-md animate-fadeIn">
-        <LoginForm role={selectedRole} />
+        {/* Right: Login form */}
+        <div className="w-full max-w-md mx-auto animate-fadeIn">
+          {/* Role toggle above form so left description can react */}
+          <div className="mb-4 flex gap-2 bg-gray-900/70 p-2 rounded-2xl border border-gray-800">
+            <button
+              type="button"
+              onClick={() => setSelectedRole("customer")}
+              className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                selectedRole === "customer"
+                  ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.6)]"
+                  : "bg-transparent text-gray-400 hover:text-white"
+              }`}
+            >
+              Customer
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedRole("barber")}
+              className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                selectedRole === "barber"
+                  ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.6)]"
+                  : "bg-transparent text-gray-400 hover:text-white"
+              }`}
+            >
+              Barber
+            </button>
+          </div>
+
+          <LoginForm role={selectedRole} />
+        </div>
       </div>
 
       <style jsx>{`

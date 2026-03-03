@@ -60,19 +60,15 @@ export function RegisterForm() {
       if (response.data.success) {
         setMessage("✅ Account created successfully!");
 
-        // Store user info in localStorage
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("userName", response.data.user.name);
         localStorage.setItem("userRole", formData.role);
         localStorage.setItem("userEmail", formData.email);
         localStorage.setItem("userPhone", formData.phone);
 
-        // Redirect based on role
         setTimeout(() => {
           if (formData.role === "barber") {
             router.push("/barber-shop-registration");
-            
-
           } else {
             router.push("/");
           }
@@ -86,7 +82,9 @@ export function RegisterForm() {
       if (error.response) {
         setMessage(`❌ ${error.response.data.message || "Registration failed"}`);
       } else if (error.request) {
-        setMessage("❌ No response from server. Check if backend is running on http://localhost:5000");
+        setMessage(
+          "❌ No response from server. Check if backend is running on http://localhost:5000"
+        );
       } else {
         setMessage(`❌ ${error.message}`);
       }
@@ -96,34 +94,47 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto my-12">
+    <div className="w-full max-w-md mx-auto my-10">
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 shadow-2xl rounded-2xl p-8 space-y-5 hover:border-gray-700/50 transition"
+        className="relative bg-gradient-to-b from-gray-900/85 via-gray-900/95 to-black/95 backdrop-blur-2xl border border-gray-800/80 shadow-[0_20px_60px_rgba(0,0,0,0.75)] rounded-3xl px-6 sm:px-7 py-7 space-y-5 hover:border-gray-700/60 transition-all duration-200 hover:-translate-y-0.5"
       >
+        {/* top glow line */}
+        <div className="absolute inset-x-10 -top-px h-px bg-gradient-to-r from-transparent via-teal-500/60 to-transparent" />
+
         {/* Header */}
         <div className="space-y-3 text-center">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-lg flex items-center justify-center">
+            <div className="w-11 h-11 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl flex items-center justify-center shadow-[0_0_22px_rgba(20,184,166,0.5)]">
               <Scissors className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-xl text-white">BarberBook</span>
+            <span className="font-bold text-xl sm:text-2xl text-white">
+              BarberBook
+            </span>
           </div>
-          <h2 className="text-3xl font-bold text-white">Create Account</h2>
-          <p className="text-gray-400 text-sm mt-1">
-            Get started in just a few minutes
-          </p>
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+              Create your account
+            </h2>
+            <p className="text-gray-400 text-xs sm:text-sm mt-1">
+              Join the{" "}
+              <span className="text-teal-400 font-medium">
+                {formData.role === "customer" ? "grooming" : "barber"}
+              </span>{" "}
+              community in minutes.
+            </p>
+          </div>
         </div>
 
         {/* Role Selection Tabs */}
-        <div className="grid grid-cols-2 gap-3 p-1 bg-gray-800/50 rounded-lg border border-gray-700/50">
+        <div className="grid grid-cols-2 gap-2.5 p-1.5 bg-gray-900/80 rounded-2xl border border-gray-800/90">
           <button
             type="button"
             onClick={() => setFormData({ ...formData, role: "customer" })}
-            className={`flex items-center justify-center space-x-2 py-2.5 px-3 rounded-md font-semibold transition duration-300 text-sm ${
+            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all ${
               formData.role === "customer"
-                ? "bg-gradient-to-r from-teal-500 to-teal-600 text-black shadow-lg"
-                : "bg-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-700/30"
+                ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.7)]"
+                : "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/60"
             }`}
           >
             <User className="w-4 h-4" />
@@ -132,10 +143,10 @@ export function RegisterForm() {
           <button
             type="button"
             onClick={() => setFormData({ ...formData, role: "barber" })}
-            className={`flex items-center justify-center space-x-2 py-2.5 px-3 rounded-md font-semibold transition duration-300 text-sm ${
+            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all ${
               formData.role === "barber"
-                ? "bg-gradient-to-r from-teal-500 to-teal-600 text-black shadow-lg"
-                : "bg-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-700/30"
+                ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.7)]"
+                : "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/60"
             }`}
           >
             <Scissors className="w-4 h-4" />
@@ -144,87 +155,105 @@ export function RegisterForm() {
         </div>
 
         {/* Role Description */}
-        <div className="p-3 bg-gradient-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
-          <p className="text-teal-300 text-sm font-medium text-center">
+        <div className="p-3.5 bg-gradient-to-r from-teal-500/12 to-teal-600/10 border border-teal-500/30 rounded-2xl">
+          <p className="text-teal-300 text-xs sm:text-sm font-medium text-center">
             {formData.role === "customer"
-              ? "📍 Book appointments with professional barbers"
-              : "💼 Manage services and grow your business"}
+              ? "📍 Discover and book appointments with trusted barbers near you."
+              : "💼 Showcase your services, manage clients, and grow your shop."}
           </p>
         </div>
 
-        {/* First Name */}
-        <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-gray-300 text-sm font-semibold block">
-            First Name
-          </Label>
-          <Input
-            id="firstName"
-            placeholder="Devanshu"
-            value={formData.firstName}
-            onChange={(e) =>
-              setFormData({ ...formData, firstName: e.target.value })
-            }
-            className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-600 text-sm py-2.5 w-full focus:border-teal-500/50 focus:bg-gray-800/80 transition"
-            required
-          />
-        </div>
+        {/* Name fields side-by-side on larger screens */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* First Name */}
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="firstName"
+              className="text-gray-300 text-xs sm:text-sm font-medium"
+            >
+              First name
+            </Label>
+            <Input
+              id="firstName"
+              placeholder="Devanshu"
+              value={formData.firstName}
+              onChange={(e) =>
+                setFormData({ ...formData, firstName: e.target.value })
+              }
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+              required
+            />
+          </div>
 
-        {/* Last Name */}
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-gray-300 text-sm font-semibold block">
-            Last Name
-          </Label>
-          <Input
-            id="lastName"
-            placeholder="Sharma"
-            value={formData.lastName}
-            onChange={(e) =>
-              setFormData({ ...formData, lastName: e.target.value })
-            }
-            className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-600 text-sm py-2.5 w-full focus:border-teal-500/50 focus:bg-gray-800/80 transition"
-            required
-          />
+          {/* Last Name */}
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="lastName"
+              className="text-gray-300 text-xs sm:text-sm font-medium"
+            >
+              Last name
+            </Label>
+            <Input
+              id="lastName"
+              placeholder="Sharma"
+              value={formData.lastName}
+              onChange={(e) =>
+                setFormData({ ...formData, lastName: e.target.value })
+              }
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+              required
+            />
+          </div>
         </div>
 
         {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-gray-300 text-sm font-semibold block">
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="email"
+            className="text-gray-300 text-xs sm:text-sm font-medium"
+          >
             Email
           </Label>
           <Input
             id="email"
             type="email"
-            placeholder="prestige@education.in"
+            placeholder="you@example.com"
             value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
-            className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-600 text-sm py-2.5 w-full focus:border-teal-500/50 focus:bg-gray-800/80 transition"
+            className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
             required
           />
         </div>
 
         {/* Phone */}
-        <div className="space-y-2">
-          <Label htmlFor="phone" className="text-gray-300 text-sm font-semibold block">
-            Phone Number
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="phone"
+            className="text-gray-300 text-xs sm:text-sm font-medium"
+          >
+            Phone number
           </Label>
           <Input
             id="phone"
             type="tel"
-            placeholder="+91 987654321"
+            placeholder="+91 9876543210"
             value={formData.phone}
             onChange={(e) =>
               setFormData({ ...formData, phone: e.target.value })
             }
-            className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-600 text-sm py-2.5 w-full focus:border-teal-500/50 focus:bg-gray-800/80 transition"
+            className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
             required
           />
         </div>
 
         {/* Password */}
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-gray-300 text-sm font-semibold block">
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="password"
+            className="text-gray-300 text-xs sm:text-sm font-medium"
+          >
             Password
           </Label>
           <div className="relative">
@@ -236,14 +265,12 @@ export function RegisterForm() {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-600 text-sm py-2.5 pr-10 w-full focus:border-teal-500/50 focus:bg-gray-800/80 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 pr-10 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
               required
             />
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-gray-500 hover:text-teal-400 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
@@ -251,20 +278,23 @@ export function RegisterForm() {
               ) : (
                 <Eye className="w-4 h-4" />
               )}
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Confirm Password */}
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword" className="text-gray-300 text-sm font-semibold block">
-            Confirm Password
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="confirmPassword"
+            className="text-gray-300 text-xs sm:text-sm font-medium"
+          >
+            Confirm password
           </Label>
           <div className="relative">
             <Input
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm password"
+              placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChange={(e) =>
                 setFormData({
@@ -272,14 +302,12 @@ export function RegisterForm() {
                   confirmPassword: e.target.value,
                 })
               }
-              className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-600 text-sm py-2.5 pr-10 w-full focus:border-teal-500/50 focus:bg-gray-800/80 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 pr-10 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
               required
             />
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-gray-500 hover:text-teal-400 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
               onClick={() =>
                 setShowConfirmPassword(!showConfirmPassword)
               }
@@ -289,7 +317,7 @@ export function RegisterForm() {
               ) : (
                 <Eye className="w-4 h-4" />
               )}
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -297,40 +325,24 @@ export function RegisterForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-teal-500 via-teal-500 to-teal-600 hover:from-teal-600 hover:via-teal-600 hover:to-teal-700 text-black font-semibold rounded-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-lg hover:shadow-xl"
+          className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-teal-500 via-teal-500 to-emerald-500 hover:from-teal-400 hover:via-teal-500 hover:to-emerald-400 text-black font-semibold rounded-2xl transition-transform duration-150 transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base shadow-[0_12px_32px_rgba(20,184,166,0.6)]"
         >
-          {loading ? "Creating Account..." : "Create Account"}
+          {loading ? "Creating account..." : "Create account"}
         </Button>
 
         {/* Success/Error Message */}
         {message && (
           <div
-            className={`p-4 rounded-lg text-center text-sm font-medium transition ${
+            className={`p-3.5 rounded-xl text-center text-xs sm:text-sm font-medium transition border ${
               message.startsWith("✅")
-                ? "bg-green-500/20 text-green-400 border border-green-500/50"
-                : "bg-red-500/20 text-red-400 border border-red-500/50"
+                ? "bg-emerald-500/12 text-emerald-400 border-emerald-500/50"
+                : "bg-red-500/12 text-red-400 border-red-500/50"
             }`}
           >
             {message}
           </div>
         )}
       </form>
-
-      <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }
