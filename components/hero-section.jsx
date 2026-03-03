@@ -275,7 +275,7 @@ useEffect(() => {
           transition={{ delay: 0.7, duration: 0.8 }}
           className="flex flex-col sm:flex-row gap-4"
         >
-          <Link href="/booking" legacyBehavior>
+          <Link href="/booking">
             <a>
               <Button size="lg" className="shadow-2xl">
                 Book Your Style <ArrowRight className="ml-2" />
@@ -318,7 +318,7 @@ useEffect(() => {
     transition={{ delay: 0.7, duration: 0.8 }}
     className="flex flex-col sm:flex-row gap-4"
   >
-    <Link href="/booking" legacyBehavior>
+    <Link href="/booking">
     
         <Button size="lg" className="shadow-2xl">
           Get Started <ArrowRight className="ml-2" />
@@ -548,12 +548,10 @@ export default function Home() {
           <p className="text-gray-300 text-lg sm:text-xl mb-10 max-w-2xl mx-auto drop-shadow-sm">
             Book your next transformation today and join thousands of satisfied clients.
           </p>
-          <Link href="/booking" legacyBehavior>
-           
-              <Button size="lg" className="shadow-2xl">
-                Get Started <ArrowRight className="ml-2" />
-              </Button>
-            
+          <Link href="/booking">
+            <Button size="lg" className="shadow-2xl">
+              Get Started <ArrowRight className="ml-2" />
+            </Button>
           </Link>
         </motion.section>
       </main>

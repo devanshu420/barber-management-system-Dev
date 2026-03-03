@@ -175,11 +175,11 @@ const HeroSlider = () => {
         <p className="text-gray-300 max-w-2xl mb-8 text-lg">
           Redefining grooming with modern style and precision.
         </p>
-        <Link href="/booking" legacyBehavior>
+        <Link href="/booking">
           <Button size="lg">
             Book Your Style <ArrowRight className="ml-2" />
           </Button>
-        </Link>
+        </Link> 
       </div>
     </div>
   );
@@ -283,7 +283,7 @@ export default function Home() {
           <p className="text-gray-300 text-lg mb-8">
             Book your next transformation today.
           </p>
-          <Link href="/booking" legacyBehavior>
+          <Link href="/booking">
             <Button size="lg">
               Get Started <ArrowRight className="ml-2" />
             </Button>

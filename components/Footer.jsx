@@ -8,19 +8,29 @@ const Footer = () => {
   const footerLinks = [
     {
       title: "BarberBook",
-      links: ["All Features", "Who loves us", "Pricing", "Payments"],
+      links: ["Why BarberBook", "All Features", "Pricing", "For Barbers"],
     },
     {
-      title: "",
-      links: ["Blog", "About us", "Help Center", "Contact us"],
+      title: "For Customers",
+      links: [
+        "Find a barbershop",
+        "Book an appointment",
+        "Manage your bookings",
+        "Download the app",
+      ],
     },
     {
-      title: "",
-      links: ["Careers", "Comparison", "Make the Switch", "Book an appointment"],
+      title: "For Barbershops",
+      links: [
+        "Shop management",
+        "Staff scheduling",
+        "Service & pricing",
+        "Get more clients",
+      ],
     },
     {
-      title: "",
-      links: ["Terms of Use", "Privacy Policy"],
+      title: "Company",
+      links: ["About BarberBook", "Help Center", "Contact us", "Terms & Privacy"],
     },
   ];
 
@@ -99,7 +109,7 @@ const Footer = () => {
             ))}
           </motion.div>
 
-          {/* Language Selector */}
+          {/* Language / Location */}
           <motion.div
             className="flex items-center gap-2 text-gray-400 cursor-pointer select-none hover:text-cyan-400 transition-colors duration-300"
             whileHover={{ scale: 1.05 }}
@@ -109,7 +119,7 @@ const Footer = () => {
               alt="India flag"
               className="w-5 h-4 rounded-sm"
             />
-            <span className="text-base">India</span>
+            <span className="text-base">Barbers in India</span>
             <svg
               className="w-4 h-4 text-gray-400"
               fill="none"
@@ -130,7 +140,7 @@ const Footer = () => {
             <motion.a
               href="#"
               whileHover={{ scale: 1.05 }}
-              aria-label="Download on the App Store"
+              aria-label="Download BarberBook on the App Store"
             >
               <img
                 src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
@@ -141,7 +151,7 @@ const Footer = () => {
             <motion.a
               href="#"
               whileHover={{ scale: 1.05 }}
-              aria-label="Get it on Google Play"
+              aria-label="Get BarberBook on Google Play"
             >
               <img
                 src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
@@ -154,7 +164,10 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="text-center mt-8 text-gray-500 text-sm px-6">
-          <p>&copy; 2024 BarberBook. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} BarberBook — Online booking for
+            modern barbershops.
+          </p>
         </div>
       </div>
 
@@ -169,6 +182,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
-
-

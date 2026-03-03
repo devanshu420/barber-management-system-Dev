@@ -1,6 +1,7 @@
 const Booking = require("../models/Booking");
 const BarberShop = require("../models/barbershopnewmodel");
 const User = require("../models/User");
+const {sendEmail} = require("../utils/sendEmail.js");
 
 // Create booking
 exports.createBooking = async (req, res) => {
@@ -16,7 +17,15 @@ exports.createBooking = async (req, res) => {
       notes,
     } = req.body;
 
-    console.log("Booking request body:", req.body); // Debug
+    // console.log("Booking request body:", req.body); // Debug
+    console.log("Req USer ",req.user);
+    
+
+    const formattedDate = new Date(bookingDate).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
     // Validate required fields
     if (!shopId || !serviceName || !bookingDate || !bookingTime || !amount) {
@@ -67,6 +76,12 @@ exports.createBooking = async (req, res) => {
       });
     }
 
+    // To Fetch  Shop Name , Service NAme using ShopID
+    const shopName = await BarberShop.findById(shopId).select("shopName");
+    console.log("Shop Name:", shopName);
+
+
+
     // Create new booking
     const booking = new Booking({
       userId: req.user.id,
@@ -110,6 +125,107 @@ try {
   console.error("Error sending socket event:", e);
 }
 
+  const html = `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
+    <div style="max-width: 540px; margin: auto; background: #ffffff;
+                border-radius: 10px; overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      <!-- Header -->
+      <div style="background: #111827; padding: 20px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0;">✂ BarberBook</h1>
+        <p style="color: #9ca3af; margin: 5px 0 0; font-size: 13px;">
+          Booking Received
+        </p>
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 26px 28px 24px; text-align: left;">
+        <h2 style="color: #111827; margin: 0 0 10px; font-size: 20px;">
+          Hi ${req.user.name || "there"},
+        </h2>
+
+        <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0 0 14px;">
+          Thank you for booking with <strong>BarberBook</strong>. Here are your
+          appointment details:
+        </p>
+
+        <!-- Details box -->
+        <div style="
+          margin: 18px 0;
+          padding: 14px 16px;
+          background: #f3f4f6;
+          border-radius: 8px;
+          font-size: 14px;
+          color: #111827;
+        ">
+          <p style="margin: 0 0 6px;">
+            <strong>Barbershop:</strong> ${shopName.shopName || "N/A"}
+          </p>
+          <p style="margin: 0 0 6px;">
+            <strong>Service:</strong> ${serviceName || "N/A"}
+          </p>
+          <p style="margin: 0 0 6px;">
+            <strong>Date:</strong> ${formattedDate || "N/A"}
+          </p>
+          <p style="margin: 0 0 6px;">
+            <strong>Time:</strong> ${
+              bookingTime?.startTime && bookingTime?.endTime
+                ? `${bookingTime.startTime} – ${bookingTime.endTime}`
+                : "N/A"
+            }
+          </p>
+          <p style="margin: 0 0 6px;">
+            <strong>Amount:</strong> ₹${amount || "0"}
+          </p>
+          <p style="margin: 0 0 6px;">
+            <strong>Payment Method:</strong> ${
+              paymentMethod
+                ? paymentMethod.charAt(0).toUpperCase() +
+                  paymentMethod.slice(1)
+                : "N/A"
+            }
+          </p>
+          <p style="margin: 0 0 0;">
+            <strong>Booking Status:</strong> ${booking.status || "pending"} |
+            <strong> Payment Status:</strong> ${booking.paymentStatus || "pending"}
+          </p>
+        </div>
+
+        ${
+          notes
+            ? `
+        <div style="
+          margin: 16px 0 10px;
+          padding: 12px 14px;
+          background: #eef2ff;
+          border-radius: 8px;
+          font-size: 13px;
+          color: #111827;
+          border: 1px solid #e0e7ff;
+        ">
+          <p style="margin: 0 0 4px; font-weight: 600;">Your note for the barber:</p>
+          <p style="margin: 0; color: #4b5563;">${notes}</p>
+        </div>
+        `
+            : ""
+        }
+
+        <p style="color: #6b7280; font-size: 12px; line-height: 1.6; margin: 12px 0 0;">
+          You’ll receive another update if the barbershop changes the status of this
+          booking. If any detail looks incorrect, please contact the barbershop or
+          update your booking in the BarberBook app.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #f9fafb; padding: 15px; text-align: center; font-size: 12px; color: #9ca3af;">
+        © ${new Date().getFullYear()} BarberBook. All rights reserved.
+      </div>
+    </div>
+  </div>
+`;
+
+   await sendEmail(req.user.email,`Your ${serviceName} booking at ${shopName.shopName || "Shop"}`,html);
 
     console.log("Booking saved successfully:", booking); // Debug
 
@@ -507,6 +623,45 @@ exports.cancelBooking = async (req, res) => {
       });
       console.log("📢 bookingUpdate sent to BARBER room:", room);
     }
+  const html = `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
+    <div style="max-width: 480px; margin: auto; background: #ffffff;
+                border-radius: 10px; overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      <!-- Header -->
+      <div style="background: #111827; padding: 20px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0;">✂ BarberBook</h1>
+        <p style="color: #f97373; margin: 5px 0 0; font-size: 13px;">
+          Booking Cancelled
+        </p>
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 24px 26px 22px; text-align: left;">
+        <h2 style="color: #111827; margin: 0 0 10px; font-size: 18px;">
+          Hi ${req.user.name || "there"},
+        </h2>
+
+        <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0 0 10px;">
+          Your BarberBook appointment has been cancelled successfully.
+        </p>
+
+        <p style="color: #6b7280; font-size: 12px; line-height: 1.6; margin: 8px 0 0;">
+          If this wasn’t you or you want to book again, you can create a new
+          appointment anytime in the BarberBook app.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #f9fafb; padding: 14px; text-align: center; font-size: 12px; color: #9ca3af;">
+        © ${new Date().getFullYear()} BarberBook. All rights reserved.
+      </div>
+    </div>
+  </div>
+`;
+
+
+    await sendEmail(req.user.email, "Booking Cancelled", html);
 
     res.status(200).json({
       success: true,

@@ -24,13 +24,73 @@ exports.register = async (req, res) => {
 
     await user.save();
 
+    const html = `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
+    <div style="max-width: 500px; margin: auto; background: #ffffff;
+                border-radius: 10px; overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      <div style="background: #111827; padding: 20px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0;">✂ BarberBook</h1>
+        <p style="color: #9ca3af; margin: 5px 0 0; font-size: 13px;">
+          Welcome to your new grooming hub
+        </p>
+      </div>
+
+      <div style="padding: 30px; text-align: left;">
+        <h2 style="color: #111827; margin-bottom: 10px; font-size: 20px;">
+          Welcome, ${name || "there"} 👋
+        </h2>
+
+        <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0 0 14px;">
+          Thanks for creating an account with <strong>BarberBook</strong>.
+          You can now easily discover barbers, book appointments, and manage
+          all your grooming visits in one place.
+        </p>
+
+        <div style="
+          margin: 24px 0;
+          padding: 14px 16px;
+          background: #f3f4f6;
+          border-radius: 8px;
+          font-size: 14px;
+          color: #111827;
+        ">
+          <p style="margin: 0 0 4px;">
+            <strong>What you can do next:</strong>
+          </p>
+          <ul style="padding-left: 18px; margin: 6px 0 0; color: #4b5563;">
+            <li>Browse available barbers and services</li>
+            <li>Book a haircut or beard trim in a few taps</li>
+            <li>View and manage your upcoming appointments</li>
+          </ul>
+        </div>
+
+        <p style="color: #6b7280; font-size: 12px; line-height: 1.6; margin: 0;">
+          If you didn’t sign up for BarberBook, you can safely ignore this email.
+        </p>
+      </div>
+
+      <div style="
+        background: #f9fafb;
+        padding: 15px;
+        text-align: center;
+        font-size: 12px;
+        color: #9ca3af;
+      ">
+        © ${new Date().getFullYear()} BarberBook. All rights reserved.
+      </div>
+    </div>
+  </div>
+`;
+
+    await sendEmail(user.email, "Welcome to BarberBook", html);
+
     res.status(201).json({
       success: true,
       message: "User registered successfully",
       user,
       token,
       refreshToken,
-      otp, // for testing
     });
   } catch (error) {
     console.error("Registration error:", error);

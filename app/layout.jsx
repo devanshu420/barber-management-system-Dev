@@ -10,8 +10,12 @@ export const metadata = {
   title: "Barber Booking",
   description: "Created by Devanshu",
   manifest: "/manifest.json",
-  themeColor: "#1F2937"
 }
+
+export const viewport = {
+    themeColor: "#1F2937"
+
+};
 
 export default function RootLayout({ children }) {
   return (
