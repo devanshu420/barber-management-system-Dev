@@ -31,7 +31,6 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
 
         const shopId = shop._id || shop.id;
 
-        // Get shop details including working hours
         const response = await axios.get(
           `http://localhost:5000/api/barbers/shops/${shopId}`,
           {
@@ -47,7 +46,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
           const shopData = response.data.data;
           setWorkingHours(shopData.workingHours || {});
 
-          // Fetch booked appointments for this shop
+          // Fetch booked appointments for this shop (kept as in your logic)
           try {
             const bookingsResponse = await axios.get(
               `http://localhost:5000/api/bookings/shop/${shopId}`,
@@ -84,7 +83,6 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
 
     if (!hoursData) return slots;
 
-    // Example working hours format: { openTime: "09:00", closeTime: "18:00" }
     const openTime = hoursData.openTime || "09:00";
     const closeTime = hoursData.closeTime || "18:00";
 
@@ -94,16 +92,17 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
     let currentHour = openHour;
     let currentMin = openMin;
 
-    while (currentHour < closeHour || (currentHour === closeHour && currentMin < closeMin)) {
+    while (
+      currentHour < closeHour ||
+      (currentHour === closeHour && currentMin < closeMin)
+    ) {
       const hour = currentHour.toString().padStart(2, "0");
       const min = currentMin.toString().padStart(2, "0");
       const timeStr = `${hour}:${min}`;
 
-      // Convert to 12-hour format
       const timeDisplay = convertTo12Hour(timeStr);
       slots.push(timeDisplay);
 
-      // Add 30 minutes interval
       currentMin += 30;
       if (currentMin >= 60) {
         currentMin -= 60;
@@ -114,34 +113,33 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
     return slots;
   };
 
+  const generateEndTime = (startTime, duration) => {
+    const [time, period] = startTime.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
 
-const generateEndTime = (startTime, duration) => {
-  const [time, period] = startTime.split(" ");
-  let [hours, minutes] = time.split(":").map(Number);
+    if (period === "PM" && hours !== 12) hours += 12;
+    if (period === "AM" && hours === 12) hours = 0;
 
-  if (period === "PM" && hours !== 12) hours += 12;
-  if (period === "AM" && hours === 12) hours = 0;
+    const start = new Date();
+    start.setHours(hours, minutes);
 
-  const start = new Date();
-  start.setHours(hours, minutes);
+    const end = new Date(start.getTime() + duration * 60000);
 
-  const end = new Date(start.getTime() + duration * 60000);
+    const endHours = end.getHours() % 12 || 12;
+    const endMinutes = end.getMinutes().toString().padStart(2, "0");
+    const endPeriod = end.getHours() >= 12 ? "PM" : "AM";
 
-  const endHours = end.getHours() % 12 || 12;
-  const endMinutes = end.getMinutes().toString().padStart(2, "0");
-  const endPeriod = end.getHours() >= 12 ? "PM" : "AM";
-
-  return `${endHours}:${endMinutes} ${endPeriod}`;
-};
-
-
+    return `${endHours}:${endMinutes} ${endPeriod}`;
+  };
 
   // 🔹 Convert 24-hour to 12-hour format
   const convertTo12Hour = (time24) => {
     const [hours, minutes] = time24.split(":").map(Number);
     const period = hours >= 12 ? "PM" : "AM";
     const hour12 = hours % 12 || 12;
-    return `${hour12.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${period}`;
+    return `${hour12.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")} ${period}`;
   };
 
   // 🔹 Fetch booked slots for selected date
@@ -152,9 +150,10 @@ const generateEndTime = (startTime, duration) => {
       try {
         const dateStr = selectedDate.toISOString().split("T")[0];
 
-        // Call backend to get booked slots for this date
         const response = await axios.get(
-          `http://localhost:5000/api/bookings/shop/${shop._id || shop.id}/date/${dateStr}`,
+          `http://localhost:5000/api/bookings/shop/${
+            shop._id || shop.id
+          }/date/${dateStr}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -207,64 +206,69 @@ const generateEndTime = (startTime, duration) => {
     return workingDays.includes(dayName);
   };
 
- const handleConfirm = () => {
-  if (selectedDate && selectedTime) {
-    const endTime = generateEndTime(selectedTime, serviceDuration);
+  const handleConfirm = () => {
+    if (selectedDate && selectedTime) {
+      const endTime = generateEndTime(selectedTime, serviceDuration);
 
-    onSelect(selectedDate, {
-      startTime: selectedTime,
-      endTime: endTime,
-    });
-  }
-};
-
+      onSelect(selectedDate, {
+        startTime: selectedTime,
+        endTime: endTime,
+      });
+    }
+  };
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="text-center py-12">
-          <p className="text-gray-400">Loading available time slots...</p>
+        <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="w-10 h-10 rounded-full border-2 border-t-transparent border-emerald-400 animate-spin" />
+          <p className="text-gray-300 text-sm sm:text-base">
+            Loading available time slots...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7 sm:space-y-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
-          <Calendar className="w-8 h-8 text-green-400" />
+      <div className="text-center mb-4 sm:mb-6">
+        <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-500/25 to-teal-500/25 rounded-2xl mb-4 border border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.6)]">
+          <Calendar className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-200" />
         </div>
-        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          Select Date & Time
+        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+          Select date & time
         </h3>
-        <p className="text-gray-400 text-sm sm:text-base">
-          Choose your preferred appointment time
+        <p className="text-gray-400 text-xs sm:text-sm max-w-md mx-auto">
+          Choose when you’d like your appointment to start.
         </p>
       </div>
 
       {/* Error State */}
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start space-x-3">
+        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-          <p className="text-red-300 text-sm">{error}</p>
+          <p className="text-red-300 text-xs sm:text-sm">{error}</p>
         </div>
       )}
 
       {/* Working Hours Info */}
       {workingHours && (
-        <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-          <div className="flex items-center space-x-2 mb-2">
-            <Clock className="w-4 h-4 text-blue-400" />
-            <p className="text-blue-300 font-semibold text-sm">Working Hours</p>
+        <div className="p-4 bg-sky-500/10 border border-sky-500/30 rounded-xl">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Clock className="w-4 h-4 text-sky-300" />
+            <p className="text-sky-200 font-semibold text-xs sm:text-sm">
+              Working hours
+            </p>
           </div>
-          <p className="text-blue-200 text-sm">
-            {workingHours.openTime || "09:00"} - {workingHours.closeTime || "18:00"}
+          <p className="text-sky-100 text-xs sm:text-sm">
+            {workingHours.openTime || "09:00"} –{" "}
+            {workingHours.closeTime || "18:00"}
           </p>
           {workingHours.workingDays && (
-            <p className="text-blue-200 text-sm mt-2">
-              Working Days: {workingHours.workingDays.join(", ")}
+            <p className="text-sky-100 text-[11px] sm:text-xs mt-1.5">
+              Days: {workingHours.workingDays.join(", ")}
             </p>
           )}
         </div>
@@ -272,19 +276,19 @@ const generateEndTime = (startTime, duration) => {
 
       {/* Date Picker */}
       <div>
-        <label className="block text-white font-semibold mb-3 text-sm sm:text-base">
-          Select Date
+        <label className="block text-white font-semibold mb-2 text-sm sm:text-base">
+          Select date
         </label>
-        <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+        <div className="bg-gray-900/70 p-3.5 sm:p-4 rounded-2xl border border-gray-800/80">
           <DatePicker
             selected={selectedDate}
             onChange={(date) => setSelectedDate(date)}
             minDate={new Date()}
             filterDate={filterDate}
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 text-white px-3 py-2.5 focus:border-teal-500 outline-none"
-            placeholderText="Click to select a date"
+            className="w-full rounded-xl border border-gray-800 bg-gray-950 text-white text-sm sm:text-base px-3 py-2.5 focus:border-teal-500 focus:outline-none"
+            placeholderText="Click to pick a date"
             dateFormat="MMMM d, yyyy"
-            calendarClassName="bg-gray-900 text-white"
+            calendarClassName="bg-gray-900 text-white rounded-xl overflow-hidden border border-gray-800"
           />
         </div>
       </div>
@@ -292,11 +296,11 @@ const generateEndTime = (startTime, duration) => {
       {/* Time Slots */}
       {selectedDate ? (
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2.5">
             <label className="block text-white font-semibold text-sm sm:text-base">
-              Select Time
+              Select time
             </label>
-            <span className="text-gray-400 text-xs sm:text-sm">
+            <span className="text-gray-400 text-[11px] sm:text-xs">
               {selectedDate.toLocaleDateString("en-US", {
                 weekday: "short",
                 month: "short",
@@ -306,13 +310,13 @@ const generateEndTime = (startTime, duration) => {
           </div>
 
           {availableSlots.length === 0 ? (
-            <div className="p-4 bg-gray-800/30 border border-gray-700/50 rounded-lg text-center">
-              <p className="text-gray-400 text-sm">
-                No time slots available on this date
+            <div className="p-4 bg-gray-900/70 border border-gray-800/80 rounded-xl text-center">
+              <p className="text-gray-300 text-sm">
+                No time slots available on this date.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
               {availableSlots.map((time) => {
                 const disabled = isBooked(time);
                 const selected = selectedTime === time;
@@ -321,17 +325,17 @@ const generateEndTime = (startTime, duration) => {
                     key={time}
                     onClick={() => !disabled && setSelectedTime(time)}
                     disabled={disabled}
-                    className={`p-3 rounded-lg text-center transition-all border-2 text-sm sm:text-base ${
+                    className={`p-2.5 sm:p-3 rounded-xl text-center transition-all border text-xs sm:text-sm ${
                       selected
-                        ? "border-teal-500 bg-teal-500/10 text-teal-400"
+                        ? "border-teal-500 bg-teal-500/15 text-teal-300 shadow-[0_0_18px_rgba(45,212,191,0.5)]"
                         : disabled
-                        ? "border-gray-600 bg-gray-700 text-gray-500 cursor-not-allowed opacity-50"
-                        : "border-gray-700 bg-gray-800 hover:border-teal-500/50 text-white hover:bg-gray-800/50"
+                        ? "border-gray-700 bg-gray-800/70 text-gray-500 cursor-not-allowed opacity-60"
+                        : "border-gray-800 bg-gray-900/80 hover:border-teal-500/60 hover:bg-gray-900 text-white"
                     }`}
                   >
-                    <div className="flex items-center justify-center space-x-1 mb-1">
+                    <div className="flex items-center justify-center mb-1">
                       <Clock
-                        className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                        className={`w-3.5 h-3.5 ${
                           disabled ? "text-gray-500" : "text-gray-400"
                         }`}
                       />
@@ -339,7 +343,7 @@ const generateEndTime = (startTime, duration) => {
                     <p
                       className={`font-semibold ${
                         selected
-                          ? "text-teal-400"
+                          ? "text-teal-300"
                           : disabled
                           ? "text-gray-500 line-through"
                           : "text-white"
@@ -348,7 +352,9 @@ const generateEndTime = (startTime, duration) => {
                       {time}
                     </p>
                     {disabled && (
-                      <p className="text-xs text-gray-500 mt-1">Booked</p>
+                      <p className="text-[10px] text-gray-500 mt-1">
+                        Booked
+                      </p>
                     )}
                   </button>
                 );
@@ -357,17 +363,19 @@ const generateEndTime = (startTime, duration) => {
           )}
         </div>
       ) : (
-        <div className="p-4 bg-gray-800/30 border border-gray-700/50 rounded-lg text-center">
-          <p className="text-gray-400 text-sm">Select a date to view available times</p>
+        <div className="p-4 bg-gray-900/70 border border-gray-800/80 rounded-xl text-center">
+          <p className="text-gray-300 text-sm">
+            Select a date to see available time slots.
+          </p>
         </div>
       )}
 
       {/* Duration Info */}
       {serviceDuration && (
-        <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-          <p className="text-orange-300 text-sm">
-            ⏱️ This service will take approximately{" "}
-            <strong>{serviceDuration} minutes</strong>
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+          <p className="text-amber-200 text-xs sm:text-sm">
+            ⏱ This service takes approximately{" "}
+            <span className="font-semibold">{serviceDuration} minutes</span>.
           </p>
         </div>
       )}
@@ -376,141 +384,10 @@ const generateEndTime = (startTime, duration) => {
       <Button
         onClick={handleConfirm}
         disabled={!selectedDate || !selectedTime}
-        className="w-full py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition transform hover:scale-105"
+        className="w-full py-3 bg-gradient-to-r from-teal-500 via-cyan-500 to-emerald-500 hover:from-teal-400 hover:via-cyan-400 hover:to-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-2xl transition-transform duration-150 hover:scale-[1.02]"
       >
-        Continue to Confirmation
+        Continue to confirmation
       </Button>
     </div>
   );
 }
-
-
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import { Button } from "@/components/ui/button";
-// import { Calendar, Clock } from "lucide-react";
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
-
-// // Mock time slots with booked flags per date
-// const mockBookedSlots = {
-//   // key = ISO date string
-//   "2025-11-05": ["10:00 AM", "3:00 PM"],
-//   "2025-11-06": ["9:00 AM", "11:00 AM", "2:30 PM"],
-//   // add more booked dates and times here
-// };
-
-// // List of all available time slots
-// const allTimeSlots = [
-//   "9:00 AM",
-//   "9:30 AM",
-//   "10:00 AM",
-//   "10:30 AM",
-//   "11:00 AM",
-//   "2:00 PM",
-//   "2:30 PM",
-//   "3:00 PM",
-//   "3:30 PM",
-//   "4:00 PM",
-// ];
-
-// export function TimeSelection({ serviceDuration, onSelect }) {
-//   const [selectedDate, setSelectedDate] = useState(null);
-//   const [selectedTime, setSelectedTime] = useState(null);
-//   const [bookedSlots, setBookedSlots] = useState([]);
-
-//   // Update booked slots when selectedDate changes
-//   useEffect(() => {
-//     if (selectedDate) {
-//       const dateKey = selectedDate.toISOString().split("T")[0];
-//       setBookedSlots(mockBookedSlots[dateKey] || []);
-//       setSelectedTime(null);
-//     }
-//   }, [selectedDate]);
-
-//   const isBooked = (time) => bookedSlots.includes(time);
-
-//   const handleConfirm = () => {
-//     if (selectedDate && selectedTime) {
-//       onSelect(selectedDate, selectedTime);
-//     }
-//   };
-
-//   return (
-//     <div className="space-y-6">
-//       <div className="text-center mb-8">
-//         <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
-//           <Calendar className="w-8 h-8 text-green-400" />
-//         </div>
-//         <h3 className="text-2xl font-bold text-white mb-2">Select Date & Time</h3>
-//         <p className="text-gray-400">Choose your preferred appointment time</p>
-//       </div>
-
-//       {/* Date Picker */}
-//       <div>
-//         <label className="block text-white font-semibold mb-3">Select Date</label>
-//         <DatePicker
-//           selected={selectedDate}
-//           onChange={(date) => setSelectedDate(date)}
-//           minDate={new Date()}
-//           className="w-full rounded-lg border border-gray-700 bg-gray-800 text-white px-3 py-2"
-//           placeholderText="Click to select a date"
-//           dateFormat="MMMM d, yyyy"
-//           calendarClassName="bg-gray-900 text-white"
-//         />
-//       </div>
-
-//       {/* Time Slots */}
-//       {selectedDate && (
-//         <div>
-//           <label className="block text-white font-semibold mb-3">Select Time</label>
-//           <div className="grid grid-cols-3 gap-3">
-//             {allTimeSlots.map((time) => {
-//               const disabled = isBooked(time);
-//               const selected = selectedTime === time;
-//               return (
-//                 <button
-//                   key={time}
-//                   onClick={() => !disabled && setSelectedTime(time)}
-//                   disabled={disabled}
-//                   className={`p-3 rounded-lg text-center transition-all border-2 ${
-//                     selected
-//                       ? "border-teal-500 bg-teal-500/10 text-teal-400"
-//                       : disabled
-//                       ? "border-gray-600 bg-gray-700 text-gray-500 cursor-not-allowed line-through"
-//                       : "border-gray-700 bg-gray-800 hover:border-teal-500/50 text-white"
-//                   }`}
-//                 >
-//                   <div className="flex items-center justify-center space-x-1 mb-1">
-//                     <Clock className={`w-4 h-4 ${disabled ? 'text-gray-500' : 'text-gray-400'}`} />
-//                   </div>
-//                   <p className={`font-semibold ${selected ? "text-teal-400" : disabled ? "text-gray-500" : "text-white"}`}>
-//                     {time}
-//                   </p>
-//                 </button>
-//               );
-//             })}
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Duration Info */}
-//       {serviceDuration && (
-//         <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-//           <p className="text-blue-300 text-sm">
-//             ℹ️ This service will take approximately <strong>{serviceDuration} minutes</strong>
-//           </p>
-//         </div>
-//       )}
-
-//       <Button
-//         onClick={handleConfirm}
-//         disabled={!selectedDate || !selectedTime}
-//         className="w-full py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 disabled:opacity-50 text-black font-semibold rounded-lg"
-//       >
-//         Continue to Confirmation
-//       </Button>
-//     </div>
-//   );
-// }

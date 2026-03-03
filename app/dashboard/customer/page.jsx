@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -24,7 +23,6 @@ export default function CustomerDashboard() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
-  // 🔹 Load user data from localStorage on mount
   useEffect(() => {
     try {
       const token = localStorage.getItem("token");
@@ -32,13 +30,11 @@ export default function CustomerDashboard() {
       const userRole = localStorage.getItem("userRole");
       const booking = localStorage.getItem("userBookings") || 0;
 
-      // Redirect to login if not authenticated
       if (!token) {
         router.push("/auth/login");
         return;
       }
 
-      // Set user data (you can fetch from API for more details)
       setUserData({
         name: userName,
         role: userRole,
@@ -60,7 +56,6 @@ export default function CustomerDashboard() {
     }
   }, [router]);
 
-  // 🔹 Handle logout
   const handleLogout = () => {
     try {
       localStorage.removeItem("token");
@@ -93,7 +88,10 @@ export default function CustomerDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-400 mb-4">Unable to load user data</p>
-          <Button onClick={() => router.push("/")} className="bg-teal-500 hover:bg-teal-600">
+          <Button
+            onClick={() => router.push("/")}
+            className="bg-teal-500 hover:bg-teal-600"
+          >
             Go Home
           </Button>
         </div>
@@ -102,11 +100,11 @@ export default function CustomerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black text-white py-12 px-4 sm:px-6 lg:px-8">
-      {/* 🔹 Header */}
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-black to-slate-950 text-white py-10 px-4 sm:px-6 lg:px-10">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <Link href="/">
               <Button
                 variant="ghost"
@@ -116,191 +114,209 @@ export default function CustomerDashboard() {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
-            <h1 className="text-4xl font-bold">Dashboard</h1>
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-teal-400">
+                Customer
+              </p>
+              <h1 className="text-3xl sm:text-4xl font-semibold mt-1">
+                Dashboard
+              </h1>
+            </div>
           </div>
+
           <Button
             onClick={handleLogout}
-            className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50"
+            className="bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/50 text-sm"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
           </Button>
         </div>
 
-        {/* 🔹 Profile Card */}
-        <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-8 mb-8 hover:border-gray-700 transition">
-          <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-            {/* Avatar */}
-            <div className="flex-shrink-0">
-              <div className="w-24 h-24 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-4xl font-bold text-black">
-                {userData.name.charAt(0).toUpperCase()}
+        {/* Top: profile + stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-[2.1fr,1fr] gap-6">
+          {/* Profile card */}
+          <div className="bg-gradient-to-br from-slate-900/70 to-slate-950/70 border border-slate-800 rounded-2xl p-6 sm:p-7 shadow-[0_18px_45px_rgba(15,23,42,0.85)]">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+              {/* Avatar */}
+              <div className="flex-shrink-0 flex flex-col items-center">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl flex items-center justify-center text-4xl font-bold text-black shadow-lg shadow-teal-500/40">
+                  {userData.name?.charAt(0).toUpperCase()}
+                </div>
+                <p className="mt-3 text-xs text-slate-400">
+                  Member since {userData.joinDate}
+                </p>
               </div>
-            </div>
 
-            {/* User Info */}
-            <div className="flex-1">
-              <div className="space-y-3">
-                <div>
-                  <h2 className="text-3xl font-bold text-white mb-1">{userData.name}</h2>
-                  <div className="flex items-center space-x-2">
-                    <Shield className="w-4 h-4 text-teal-400" />
-                    <span className="text-teal-400 font-semibold capitalize">
-                      {userData.role}
+              {/* Info */}
+              <div className="flex-1 space-y-4">
+                <div className="flex justify-between gap-4">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-semibold">
+                      {userData.name}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <Shield className="w-4 h-4 text-teal-400" />
+                      <span className="text-sm text-teal-300 capitalize font-medium">
+                        {userData.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="h-9 bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 border border-teal-500/40 text-xs sm:text-sm"
+                  >
+                    <Edit className="w-4 h-4 mr-1.5" />
+                    Edit Profile
+                  </Button>
+                </div>
+
+                {/* Verification chips */}
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/40">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-xs text-emerald-300">
+                      Email verified
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/40">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-xs text-emerald-300">
+                      Phone verified
                     </span>
                   </div>
                 </div>
 
-                {/* Verification Status */}
-                <div className="flex flex-wrap gap-3">
-                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-green-400">Email Verified</span>
+                {/* Contact inline row */}
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 border-t border-slate-800/80 mt-2">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Mail className="w-4 h-4 text-teal-400" />
+                    <span className="text-slate-300 break-all">
+                      {userData.email}
+                    </span>
                   </div>
-                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-green-400">Phone Verified</span>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Phone className="w-4 h-4 text-teal-400" />
+                    <span className="text-slate-300">{userData.phone}</span>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Edit Button */}
-            <Button
-              onClick={() => setIsEditing(!isEditing)}
-              className="bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/50"
-            >
-              <Edit className="w-4 h-4 mr-2" />
-              Edit Profile
-            </Button>
           </div>
-        </div>
 
-        {/* 🔹 Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Bookings */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-xl p-6 hover:border-teal-500/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Total Bookings</p>
-                <p className="text-3xl font-bold text-white mt-2">{userData.bookings}</p>
+          {/* Compact stats */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Total bookings</span>
+                <Calendar className="w-5 h-5 text-teal-400/60" />
               </div>
-              <Calendar className="w-12 h-12 text-teal-400/20" />
+              <p className="mt-3 text-3xl font-semibold">
+                {userData.bookings}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Keep your grooming on schedule.
+              </p>
             </div>
-          </div>
 
-          {/* Loyalty Points */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-xl p-6 hover:border-teal-500/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Loyalty Points</p>
-                <p className="text-3xl font-bold text-white mt-2">{userData.loyaltyPoints}</p>
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Reviews</span>
+                <Star className="w-5 h-5 text-yellow-400/70" />
               </div>
-              <Star className="w-12 h-12 text-yellow-400/20" />
-            </div>
-          </div>
-
-          {/* Wallet Balance */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-xl p-6 hover:border-teal-500/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Wallet Balance</p>
-                <p className="text-3xl font-bold text-white mt-2">₹{userData.walletBalance}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">💳</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Reviews */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-xl p-6 hover:border-teal-500/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Reviews</p>
-                <p className="text-3xl font-bold text-white mt-2">{userData.reviews}</p>
-              </div>
-              <Star className="w-12 h-12 text-orange-400/20" />
+              <p className="mt-3 text-3xl font-semibold">
+                {userData.reviews}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Share feedback to help your barbers.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* 🔹 Personal Information */}
+        {/* Bottom: contact + account sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Contact Details */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-8 hover:border-gray-700 transition">
-            <h3 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-              <User className="w-6 h-6 text-teal-400" />
-              <span>Contact Information</span>
+          {/* Contact information */}
+          <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-7 shadow-[0_16px_40px_rgba(15,23,42,0.75)]">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-5 flex items-center gap-2">
+              <User className="w-5 h-5 text-teal-400" />
+              <span>Contact information</span>
             </h3>
 
-            <div className="space-y-6">
-              {/* Email */}
+            <div className="space-y-5 text-sm">
               <div>
-                <label className="text-gray-400 text-sm font-semibold">Email Address</label>
-                <div className="mt-2 flex items-center space-x-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                  <Mail className="w-5 h-5 text-teal-400" />
-                  <span className="text-white">{userData.email}</span>
+                <label className="text-slate-400 text-xs font-semibold">
+                  Email address
+                </label>
+                <div className="mt-2 flex items-center gap-3 px-3.5 py-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <Mail className="w-4 h-4 text-teal-400" />
+                  <span className="text-slate-100 break-all">
+                    {userData.email}
+                  </span>
                 </div>
               </div>
 
-              {/* Phone */}
               <div>
-                <label className="text-gray-400 text-sm font-semibold">Phone Number</label>
-                <div className="mt-2 flex items-center space-x-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                  <Phone className="w-5 h-5 text-teal-400" />
-                  <span className="text-white">{userData.phone}</span>
+                <label className="text-slate-400 text-xs font-semibold">
+                  Phone number
+                </label>
+                <div className="mt-2 flex items-center gap-3 px-3.5 py-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <Phone className="w-4 h-4 text-teal-400" />
+                  <span className="text-slate-100">{userData.phone}</span>
                 </div>
               </div>
 
-              {/* Role */}
               <div>
-                <label className="text-gray-400 text-sm font-semibold">Account Type</label>
-                <div className="mt-2 flex items-center space-x-3 p-4 bg-teal-500/10 rounded-lg border border-teal-500/30">
-                  <Scissors className="w-5 h-5 text-teal-400" />
-                  <span className="text-teal-300 capitalize font-semibold">{userData.role}</span>
+                <label className="text-slate-400 text-xs font-semibold">
+                  Account type
+                </label>
+                <div className="mt-2 flex items-center gap-3 px-3.5 py-3 rounded-xl bg-teal-500/10 border border-teal-500/30">
+                  <Scissors className="w-4 h-4 text-teal-300" />
+                  <span className="text-teal-200 capitalize font-medium">
+                    {userData.role}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Account Statistics */}
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-2xl p-8 hover:border-gray-700 transition">
-            <h3 className="text-2xl font-bold text-white mb-6">Account Statistics</h3>
+          {/* Account statistics (wallet & loyalty removed) */}
+          <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-7 shadow-[0_16px_40px_rgba(15,23,42,0.75)]">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-5">
+              Account overview
+            </h3>
 
-            <div className="space-y-6">
-              {/* Join Date */}
-              <div className="flex justify-between items-center p-4 bg-gray-800/30 rounded-lg">
-                <span className="text-gray-400">Member Since</span>
-                <span className="text-white font-semibold">{userData.joinDate}</span>
+            <div className="space-y-5 text-sm">
+              <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-slate-900/60">
+                <span className="text-slate-400">Member since</span>
+                <span className="text-slate-100 font-medium">
+                  {userData.joinDate}
+                </span>
               </div>
 
-              {/* Total Bookings */}
-              <div className="flex justify-between items-center p-4 bg-gray-800/30 rounded-lg">
-                <span className="text-gray-400">Total Bookings</span>
-                <span className="text-teal-400 font-bold text-lg">{userData.bookings}</span>
+              <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-slate-900/60">
+                <span className="text-slate-400">Total bookings</span>
+                <span className="text-teal-300 font-semibold">
+                  {userData.bookings}
+                </span>
               </div>
 
-              {/* Loyalty Points */}
-              <div className="flex justify-between items-center p-4 bg-gray-800/30 rounded-lg">
-                <span className="text-gray-400">Loyalty Points</span>
-                <span className="text-yellow-400 font-bold text-lg">{userData.loyaltyPoints}</span>
+              <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-slate-900/60">
+                <span className="text-slate-400">Reviews given</span>
+                <span className="text-yellow-300 font-semibold">
+                  {userData.reviews}
+                </span>
               </div>
 
-              {/* Wallet Balance */}
-              <div className="flex justify-between items-center p-4 bg-green-500/10 rounded-lg border border-green-500/30">
-                <span className="text-gray-400">Wallet Balance</span>
-                <span className="text-green-400 font-bold text-lg">₹{userData.walletBalance}</span>
-              </div>
-
-              {/* Rating */}
-              <div className="flex justify-between items-center p-4 bg-orange-500/10 rounded-lg border border-orange-500/30">
-                <span className="text-gray-400">Your Rating</span>
-                <div className="flex items-center space-x-1">
+              <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-orange-500/10 border border-orange-500/30">
+                <span className="text-slate-300">Your rating</span>
+                <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`w-4 h-4 ${
-                        i < 4 ? "text-orange-400 fill-orange-400" : "text-gray-600"
+                        i < 4 ? "text-orange-400 fill-orange-400" : "text-slate-600"
                       }`}
                     />
                   ))}
@@ -310,42 +326,26 @@ export default function CustomerDashboard() {
           </div>
         </div>
 
-        {/* 🔹 Action Buttons */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Actions */}
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link href="/my-booking">
-            <Button className="w-full bg-teal-500 hover:bg-teal-600 text-black font-semibold py-3 rounded-lg transition transform hover:scale-105">
-              View Bookings
+            <Button className="w-full bg-teal-500 hover:bg-teal-600 text-black font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]">
+              View bookings
             </Button>
           </Link>
           <Link href="/payment">
-            <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition transform hover:scale-105">
-              Manage Wallet
+            <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]">
+              Manage payments
             </Button>
           </Link>
           <Button
             onClick={handleLogout}
-            className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50 font-semibold py-3 rounded-lg transition transform hover:scale-105"
+            className="w-full bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/50 font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]"
           >
-            Sign Out
+            Sign out
           </Button>
         </div>
       </div>
-
-      <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }
