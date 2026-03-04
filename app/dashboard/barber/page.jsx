@@ -29,7 +29,7 @@ export default function BarberDashboardPage() {
           typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
         const response = await axios.get(
-          `https://barber-book-devanshu.onrender.com/api/barber/barbershops?barberId=${barberId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/barber/barbershops?barberId=${barberId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

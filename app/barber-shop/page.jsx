@@ -41,7 +41,7 @@ export default function BarberDashboardPage() {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `https://barber-book-devanshu.onrender.com/api/barbers/barbershops/${barberId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/barbers/barbershops/${barberId}`,
         );
 
         if (mounted) setShops(data.success ? data.data : []);
@@ -63,7 +63,7 @@ export default function BarberDashboardPage() {
   useEffect(() => {
     if (!barberId) return;
 
-    const socket = io("https://barber-book-devanshu.onrender.com", {
+    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
       transports: ["websocket"],
       withCredentials: true,
     });

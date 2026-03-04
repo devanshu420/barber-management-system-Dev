@@ -26,7 +26,7 @@ export default function ChatbotPage() {
       const token = localStorage.getItem("token");
       console.log("TOKEN:", token);
 
-      const res = await fetch("https://barber-book-devanshu.onrender.com/api/ai/chat", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ai/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

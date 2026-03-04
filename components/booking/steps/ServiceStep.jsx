@@ -39,7 +39,7 @@ export function ServiceSelection({ onSelect, shop }) {
         }
 
         const response = await axios.get(
-          `https://barber-book-devanshu.onrender.com/api/barbers/shops/${shopId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/barbers/shops/${shopId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -21,7 +21,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await axios.post(
-        "https://barber-book-devanshu.onrender.com/api/auth/forgot-password-otp",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password-otp`,
         { email }
       );
 

@@ -14,7 +14,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-axios.defaults.baseURL = "https://barber-book-devanshu.onrender.com";
+axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 export default function BookingConfirmation({ bookingData, onBack }) {
   const router = useRouter();

@@ -50,7 +50,7 @@ export function RegisterForm() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://barber-book-devanshu.onrender.com/api/auth/register",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
         userData,
         {
           headers: { "Content-Type": "application/json" },

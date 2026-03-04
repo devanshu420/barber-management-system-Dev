@@ -61,7 +61,7 @@ useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
 
-    const socket = io("https://barber-book-devanshu.onrender.com", {
+    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`,{
       transports: ["websocket"],
     });
 
@@ -120,7 +120,7 @@ useEffect(() => {
       setUserName("");
       setIsMenuOpen(false);
       setIsProfileOpen(false);
-      router.push("http://localhost:3000");
+      router.push("https://barber-book-dev.vercel.app/");
     } catch (error) {
       console.error("Error during logout:", error);
     }

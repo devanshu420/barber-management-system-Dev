@@ -153,7 +153,7 @@ useEffect(() => {
 
     // If BARBER tries to access user website → Redirect to barber dashboard
     if (role === "barber") {
-      router.replace("http://localhost:3000/barber-shop");
+      router.replace("https://barber-book-dev.vercel.app/barber-shop");
     }
   }, []);
 
@@ -164,7 +164,7 @@ useEffect(() => {
 
   if (!userId) return; // user not logged in → no notifications
 
-  const socket = io("https://barber-book-devanshu.onrender.com");
+  const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
 
   socket.emit("joinUserRoom", userId);
 

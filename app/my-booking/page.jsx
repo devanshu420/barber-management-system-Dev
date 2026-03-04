@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-axios.defaults.baseURL = "https://barber-book-devanshu.onrender.com";
+axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 let socket;
 
@@ -109,7 +109,7 @@ export default function MyBookingsPage() {
         setBookings(transformedBookings);
 
         if (!socket) {
-          socket = io("https://barber-book-devanshu.onrender.com", {
+          socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
             transports: ["websocket"],
           });
 

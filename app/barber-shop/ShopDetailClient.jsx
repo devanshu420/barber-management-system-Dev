@@ -18,7 +18,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-const API_BASE = "https://barber-book-devanshu.onrender.com/api";
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 export default function ShopDetailClient() {
   const params = useParams();
@@ -107,7 +107,7 @@ export default function ShopDetailClient() {
       setBookings([]);
       if (err.code === "ERR_NETWORK") {
         showToast(
-          "Network error: ensure backend is running on https://barber-book-devanshu.onrender.com",
+          "Network error: ensure backend is running on ${process.env.NEXT_PUBLIC_API_URL}",
           "error"
         );
       } else if (err.response?.status === 404) {

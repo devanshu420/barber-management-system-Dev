@@ -32,7 +32,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
         const shopId = shop._id || shop.id;
 
         const response = await axios.get(
-          `https://barber-book-devanshu.onrender.com/api/barbers/shops/${shopId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/barbers/shops/${shopId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -49,7 +49,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
           // Fetch booked appointments for this shop (kept as in your logic)
           try {
             const bookingsResponse = await axios.get(
-              `https://barber-book-devanshu.onrender.com/api/bookings/shop/${shopId}`,
+              `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/shop/${shopId}`,
               {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -151,7 +151,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
         const dateStr = selectedDate.toISOString().split("T")[0];
 
         const response = await axios.get(
-          `https://barber-book-devanshu.onrender.com/api/bookings/shop/${
+          `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/shop/${
             shop._id || shop.id
           }/date/${dateStr}`,
           {

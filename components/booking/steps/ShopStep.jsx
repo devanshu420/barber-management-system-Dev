@@ -39,7 +39,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
   // Fetch shops by GPS
   const fetchShopsByGPS = async (latitude, longitude, distance = 5) => {
     try {
-      const url = `https://barber-book-devanshu.onrender.com/api/barbers/nearby-shops?latitude=${latitude}&longitude=${longitude}&maxDistance=${distance}&limit=5`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/barbers/nearby-shops?latitude=${latitude}&longitude=${longitude}&maxDistance=${distance}&limit=5`;
       console.log("ShopSelection GPS API:", url);
 
       const { data } = await axios.get(url);
@@ -75,7 +75,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
   // Fetch shops by city
   const fetchShopsByCity = async (city) => {
     try {
-      const url = `https://barber-book-devanshu.onrender.com/api/barbers/shops-by-city/${city.trim()}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/barbers/shops-by-city/${city.trim()}`;
       console.log("ShopSelection City API:", url);
 
       const { data } = await axios.get(url);
