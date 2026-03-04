@@ -17,7 +17,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: ["http://localhost:3000", "https://barber-book-dev.vercel.app"],
     methods: ["GET", "POST"],
   },
 });
@@ -51,7 +51,7 @@ socket.on("joinUserRoom", (userId) => {
 
 app.use(helmet());
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://barber-book-dev.vercel.app/'],
+  origin: ['http://localhost:3000', 'https://barber-book-dev.vercel.app'],
   credentials: true
 }));
 
