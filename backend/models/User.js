@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, minlength: 6, select: false },
     role: { type: String, enum: ["customer", "barber"], default: "customer" },
     profilePhoto: { type: String, default: null },
+    profilePhotoId: {
+      type: String, // ImageKit image ID (for optional deletion)
+      default: null,
+    },
     isVerified: { type: Boolean, default: false },
     resetOtp: String,
     resetOtpExpire: Date,

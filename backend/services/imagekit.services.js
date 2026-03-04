@@ -24,4 +24,8 @@ async function uploadImage({ buffer, folder = '/barber-book' }) {
     };
 }
 
-module.exports = { imagekit, uploadImage };
+async function deleteImage(fileId) {
+    await imagekit.deleteFile(fileId);
+}
+
+module.exports = { imagekit, uploadImage , deleteImage };

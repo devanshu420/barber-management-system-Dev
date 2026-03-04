@@ -57,26 +57,54 @@ const initialState = {
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return;
 
-    const token = localStorage.getItem("token");
-    if (token) {
-      getProfile()
-        .then((user) => {
-          dispatch({
-            type: "LOGIN_SUCCESS",
-            payload: { user, token },
-          });
-        })
-        .catch(() => {
-          localStorage.removeItem("token");
-          dispatch({ type: "LOGOUT" });
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     getProfile()
+  //       .then((user) => {
+  //         dispatch({
+  //           type: "LOGIN_SUCCESS",
+  //           payload: { user, token },
+  //         });
+  //       })
+  //       .catch(() => {
+  //         localStorage.removeItem("token");
+  //         dispatch({ type: "LOGOUT" });
+  //       });
+  //   } else {
+  //     dispatch({ type: "LOGOUT" });
+  //   }
+  // }, []);
+
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const token = localStorage.getItem("token");
+  if (token) {
+    getProfile()
+      .then((user) => {
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: { user, token },
         });
-    } else {
-      dispatch({ type: "LOGOUT" });
-    }
-  }, []);
+      })
+      .catch((error) => {
+        console.error("getProfile failed in AuthProvider:", {
+          message: error?.message,
+          status: error?.response?.status,
+          data: error?.response?.data,
+        });
+        // yahan token mat hatao
+        // localStorage.removeItem("token");
+        dispatch({ type: "LOGOUT" });
+      });
+  } else {
+    dispatch({ type: "LOGOUT" });
+  }
+}, []);
+
 
   const login = async (credentials) => {
     dispatch({ type: "LOGIN_START" });

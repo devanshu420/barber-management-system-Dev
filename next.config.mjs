@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-     images: {
+  images: {
+    domains: ["ik.imagekit.io"],
     qualities: [75, 85], // allow both
   },
 };
