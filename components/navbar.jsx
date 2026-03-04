@@ -26,6 +26,7 @@ export function Navbar() {
   const [userName, setUserName] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [userAvatar, setUserAvatar] = useState(null);
 
   const router = useRouter();
 
@@ -35,6 +36,11 @@ export function Navbar() {
     { name: "Contact", href: "/contact" },
     { name: "Bookings", href: "/my-booking" },
   ];
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+  setUserAvatar(localStorage.getItem("userProfilePhoto") || null);
+}, []);
 
   // Load auth state
   useEffect(() => {
@@ -248,7 +254,7 @@ export function Navbar() {
                 </div>
 
                 {/* Profile dropdown */}
-                <div className="relative profile-dropdown">
+                {/* <div className="relative profile-dropdown">
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition duration-300 group cursor-pointer"
@@ -283,7 +289,52 @@ export function Navbar() {
                       </button>
                     </div>
                   )}
-                </div>
+                </div> */}
+                <div className="relative profile-dropdown">
+  <button
+    onClick={() => setIsProfileOpen(!isProfileOpen)}
+    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition duration-300 group cursor-pointer"
+  >
+    <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-xs font-bold text-black">
+      {userAvatar ? (
+        <img
+          src={userAvatar}
+          alt={userName}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        userName?.charAt(0).toUpperCase()
+      )}
+    </div>
+    <span className="text-sm font-medium text-gray-300 hidden sm:block group-hover:text-teal-400">
+      {userName}
+    </span>
+    <ChevronDown
+      className={`w-4 h-4 text-gray-400 transition duration-300 ${
+        isProfileOpen ? "rotate-180" : ""
+      }`}
+    />
+  </button>
+
+  {isProfileOpen && (
+    <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl py-2 animate-fadeIn">
+      <Link href="/dashboard/customer">
+        <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-teal-400 hover:bg-gray-800/50 flex items-center space-x-2 transition cursor-pointer">
+          <User className="w-4 h-4" />
+          <span>Dashboard</span>
+        </button>
+      </Link>
+      <button
+        onClick={handleLogout}
+        className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800/50 flex items-center space-x-2 transition border-t border-gray-800 cursor-pointer"
+      >
+        <LogOut className="w-4 h-4" />
+        <span>Sign Out</span>
+      </button>
+    </div>
+  )}
+</div>
+
               </>
             ) : (
               <Button

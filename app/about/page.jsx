@@ -89,7 +89,10 @@ export default function AboutPage() {
                   Founded by{" "}
                   <span className="text-teal-400">Devanshu Sharma</span>,
                 </span>{" "}
-                <span className="text-teal-400 font-semibold"> BarberBook </span>
+                <span className="text-teal-400 font-semibold">
+                  {" "}
+                  BarberBook{" "}
+                </span>
                 began with a simple idea — to help barbers manage their
                 appointments and customers effortlessly through a clean and
                 efficient digital platform.
@@ -131,12 +134,16 @@ export default function AboutPage() {
 
               {/* Small label on image */}
               <div className="absolute bottom-4 left-4 z-10 flex flex-col gap-1">
-                <span className="inline-flex px-3 py-1 rounded-full text-[11px] font-semibold bg-black/70 text-teal-300 border border-teal-500/60 backdrop-blur-sm">
-                  Crafted for Modern Barbers
-                </span>
-                <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-medium bg-black/50 text-gray-200/90 border border-white/10 backdrop-blur-sm">
-                  Real barbers • Real customers • Real stories
-                </span>
+                {/* Top badge with subline */}
+                <div className="inline-flex items-center gap-2 px-3 py-1  text-[22px] font-semibold text-gray-300 ">
+                  <span>Devanshu Sharma</span>
+                  
+                </div>
+
+                {/* Second badge */}
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-gray-200/90 border border-white/10">
+                    Real barbers • Real customers • Real stories
+                  </span>
               </div>
             </div>
           </div>
