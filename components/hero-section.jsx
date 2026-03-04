@@ -164,7 +164,7 @@ useEffect(() => {
 
   if (!userId) return; // user not logged in → no notifications
 
-  const socket = io("http://localhost:5000");
+  const socket = io("https://barber-book-devanshu.onrender.com");
 
   socket.emit("joinUserRoom", userId);
 

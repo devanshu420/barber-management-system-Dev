@@ -50,7 +50,7 @@ export function RegisterForm() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        "https://barber-book-devanshu.onrender.com/api/auth/register",
         userData,
         {
           headers: { "Content-Type": "application/json" },
@@ -83,8 +83,8 @@ export function RegisterForm() {
         setMessage(`❌ ${error.response.data.message || "Registration failed"}`);
       } else if (error.request) {
         setMessage(
-          "❌ No response from server. Check if backend is running on http://localhost:5000"
-        );
+          "❌ No response from server. Check if backend is running on https://barber-book-devanshu.onrender.com"
+        );  
       } else {
         setMessage(`❌ ${error.message}`);
       }

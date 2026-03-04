@@ -61,7 +61,7 @@ useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
 
-    const socket = io("http://localhost:5000", {
+    const socket = io("https://barber-book-devanshu.onrender.com", {
       transports: ["websocket"],
     });
 

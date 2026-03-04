@@ -60,7 +60,7 @@ export default function Payment() {
 
       // 1️⃣ Create Razorpay Order (same as your first code)
       const { data } = await axios.post(
-        "http://localhost:5000/api/payment/create-order",
+        "https://barber-book-devanshu.onrender.com/api/payment/create-order",
         { bookingId },
         { withCredentials: true }
       );
@@ -77,7 +77,7 @@ export default function Payment() {
 
         handler: async function (response) {
           await axios.post(
-            "http://localhost:5000/api/payment/verify-payment",
+            "https://barber-book-devanshu.onrender.com/api/payment/verify-payment",
             {
               ...response,
               bookingId,

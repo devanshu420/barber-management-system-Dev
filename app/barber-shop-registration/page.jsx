@@ -433,7 +433,7 @@ const handleSubmit = async (e) => {
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const response = await axios.post(
-      "http://localhost:5000/api/barbers/register-shop",
+      "https://barber-book-devanshu.onrender.com/api/barbers/register-shop",
       submitFormData,
       {
         headers: {

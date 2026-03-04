@@ -72,7 +72,7 @@ export default function ResetPassword() {
       console.log("otp sending   =>", finalOtp, "length:", finalOtp.length);
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/verify-reset-otp",
+        "https://barber-book-devanshu.onrender.com/api/auth/verify-reset-otp",
         {
           email,
           otp: finalOtp,
@@ -116,7 +116,7 @@ export default function ResetPassword() {
       const finalOtp = otp.join(""); // if backend still expects OTP
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/reset-password-otp",
+        "https://barber-book-devanshu.onrender.com/api/auth/reset-password-otp",
         {
           email,
           otp: finalOtp,
@@ -150,7 +150,7 @@ export default function ResetPassword() {
   const resendOtp = async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/forgot-password-otp",
+        "https://barber-book-devanshu.onrender.com/api/auth/forgot-password-otp",
         { email }
       );
       setTimer(60);

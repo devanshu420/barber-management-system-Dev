@@ -26,7 +26,7 @@ export function LocationSelection({ onSelect }) {
   const [searchType, setSearchType] = useState(null); // "gps" or "city"
 
   const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    process.env.NEXT_PUBLIC_API_URL || "https://barber-book-devanshu.onrender.com";
 
   // GPS API: /api/barbers/nearby-shops?latitude=...&longitude=...
   const fetchNearbyShopsByGPS = async (latitude, longitude, distance = 5) => {

@@ -152,7 +152,7 @@ export default function BarberRegistrationPage() {
 
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-      const response = await axios.post("http://localhost:5000/api/barbers/barber-shop-registration", payload, {
+      const response = await axios.post("https://barber-book-devanshu.onrender.com/api/barbers/barber-shop-registration", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

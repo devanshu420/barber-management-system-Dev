@@ -35,7 +35,7 @@ export function LoginForm({ role = "customer" }) {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "https://barber-book-devanshu.onrender.com/api/auth/login",
         {
           email: formData.email,
           password: formData.password,
