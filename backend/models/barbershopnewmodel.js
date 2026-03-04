@@ -49,17 +49,13 @@ const barberShopSchema = new mongoose.Schema(
     // ============================================
     // IMAGES & CERTIFICATES
     // ============================================
-    // images: [
-    //   {
-    //     _id: mongoose.Schema.Types.ObjectId,
-    //     filename: { type: String, required: true },
-    //     path: { type: String, required: true },
-    //     size: { type: Number, required: true },
-    //     mimetype: { type: String, default: "image/jpeg" },
-    //     uploadedAt: { type: Date, default: Date.now },
-    //   },
-    // ],
-    // certificates: [String],
+    // SINGLE SHOP IMAGE (ImageKit)
+    image: {
+      url: { type: String },
+      thumbnail: { type: String },
+      imageId: { type: String },
+      uploadedAt: { type: Date },
+    },
 
     // ============================================
     // SERVICES
@@ -196,7 +192,7 @@ const barberShopSchema = new mongoose.Schema(
     // ============================================
     // STATUS
     // ============================================
-    isVerified: { type: Boolean, default: true },
+    isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
   },
   {

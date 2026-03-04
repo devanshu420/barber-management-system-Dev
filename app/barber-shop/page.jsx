@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Building2, Star, Bell } from "lucide-react";
 import { io } from "socket.io-client";
 
-
 export default function BarberDashboardPage() {
   const router = useRouter();
   const [shops, setShops] = useState([]);
@@ -42,7 +41,7 @@ export default function BarberDashboardPage() {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `http://localhost:5000/api/barbers/barbershops/${barberId}`
+          `http://localhost:5000/api/barbers/barbershops/${barberId}`,
         );
 
         if (mounted) setShops(data.success ? data.data : []);
@@ -60,40 +59,34 @@ export default function BarberDashboardPage() {
     };
   }, [barberId, router]);
 
-
-
-
-
-  
   // 🔥 SOCKET.IO REAL-TIME NOTIFICATIONS
-useEffect(() => {
-  if (!barberId) return;
+  useEffect(() => {
+    if (!barberId) return;
 
-  const socket = io("http://localhost:5000", {
-    transports: ["websocket"],
-    withCredentials: true,
-  });
+    const socket = io("http://localhost:5000", {
+      transports: ["websocket"],
+      withCredentials: true,
+    });
 
-  socket.on("connect", () => {
-    console.log("Socket connected:", socket.id);
-    socket.emit("joinBarberRoom", barberId);
-  });
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      socket.emit("joinBarberRoom", barberId);
+    });
 
-  socket.on("newBooking", (data) => {
-    console.log("📩 New booking received:", data);
+    socket.on("newBooking", (data) => {
+      console.log("📩 New booking received:", data);
 
-    setNotifications((prev) => [
-      {
-        message: `New booking at ${data.shopName} for ${data.service}`,
-        time: new Date().toLocaleTimeString(),
-      },
-      ...prev,
-    ]);
-  });
+      setNotifications((prev) => [
+        {
+          message: `New booking at ${data.shopName} for ${data.service}`,
+          time: new Date().toLocaleTimeString(),
+        },
+        ...prev,
+      ]);
+    });
 
-  return () => socket.disconnect();
-}, [barberId]);
-
+    return () => socket.disconnect();
+  }, [barberId]);
 
   // =============================
   // Cursor Glow UI
@@ -140,17 +133,18 @@ useEffect(() => {
     <>
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
           rel="stylesheet"
         />
       </Head>
 
-      <div
-        className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] px-4 sm:px-6 lg:px-8 py-12"
-      >
-
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] px-4 sm:px-6 lg:px-8 py-12">
         {/* Glow Cursor */}
         <div
           ref={glowRef}
@@ -169,7 +163,8 @@ useEffect(() => {
                 My Shops
               </h1>
               <p className="mt-2 text-sm text-gray-400 max-w-xl">
-                Manage your barber shops — edit details, view services & ratings.
+                Manage your barber shops — edit details, view services &
+                ratings.
               </p>
             </div>
 
@@ -259,6 +254,24 @@ useEffect(() => {
                 >
                   <Link href={`/barber-shop/${shop._id}`}>
                     <Card className="overflow-hidden border border-gray-700 rounded-2xl bg-gradient-to-br from-[#0b1114]/60 to-[#061011]/40 backdrop-blur-md shadow-lg hover:shadow-[0_20px_60px_rgba(20,220,200,0.08)]">
+                      {/* Shop image */}
+                      <div className="relative w-full rounded-xl overflow-hidden border border-gray-800 bg-gray-900/70">
+                        <div className="relative w-full pt-[60%]">
+                          <img
+                            src={
+                              shop.image?.url ||
+                              "https://via.placeholder.com/600x300?text=Barbershop"
+                            }
+                            alt={shop.shopName}
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://via.placeholder.com/600x300?text=Barbershop";
+                            }}
+                          />
+                        </div>
+                      </div>
+
                       <CardHeader className="flex items-center justify-between p-4">
                         <div className="flex items-center gap-4">
                           <Building2 className="w-10 h-10 text-cyan-300" />

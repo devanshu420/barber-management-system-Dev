@@ -55,23 +55,20 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
           rating: shop.ratings?.average || 0,
           reviews: shop.ratings?.count || 0,
           image:
-            shop.images?.[0] ||
+            shop.image?.url || // 👈 yahan change
             "https://via.placeholder.com/300?text=Barbershop",
           waitlist: shop.currentQueue?.length || 0,
           barbers: shop.staff?.length || 0,
         }));
 
         setNearbyShops(shops);
-        console.log("Shops formatted:", shops);
       } else {
         setError("No nearby shops found");
         setNearbyShops([]);
       }
     } catch (err) {
       console.error("GPS Error:", err);
-      setError(
-        err?.response?.data?.message || "Failed to fetch nearby shops"
-      );
+      setError(err?.response?.data?.message || "Failed to fetch nearby shops");
     }
   };
 
@@ -94,14 +91,13 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
           rating: shop.ratings?.average || 0,
           reviews: shop.ratings?.count || 0,
           image:
-            shop.images?.[0] ||
+            shop.image?.url || // 👈 same yahan bhi
             "https://via.placeholder.com/300?text=Barbershop",
           waitlist: shop.currentQueue?.length || 0,
           barbers: shop.staff?.length || 0,
         }));
 
         setNearbyShops(shops);
-        console.log("Shops formatted:", shops);
       } else {
         setError("No shops found in this city");
         setNearbyShops([]);
@@ -109,7 +105,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
     } catch (err) {
       console.error("City Error:", err);
       setError(
-        err?.response?.data?.message || "Failed to fetch shops for this city"
+        err?.response?.data?.message || "Failed to fetch shops for this city",
       );
     }
   };
@@ -133,7 +129,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
           await fetchShopsByGPS(
             userLocation.latitude,
             userLocation.longitude,
-            maxDistance
+            maxDistance,
           );
         }
         // If city/manual search
@@ -226,22 +222,27 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
               <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-teal-400/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
               {/* Shop Image */}
-              <div className="relative mb-4 rounded-xl overflow-hidden group-hover:shadow-lg transition-shadow">
-                <img
-                  src={shop.image}
-                  alt={shop.name}
-                  className="w-full h-32 sm:h-40 object-cover transform group-hover:scale-[1.02] transition-transform duration-300"
-                  onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/300?text=Barbershop";
-                  }}
-                />
-                {selectedShop?.id === shop.id && (
-                  <div className="absolute top-2 right-2 w-7 h-7 bg-teal-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(45,212,191,0.8)]">
-                    <span className="text-white text-sm font-bold">✓</span>
-                  </div>
-                )}
-              </div>
+             <div className="relative mb-4 rounded-xl overflow-hidden group-hover:shadow-lg transition-shadow">
+  {/* Aspect ratio box */}
+  <div className="relative w-full pt-[60%] sm:pt-[65%] bg-gray-800/60">
+    <img
+      src={shop.image}
+      alt={shop.name}
+      className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-[1.02] transition-transform duration-300"
+      onError={(e) => {
+        e.currentTarget.src =
+          "https://via.placeholder.com/300?text=Barbershop";
+      }}
+    />
+  </div>
+
+  {selectedShop?.id === shop.id && (
+    <div className="absolute top-2 right-2 w-7 h-7 bg-teal-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(45,212,191,0.8)]">
+      <span className="text-white text-sm font-bold">✓</span>
+    </div>
+  )}
+</div>
+
 
               {/* Shop Name */}
               <h4 className="text-base sm:text-lg font-semibold text-white truncate mb-1.5 group-hover:text-teal-300 transition-colors">
@@ -289,7 +290,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
               {/* Waitlist */}
               <div
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[11px] sm:text-xs font-semibold mb-3 ${getWaitlistColor(
-                  shop.waitlist
+                  shop.waitlist,
                 )}`}
               >
                 <Clock className="w-3 h-3 flex-shrink-0" />

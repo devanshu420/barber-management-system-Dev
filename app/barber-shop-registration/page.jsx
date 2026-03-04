@@ -225,132 +225,115 @@ export default function BarberRegistrationPage() {
   };
 
   // SUBMIT
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setError("");
-  //   setSuccess("");
 
-  //   try {
-  //     if (!formData.shopName.trim()) {
-  //       setError("Shop name is required");
-  //       setLoading(false);
-  //       return;
-  //     }
 
-  //     if (
-  //       !formData.address.trim() ||
-  //       !formData.city.trim() ||
-  //       !formData.state.trim()
-  //     ) {
-  //       setError("Complete address is required");
-  //       setLoading(false);
-  //       return;
-  //     }
+//   const handleSubmit = async (e) => {
+//   e.preventDefault();
+//   setLoading(true);
+//   setError("");
+//   setSuccess("");
 
-  //     if (formData.services.length === 0 || !formData.services[0].name) {
-  //       setError("Add at least one service");
-  //       setLoading(false);
-  //       return;
-  //     }
+//   try {
+//     if (!formData.shopName.trim()) {
+//       setError("Shop name is required");
+//       setLoading(false);
+//       return;
+//     }
 
-  //     if (formData.latitude && formData.longitude && !validateCoordinates()) {
-  //       setError(
-  //         "Please enter valid latitude (-90 to 90) and longitude (-180 to 180)"
-  //       );
-  //       setLoading(false);
-  //       return;
-  //     }
+//     if (
+//       !formData.address.trim() ||
+//       !formData.city.trim() ||
+//       !formData.state.trim()
+//     ) {
+//       setError("Complete address is required");
+//       setLoading(false);
+//       return;
+//     }
 
-  //     const submitFormData = new FormData();
+//     if (formData.services.length === 0 || !formData.services[0].name) {
+//       setError("Add at least one service");
+//       setLoading(false);
+//       return;
+//     }
 
-  //     // Basic info
-  //     submitFormData.append("shopName", formData.shopName);
-  //     submitFormData.append("description", formData.description);
+//     if (formData.latitude && formData.longitude && !validateCoordinates()) {
+//       setError(
+//         "Please enter valid latitude (-90 to 90) and longitude (-180 to 180)"
+//       );
+//       setLoading(false);
+//       return;
+//     }
 
-  //     // Location object (backend expects location.* with coordinates array)
-  //     const lat = parseFloat(formData.latitude);
-  //     const lng = parseFloat(formData.longitude);
+//     const lat = parseFloat(formData.latitude);
+//     const lng = parseFloat(formData.longitude);
 
-  //     const coordinatesArray =
-  //       !isNaN(lat) && !isNaN(lng) ? [lng, lat] : []; // [longitude, latitude]
+//     const coordinatesArray =
+//       !isNaN(lat) && !isNaN(lng) ? [lng, lat] : [];
 
-  //     const locationPayload = {
-  //       address: formData.address,
-  //       city: formData.city,
-  //       state: formData.state,
-  //       zipCode: formData.zipCode || "",
-  //       coordinates: coordinatesArray,
-  //     };
+//     const locationPayload = {
+//       address: formData.address,
+//       city: formData.city,
+//       state: formData.state,
+//       zipCode: formData.zipCode || "",
+//       coordinates: coordinatesArray,
+//     };
 
-  //     submitFormData.append("location", JSON.stringify(locationPayload));
+//     const userId =
+//       typeof window !== "undefined"
+//         ? localStorage.getItem("userId")
+//         : "";
 
-  //     const userId = typeof window !== "undefined"
-  //       ? localStorage.getItem("userId")
-  //       : "";
+//     const payload = {
+//       barberOwner: userId || "",
+//       shopName: formData.shopName,
+//       description: formData.description,
+//       location: locationPayload,
+//       services: formData.services.map((s) => ({
+//         name: s.name,
+//         price: Number(s.price),
+//         duration: Number(s.duration),
+//         category: s.category,
+//         description: s.description || "",
+//         isActive: true,
+//       })),
+//       workingHours: cleanWorkingHours(formData.workingHours),
+//       staff: cleanStaff(formData.staff),
+//     };
 
-  //     submitFormData.append("barberOwner", userId || "");
+//     const token =
+//       typeof window !== "undefined"
+//         ? localStorage.getItem("token")
+//         : null;
 
-  //     // Image (optional) – backend currently ignore karega, future ke liye ready
-  //     if (formData.image) {
-  //       submitFormData.append("image", formData.image);
-  //     }
+//     const response = await axios.post(
+//       "http://localhost:5000/api/barbers/register-shop",
+//       payload,
+//       {
+//         headers: {
+//           Authorization: token ? `Bearer ${token}` : "",
+//           // "Content-Type": "application/json", // optional
+//         },
+//       }
+//     );
 
-  //     submitFormData.append(
-  //       "services",
-  //       JSON.stringify(
-  //         formData.services.map((s) => ({
-  //           name: s.name,
-  //           price: Number(s.price),
-  //           duration: Number(s.duration),
-  //           category: s.category,
-  //           description: s.description || "",
-  //           isActive: true,
-  //         }))
-  //       )
-  //     );
+//     if (response.data.success) {
+//       setSuccess("✅ Shop registered successfully! Redirecting...");
+//       setTimeout(() => router.push("/barber-shop"), 2000);
+//     } else {
+//       setError(response.data.message || "Failed to register shop");
+//     }
+//   } catch (err) {
+//     console.error(
+//       "❌ Registration error:",
+//       err?.response?.data || err?.message
+//     );
+//     setError(err?.response?.data?.message || "Failed to register shop");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
-  //     submitFormData.append(
-  //       "workingHours",
-  //       JSON.stringify(cleanWorkingHours(formData.workingHours))
-  //     );
-
-  //     submitFormData.append("staff", JSON.stringify(cleanStaff(formData.staff)));
-
-  //     const token =
-  //       typeof window !== "undefined"
-  //         ? localStorage.getItem("token")
-  //         : null;
-
-  //     const response = await axios.post(
-  //       "http://localhost:5000/api/barbers/register-shop",
-  //       submitFormData,
-  //       {
-  //         headers: {
-  //           Authorization: token ? `Bearer ${token}` : "",
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.data.success) {
-  //       setSuccess("✅ Shop registered successfully! Redirecting...");
-  //       setTimeout(() => router.push("/barber-shop"), 2000);
-  //     } else {
-  //       setError(response.data.message || "Failed to register shop");
-  //     }
-  //   } catch (err) {
-  //     console.error(
-  //       "❌ Registration error:",
-  //       err?.response?.data || err?.message
-  //     );
-  //     setError(err?.response?.data?.message || "Failed to register shop");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   setError("");
@@ -387,11 +370,12 @@ export default function BarberRegistrationPage() {
       return;
     }
 
+    // ---- LOCATION BUILD (lng, lat) ----
     const lat = parseFloat(formData.latitude);
     const lng = parseFloat(formData.longitude);
 
     const coordinatesArray =
-      !isNaN(lat) && !isNaN(lng) ? [lng, lat] : [];
+      !isNaN(lat) && !isNaN(lng) ? [lng, lat] : []; // [longitude, latitude]
 
     const locationPayload = {
       address: formData.address,
@@ -401,40 +385,60 @@ export default function BarberRegistrationPage() {
       coordinates: coordinatesArray,
     };
 
+    // ---- OWNER ID ----
     const userId =
-      typeof window !== "undefined"
-        ? localStorage.getItem("userId")
-        : "";
+      typeof window !== "undefined" ? localStorage.getItem("userId") : "";
 
-    const payload = {
-      barberOwner: userId || "",
-      shopName: formData.shopName,
-      description: formData.description,
-      location: locationPayload,
-      services: formData.services.map((s) => ({
-        name: s.name,
-        price: Number(s.price),
-        duration: Number(s.duration),
-        category: s.category,
-        description: s.description || "",
-        isActive: true,
-      })),
-      workingHours: cleanWorkingHours(formData.workingHours),
-      staff: cleanStaff(formData.staff),
-    };
+    // ---- FormData (multipart) ----
+    const submitFormData = new FormData();
+
+    submitFormData.append("barberOwner", userId || "");
+    submitFormData.append("shopName", formData.shopName);
+    submitFormData.append("description", formData.description || "");
+
+    // BACKEND: parseLocationForValidation + controller dono
+    // `location` ko JSON string expect kar rahe hain
+    submitFormData.append("location", JSON.stringify(locationPayload));
+
+    // services
+    submitFormData.append(
+      "services",
+      JSON.stringify(
+        formData.services.map((s) => ({
+          name: s.name,
+          price: Number(s.price),
+          duration: Number(s.duration),
+          category: s.category,
+          description: s.description || "",
+          isActive: true,
+        }))
+      )
+    );
+
+    // working hours
+    submitFormData.append(
+      "workingHours",
+      JSON.stringify(cleanWorkingHours(formData.workingHours))
+    );
+
+    // staff
+    submitFormData.append("staff", JSON.stringify(cleanStaff(formData.staff)));
+
+    // image (single, optional)
+    if (formData.image) {
+      submitFormData.append("image", formData.image); // field name MUST be "image"
+    }
 
     const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("token")
-        : null;
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const response = await axios.post(
       "http://localhost:5000/api/barbers/register-shop",
-      payload,
+      submitFormData,
       {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
-          // "Content-Type": "application/json", // optional
+          "Content-Type": "multipart/form-data",
         },
       }
     );
