@@ -31,14 +31,12 @@ export default function ForgotPassword() {
         if (typeof window !== "undefined") {
           localStorage.setItem("resetEmail", email);
         }
-        setTimeout(() => {
+        if (res.data.success) {
           router.push("/auth/reset-password");
-        }, 800);
+        }
       }
     } catch (error) {
-      setMessage(
-        error.response?.data?.message || "❌ Failed to send OTP"
-      );
+      setMessage(error.response?.data?.message || "❌ Failed to send OTP");
     } finally {
       setLoading(false);
     }
