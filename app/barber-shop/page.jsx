@@ -318,7 +318,7 @@ export default function BarberDashboardPage() {
           }
           body,
           .__next {
-            cursor: none;
+            cursor: auto;
           }
           @media (hover: none) {
             body,

@@ -1,15 +1,16 @@
 const Booking = require("../models/Booking");
 const BarberShop = require("../models/barbershopnewmodel");
 const User = require("../models/User");
-const {sendEmail} = require("../utils/sendEmail.js");
+const { sendEmail } = require("../utils/sendEmail.js");
 
 // Create booking
 exports.createBooking = async (req, res) => {
+
+  console.log("Request Body:", req.body);
   try {
     const {
       shopId,
-      serviceId,
-      serviceName,
+      services,
       bookingDate,
       bookingTime,
       amount,
@@ -18,8 +19,7 @@ exports.createBooking = async (req, res) => {
     } = req.body;
 
     // console.log("Booking request body:", req.body); // Debug
-    console.log("Req USer ",req.user);
-    
+    console.log("Req USer ", req.user);
 
     const formattedDate = new Date(bookingDate).toLocaleDateString("en-IN", {
       day: "2-digit",
@@ -28,10 +28,18 @@ exports.createBooking = async (req, res) => {
     });
 
     // Validate required fields
-    if (!shopId || !serviceName || !bookingDate || !bookingTime || !amount) {
+    if (
+      !shopId ||
+      !services ||
+      services.length === 0 ||
+      !bookingDate ||
+      !bookingTime ||
+      !amount
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: shopId, serviceName, bookingDate, bookingTime, amount",
+        message:
+          "Missing required fields: shopId, services, bookingDate, bookingTime, amount",
       });
     }
 
@@ -80,14 +88,15 @@ exports.createBooking = async (req, res) => {
     const shopName = await BarberShop.findById(shopId).select("shopName");
     console.log("Shop Name:", shopName);
 
-
+    //Create Service Names String
+    const serviceNames = services.map((s) => s.name).join(", ");
+    console.log("Service Names:", serviceNames);
 
     // Create new booking
     const booking = new Booking({
       userId: req.user.id,
       shopId,
-      serviceId: serviceId || null,
-      serviceName,
+      services,
       bookingDate: new Date(bookingDate),
       bookingTime: {
         startTime: bookingTime.startTime,
@@ -106,26 +115,28 @@ exports.createBooking = async (req, res) => {
     await booking.save();
 
     // --- SEND REAL-TIME NOTIFICATION TO BARBER ---
-try {
-  const shopData = await BarberShop.findById(shopId).select("shopName barberOwner");
+    try {
+      const shopData = await BarberShop.findById(shopId).select(
+        "shopName barberOwner",
+      );
 
-  if (shopData && shopData.barberOwner) {
-    const ownerId = shopData.barberOwner.toString();
+      if (shopData && shopData.barberOwner) {
+        const ownerId = shopData.barberOwner.toString();
 
-    global.io.to(ownerId).emit("newBooking", {
-      shopName: shopData.shopName,
-      service: serviceName,
-      time: bookingTime,
-      bookingId: booking._id,
-    });
+        global.io.to(ownerId).emit("newBooking", {
+          shopName: shopData.shopName,
+          service: serviceNames,
+          time: bookingTime,
+          bookingId: booking._id,
+        });
 
-    console.log("📢 Real-time notification sent to barber:", ownerId);
-  }
-} catch (e) {
-  console.error("Error sending socket event:", e);
-}
+        console.log("📢 Real-time notification sent to barber:", ownerId);
+      }
+    } catch (e) {
+      console.error("Error sending socket event:", e);
+    }
 
-  const html = `
+    const html = `
   <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
     <div style="max-width: 540px; margin: auto; background: #ffffff;
                 border-radius: 10px; overflow: hidden;
@@ -162,7 +173,7 @@ try {
             <strong>Barbershop:</strong> ${shopName.shopName || "N/A"}
           </p>
           <p style="margin: 0 0 6px;">
-            <strong>Service:</strong> ${serviceName || "N/A"}
+            <strong>Service:</strong> ${serviceNames || "N/A"}
           </p>
           <p style="margin: 0 0 6px;">
             <strong>Date:</strong> ${formattedDate || "N/A"}
@@ -180,8 +191,7 @@ try {
           <p style="margin: 0 0 6px;">
             <strong>Payment Method:</strong> ${
               paymentMethod
-                ? paymentMethod.charAt(0).toUpperCase() +
-                  paymentMethod.slice(1)
+                ? paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)
                 : "N/A"
             }
           </p>
@@ -225,7 +235,12 @@ try {
   </div>
 `;
 
-   await sendEmail(req.user.email,`Your ${serviceName} booking at ${shopName.shopName || "Shop"}`,html);
+    //  await sendEmail(req.user.email,`Your ${serviceName} booking at ${shopName.shopName || "Shop"}`,html);
+    await sendEmail(
+      req.user.email,
+      `Your booking at ${shopName.shopName || "Shop"}`,
+      html,
+    );
 
     console.log("Booking saved successfully:", booking); // Debug
 
@@ -243,6 +258,236 @@ try {
     });
   }
 };
+
+// exports.createBooking = async (req, res) => {
+//   try {
+//     const {
+//       shopId,
+//       services,
+//       bookingDate,
+//       bookingTime,
+//       amount,
+//       paymentMethod,
+//       notes,
+//     } = req.body;
+
+//     if (!shopId || !services || !bookingDate || !bookingTime || !amount) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields",
+//       });
+//     }
+
+//     if (!bookingTime.startTime || !bookingTime.endTime) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid booking time",
+//       });
+//     }
+
+//     const shop = await BarberShop.findById(shopId);
+
+//     if (!shop) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Shop not found",
+//       });
+//     }
+
+//     // Slot check
+//     const startDate = new Date(bookingDate);
+//     startDate.setHours(0, 0, 0, 0);
+
+//     const endDate = new Date(bookingDate);
+//     endDate.setHours(23, 59, 59, 999);
+
+//     const existingBooking = await Booking.findOne({
+//       shopId,
+//       bookingDate: { $gte: startDate, $lte: endDate },
+//       "bookingTime.startTime": bookingTime.startTime,
+//       status: { $in: ["pending", "confirmed"] },
+//     });
+
+//     if (existingBooking) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "This time slot is already booked",
+//       });
+//     }
+
+//     const shopData = await BarberShop.findById(shopId).select(
+//       "shopName barberOwner"
+//     );
+
+//     // services list
+//     const serviceNames = services.map((s) => s.name).join(", ");
+
+//     const booking = new Booking({
+//       userId: req.user.id,
+//       shopId,
+//       services,
+//       bookingDate: new Date(bookingDate),
+//       bookingTime,
+//       amount,
+//       paymentMethod,
+//       notes,
+//     });
+
+//     await booking.save();
+
+//     // realtime notification
+//     if (shopData.barberOwner) {
+//       global.io.to(shopData.barberOwner.toString()).emit("newBooking", {
+//         shopName: shopData.shopName,
+//         services: serviceNames,
+//         time: bookingTime,
+//         bookingId: booking._id,
+//       });
+//     }
+
+//     const servicesHtml = services
+//   .map(
+//     (s) => `
+//     <p style="margin: 0 0 6px;">
+//       <strong>${s.name}</strong> - ₹${s.price}
+//     </p>
+//   `
+//   )
+//   .join("");
+
+//     // Email HTML
+//    const html = `
+//   <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
+//     <div style="max-width: 540px; margin: auto; background: #ffffff;
+//                 border-radius: 10px; overflow: hidden;
+//                 box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+
+//       <!-- Header -->
+//       <div style="background: #111827; padding: 20px; text-align: center;">
+//         <h1 style="color: #ffffff; margin: 0;">✂ BarberBook</h1>
+//         <p style="color: #9ca3af; margin: 5px 0 0; font-size: 13px;">
+//           Booking Received
+//         </p>
+//       </div>
+
+//       <!-- Body -->
+//       <div style="padding: 26px 28px 24px; text-align: left;">
+//         <h2 style="color: #111827; margin: 0 0 10px; font-size: 20px;">
+//           Hi ${req.user.name || "there"},
+//         </h2>
+
+//         <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0 0 14px;">
+//           Thank you for booking with <strong>BarberBook</strong>. Here are your
+//           appointment details:
+//         </p>
+
+//         <!-- Details box -->
+//         <div style="
+//           margin: 18px 0;
+//           padding: 14px 16px;
+//           background: #f3f4f6;
+//           border-radius: 8px;
+//           font-size: 14px;
+//           color: #111827;
+//         ">
+//           <p style="margin: 0 0 6px;">
+//             <strong>Barbershop:</strong> ${shopName.shopName || "N/A"}
+//           </p>
+
+//           <p style="margin: 10px 0 6px;">
+//             <strong>Services:</strong>
+//           </p>
+
+//           ${servicesHtml}
+
+//           <p style="margin: 10px 0 6px;">
+//             <strong>Date:</strong> ${formattedDate || "N/A"}
+//           </p>
+
+//           <p style="margin: 0 0 6px;">
+//             <strong>Time:</strong>
+//             ${
+//               bookingTime?.startTime && bookingTime?.endTime
+//                 ? `${bookingTime.startTime} – ${bookingTime.endTime}`
+//                 : "N/A"
+//             }
+//           </p>
+
+//           <p style="margin: 0 0 6px;">
+//             <strong>Total Amount:</strong> ₹${amount || "0"}
+//           </p>
+
+//           <p style="margin: 0 0 6px;">
+//             <strong>Payment Method:</strong>
+//             ${
+//               paymentMethod
+//                 ? paymentMethod.charAt(0).toUpperCase() +
+//                   paymentMethod.slice(1)
+//                 : "N/A"
+//             }
+//           </p>
+
+//           <p style="margin: 0;">
+//             <strong>Booking Status:</strong> ${booking.status || "pending"} |
+//             <strong> Payment Status:</strong> ${booking.paymentStatus || "pending"}
+//           </p>
+//         </div>
+
+//         ${
+//           notes
+//             ? `
+//         <div style="
+//           margin: 16px 0 10px;
+//           padding: 12px 14px;
+//           background: #eef2ff;
+//           border-radius: 8px;
+//           font-size: 13px;
+//           color: #111827;
+//           border: 1px solid #e0e7ff;
+//         ">
+//           <p style="margin: 0 0 4px; font-weight: 600;">Your note for the barber:</p>
+//           <p style="margin: 0; color: #4b5563;">${notes}</p>
+//         </div>
+//         `
+//             : ""
+//         }
+
+//         <p style="color: #6b7280; font-size: 12px; line-height: 1.6; margin: 12px 0 0;">
+//           You’ll receive another update if the barbershop changes the status of this
+//           booking. If any detail looks incorrect, please contact the barbershop or
+//           update your booking in the BarberBook app.
+//         </p>
+//       </div>
+
+//       <!-- Footer -->
+//       <div style="background: #f9fafb; padding: 15px; text-align: center; font-size: 12px; color: #9ca3af;">
+//         © ${new Date().getFullYear()} BarberBook. All rights reserved.
+//       </div>
+
+//     </div>
+//   </div>
+// `;
+//     await sendEmail(
+//       req.user.email,
+//       `Booking Confirmed at ${shopData.shopName}`,
+//       html
+//     );
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Booking created successfully",
+//       data: booking,
+//     });
+//   } catch (error) {
+//     console.error("Booking error:", error);
+
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to create booking",
+//       error: error.message,
+//     });
+//   }
+// };
 
 // Get user bookings
 exports.getUserBookings = async (req, res) => {
@@ -427,7 +672,7 @@ exports.updateBookingStatus = async (req, res) => {
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true }
+      { new: true },
     ).populate("userId", "name");
 
     if (!booking) {
@@ -463,7 +708,6 @@ exports.updateBookingStatus = async (req, res) => {
     });
   }
 };
-
 
 // Reschedule booking
 exports.rescheduleBooking = async (req, res) => {
@@ -571,9 +815,7 @@ exports.rescheduleBooking = async (req, res) => {
   }
 };
 
-
 // Cancel booking
-
 
 // Cancel booking
 exports.cancelBooking = async (req, res) => {
@@ -587,7 +829,7 @@ exports.cancelBooking = async (req, res) => {
         cancellationReason,
         cancelledAt: new Date(),
       },
-      { new: true }
+      { new: true },
     )
       .populate("userId", "name")
       .populate("shopId", "shopName barberOwner");
@@ -623,7 +865,7 @@ exports.cancelBooking = async (req, res) => {
       });
       console.log("📢 bookingUpdate sent to BARBER room:", room);
     }
-  const html = `
+    const html = `
   <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
     <div style="max-width: 480px; margin: auto; background: #ffffff;
                 border-radius: 10px; overflow: hidden;
@@ -660,7 +902,6 @@ exports.cancelBooking = async (req, res) => {
   </div>
 `;
 
-
     await sendEmail(req.user.email, "Booking Cancelled", html);
 
     res.status(200).json({
@@ -678,10 +919,7 @@ exports.cancelBooking = async (req, res) => {
   }
 };
 
-
-
 // Add review
-
 
 exports.addReview = async (req, res) => {
   try {
@@ -702,7 +940,7 @@ exports.addReview = async (req, res) => {
         isReviewed: true,
         reviewDate: new Date(),
       },
-      { new: true }
+      { new: true },
     )
       .populate("userId", "name")
       .populate("shopId", "shopName barberOwner");
@@ -750,7 +988,6 @@ exports.addReview = async (req, res) => {
     });
   }
 };
-
 
 // Get all bookings (admin)
 exports.getAllBookings = async (req, res) => {

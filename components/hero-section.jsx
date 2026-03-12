@@ -54,86 +54,7 @@ const Button = forwardRef(
 Button.displayName = "Button";
 
 // ========== FUTURISTIC CURSOR ==========
-function FuturisticCursor() {
-  const cursorRef = useRef(null);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [isVisible, setIsVisible] = useState(false);
-  const [hovering, setHovering] = useState(false);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-      setIsVisible(true);
-    };
-    const handleMouseLeave = () => setIsVisible(false);
-    
-    window.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseleave", handleMouseLeave);
-    
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
-
- 
-
-
-  useEffect(() => {
-    document.body.style.cursor = "none";
-    return () => {
-      document.body.style.cursor = "auto";
-    };
-  }, []);
-
-  useEffect(() => {
-    const setHover = () => setHovering(true);
-    const clearHover = () => setHovering(false);
-    const els = document.querySelectorAll(
-      "button, a, [role='button'], input, label, textarea"
-    );
-    els.forEach((el) => {
-      el.addEventListener("mouseenter", setHover);
-      el.addEventListener("mouseleave", clearHover);
-    });
-    return () => {
-      els.forEach((el) => {
-        el.removeEventListener("mouseenter", setHover);
-        el.removeEventListener("mouseleave", clearHover);
-      });
-    };
-  }, []);
-
-  return (
-    <div
-      ref={cursorRef}
-      className="fixed top-0 left-0 z-10000 pointer-events-none"
-      style={{
-        transform: `translate(calc(${cursorPos.x}px - 50%), calc(${cursorPos.y}px - 50%))`,
-        opacity: isVisible ? 1 : 0,
-        transition: "opacity 0.2s ease-out",
-      }}
-    >
-      <motion.div
-        animate={{
-          scale: hovering ? 1.5 : 1,
-        }}
-        transition={{ duration: 0.2 }}
-        className={`w-5 h-5 rounded-full border-2 transition-all duration-150 ${
-          hovering
-            ? "border-cyan-300 bg-cyan-200/50 shadow-lg shadow-cyan-400/80"
-            : "border-cyan-500 bg-cyan-400/30 shadow-lg shadow-cyan-400/50"
-        }`}
-        style={{
-          boxShadow: hovering
-            ? "0 0 30px 10px rgba(34,211,238,0.7), 0 0 60px 20px rgba(34,211,238,0.4)"
-            : "0 0 20px 6px rgba(34,211,238,0.5), 0 0 40px 12px rgba(34,211,238,0.2)",
-        }}
-      />
-    </div>
-  );
-}
 
 // ========== HERO SLIDER WITH NAVIGATION ==========
 function HeroSlider() {
@@ -468,7 +389,6 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-linear-to-br from-black via-gray-950 to-cyan-950 text-white overflow-x-hidden select-none">
-      <FuturisticCursor />
 
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -569,7 +489,7 @@ export default function Home() {
         }
 
         body {
-          cursor: none !important;
+          cursor: auto !important;
           background-color: #0a0a0a;
           overflow-x: hidden;
         }

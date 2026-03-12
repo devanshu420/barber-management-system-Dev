@@ -175,7 +175,7 @@ export function BookingFlow() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-950 to-cyan-950 text-white overflow-hidden py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
-      <FuturisticCursor />
+      {/* <FuturisticCursor /> */}
 
       {/* Ambient Glows */}
       <div className="pointer-events-none absolute inset-0">
@@ -287,7 +287,7 @@ export function BookingFlow() {
           __html: `
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
           * { font-family: "Poppins", sans-serif; }
-          body, .cursor-none, .cursor-none * { cursor: none !important; }
+          body, .cursor-none, .cursor-none * { cursor: auto !important; }
         `,
         }}
       />

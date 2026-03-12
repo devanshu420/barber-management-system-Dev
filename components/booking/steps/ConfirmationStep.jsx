@@ -55,14 +55,19 @@ export default function BookingConfirmation({ bookingData, onBack }) {
         "/api/bookings/create-bookings",
         {
           shopId: bookingData.shop._id,
-          serviceId: bookingData.service._id,
-          serviceName: bookingData.service.name,
+          services:
+            bookingData.service?.services?.map((s) => ({
+              serviceId: s._id,
+              name: s.name,
+              price: s.price,
+              duration: s.duration,
+            })) || [],
           bookingDate: new Date(bookingData.date).toISOString(),
           bookingTime: {
             startTime: bookingData.time.startTime,
             endTime: bookingData.time.endTime,
           },
-          amount: bookingData.service.price,
+          amount: bookingData.service?.totalPrice || 0,
           paymentMethod: "razorpay",
           notes: bookingData.notes || "",
         },
@@ -70,7 +75,7 @@ export default function BookingConfirmation({ bookingData, onBack }) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const bookingId = bookingRes.data.data._id;
@@ -83,7 +88,7 @@ export default function BookingConfirmation({ bookingData, onBack }) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const { order, key } = data;
@@ -95,7 +100,7 @@ export default function BookingConfirmation({ bookingData, onBack }) {
         currency: order.currency,
         order_id: order.id,
         name: "Barber Management System",
-        description: bookingData.service.name,
+        description: `${bookingData.service?.services?.length || 0} services booking`,
 
         handler: async function (response) {
           try {
@@ -109,7 +114,7 @@ export default function BookingConfirmation({ bookingData, onBack }) {
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },
-              }
+              },
             );
 
             setMessage("✅ Payment Successful!");
@@ -137,17 +142,22 @@ export default function BookingConfirmation({ bookingData, onBack }) {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
+      console.log("Error is :", error.response?.data?.message || error.message);
+      
       setMessage(
         `❌ ${
-          error.response?.data?.message || error.message || "Something went wrong"
-        }`
+          error.response?.data?.message ||
+          error.message ||
+          "Something went wrong"
+        }`,
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const totalAmount = bookingData.service?.price || 0;
+  // const totalAmount = bookingData.service?.price || 0;
+  const totalAmount = bookingData.service.totalPrice || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black px-4 py-8">
@@ -209,16 +219,27 @@ export default function BookingConfirmation({ bookingData, onBack }) {
                   </div>
                   <div>
                     <p className="text-[11px] uppercase tracking-wide text-slate-500">
-                      Service
+                      Services
                     </p>
-                    <p className="text-sm sm:text-base font-medium text-white">
-                      {bookingData.service?.name}
+
+                    <div className="space-y-2 mt-1">
+                      {bookingData.service?.services?.map((service) => (
+                        <div
+                          key={service._id}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="text-white">{service.name}</span>
+
+                          <span className="text-emerald-400">
+                            ₹ {service.price}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="text-xs text-slate-400 mt-2">
+                      Total duration: {bookingData.service?.totalDuration} mins
                     </p>
-                    {bookingData.service?.duration && (
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        Approx. {bookingData.service.duration} mins
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -304,7 +325,9 @@ export default function BookingConfirmation({ bookingData, onBack }) {
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between text-slate-300">
-                  <span>Service price</span>
+                  <span>
+                    Services ({bookingData.service?.services?.length})
+                  </span>
                   <span>₹ {totalAmount}</span>
                 </div>
 

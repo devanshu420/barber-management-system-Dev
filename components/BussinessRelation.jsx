@@ -131,7 +131,7 @@ const BusinessRelation = () => {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         * { font-family: "Poppins", sans-serif; }
-        body, .cursor-none, .cursor-none * { cursor: none !important; }
+        body, .cursor-none, .cursor-none * { cursor: auto !important; }
       `}</style>
     </section>
   );

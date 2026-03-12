@@ -775,11 +775,11 @@ export default function ShopDetailClient() {
         <style jsx global>{`
           html,
           body {
-            cursor: none !important;
+            cursor: auto !important;
             overflow-x: hidden;
           }
           * {
-            cursor: none !important;
+            cursor: auto !important;
           }
           @media (hover: none) {
             html,

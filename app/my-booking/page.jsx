@@ -50,8 +50,6 @@ export default function MyBookingsPage() {
 
   const [toast, setToast] = useState(null);
 
-
-
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
@@ -91,8 +89,7 @@ export default function MyBookingsPage() {
         const transformedBookings = data.map((booking) => ({
           id: booking._id,
           shopName: booking.shopId?.shopName || "Unknown Shop",
-          shopLocation:
-            booking.shopId?.location?.address || "Unknown Location",
+          shopLocation: booking.shopId?.location?.address || "Unknown Location",
           date: new Date(booking.bookingDate).toLocaleDateString("en-GB"),
           time: booking.bookingTime,
           service: booking.serviceName,
@@ -148,11 +145,11 @@ export default function MyBookingsPage() {
                   return { ...b, isReviewed: true, rating, review };
                 }
                 return b;
-              })
+              }),
             );
-             window.dispatchEvent(
-    new CustomEvent("bb-booking-update", { detail: payload })
-  );
+            window.dispatchEvent(
+              new CustomEvent("bb-booking-update", { detail: payload }),
+            );
             if (message) showToast(message, "info");
           });
         }
@@ -217,15 +214,15 @@ export default function MyBookingsPage() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
         const bookingId = selectedBooking._id || selectedBooking.id;
         setBookings((prev) =>
           prev.map((b) =>
-            b.id === bookingId ? { ...b, status: "cancelled" } : b
-          )
+            b.id === bookingId ? { ...b, status: "cancelled" } : b,
+          ),
         );
         showToast("Booking cancelled successfully", "success");
         closeCancelModal();
@@ -290,7 +287,7 @@ export default function MyBookingsPage() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -303,12 +300,12 @@ export default function MyBookingsPage() {
               ? {
                   ...b,
                   date: new Date(updated.bookingDate).toLocaleDateString(
-                    "en-GB"
+                    "en-GB",
                   ),
                   time: updated.bookingTime,
                 }
-              : b
-          )
+              : b,
+          ),
         );
 
         showToast("Booking rescheduled successfully", "success");
@@ -316,7 +313,7 @@ export default function MyBookingsPage() {
         setShowDetails(false);
       } else {
         setRescheduleError(
-          response.data.message || "Failed to reschedule booking"
+          response.data.message || "Failed to reschedule booking",
         );
       }
     } catch (err) {
@@ -367,7 +364,7 @@ export default function MyBookingsPage() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -381,8 +378,8 @@ export default function MyBookingsPage() {
                   rating: reviewRating,
                   review: reviewText,
                 }
-              : b
-          )
+              : b,
+          ),
         );
 
         showToast("Review added successfully", "success");
@@ -423,7 +420,7 @@ export default function MyBookingsPage() {
         if (showDetails) handleCloseDetails();
       }
     },
-    [showCancelModal, showRescheduleModal, showReviewModal, showDetails]
+    [showCancelModal, showRescheduleModal, showReviewModal, showDetails],
   );
 
   useEffect(() => {
@@ -469,8 +466,8 @@ export default function MyBookingsPage() {
               toast.type === "success"
                 ? "bg-emerald-500/90 text-white"
                 : toast.type === "info"
-                ? "bg-blue-500/90 text-white"
-                : "bg-red-500/90 text-white"
+                  ? "bg-blue-500/90 text-white"
+                  : "bg-red-500/90 text-white"
             }`}
           >
             <AlertCircle className="w-4 h-4" />
@@ -553,8 +550,7 @@ export default function MyBookingsPage() {
                           <div className="flex items-center space-x-2">
                             <Clock className="w-4 h-4 text-teal-400" />
                             <span>
-                              {booking.time.startTime} -{" "}
-                              {booking.time.endTime}
+                              {booking.time.startTime} - {booking.time.endTime}
                             </span>
                           </div>
                         </div>
@@ -565,7 +561,7 @@ export default function MyBookingsPage() {
                   <div className="flex flex-col sm:flex-col-reverse items-start sm:items-end gap-3">
                     <div
                       className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold capitalize ${getStatusColor(
-                        booking.status
+                        booking.status,
                       )}`}
                     >
                       {booking.status}
@@ -643,8 +639,7 @@ export default function MyBookingsPage() {
                 Booking Details
               </h2>
               <p className="text-gray-400 text-sm mb-6">
-                Confirmation #
-                {selectedBooking._id?.toString().slice(-8)}
+                Confirmation #{selectedBooking._id?.toString().slice(-8)}
               </p>
 
               <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full mb-8"></div>
@@ -654,10 +649,22 @@ export default function MyBookingsPage() {
                   <div className="flex items-center gap-3">
                     <Scissors className="w-6 h-6 text-teal-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Service</p>
-                      <p className="text-white font-semibold">
-                        {selectedBooking.serviceName}
-                      </p>
+                      <p className="text-gray-400 text-sm">Services</p>
+
+                      <div className="text-white font-semibold space-y-1">
+                        {selectedBooking?.services?.length > 0 ? (
+                          selectedBooking.services.map((service, index) => (
+                            <p key={index}>
+                              {service.name}{" "}
+                              <span className="text-gray-400">
+                                - ₹{service.price}
+                              </span>
+                            </p>
+                          ))
+                        ) : (
+                          <p className="text-gray-400">No services</p>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -689,7 +696,7 @@ export default function MyBookingsPage() {
                       <p className="text-gray-400 text-sm">Date</p>
                       <p className="text-white font-semibold">
                         {new Date(
-                          selectedBooking.bookingDate
+                          selectedBooking.bookingDate,
                         ).toLocaleDateString("en-GB")}
                       </p>
                     </div>
@@ -709,9 +716,7 @@ export default function MyBookingsPage() {
                   <div className="border-t border-gray-800 pt-4">
                     <p className="text-gray-400 text-sm">Total Amount</p>
                     <p className="text-3xl font-bold text-teal-400">
-                      ₹
-                      {selectedBooking.finalAmount ||
-                        selectedBooking.amount}
+                      ₹{selectedBooking.finalAmount || selectedBooking.amount}
                     </p>
                   </div>
                 </div>
@@ -722,10 +727,10 @@ export default function MyBookingsPage() {
                   selectedBooking.status === "confirmed"
                     ? "bg-green-500/10 border border-green-500/30"
                     : selectedBooking.status === "completed"
-                    ? "bg-blue-500/10 border border-blue-500/30"
-                    : selectedBooking.status === "cancelled"
-                    ? "bg-red-500/10 border border-red-500/30"
-                    : "bg-yellow-500/10 border border-yellow-500/30"
+                      ? "bg-blue-500/10 border border-blue-500/30"
+                      : selectedBooking.status === "cancelled"
+                        ? "bg-red-500/10 border border-red-500/30"
+                        : "bg-yellow-500/10 border border-yellow-500/30"
                 }`}
               >
                 <AlertCircle
@@ -733,10 +738,10 @@ export default function MyBookingsPage() {
                     selectedBooking.status === "confirmed"
                       ? "text-green-400"
                       : selectedBooking.status === "completed"
-                      ? "text-blue-400"
-                      : selectedBooking.status === "cancelled"
-                      ? "text-red-400"
-                      : "text-yellow-400"
+                        ? "text-blue-400"
+                        : selectedBooking.status === "cancelled"
+                          ? "text-red-400"
+                          : "text-yellow-400"
                   }`}
                 />
                 <p className="text-sm text-gray-300">
@@ -983,9 +988,7 @@ export default function MyBookingsPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white">
-                  Add Review
-                </h2>
+                <h2 className="text-xl font-semibold text-white">Add Review</h2>
                 <button
                   className="text-gray-400 hover:text-white"
                   onClick={closeReviewModal}
@@ -1019,8 +1022,7 @@ export default function MyBookingsPage() {
 
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">
-                    Write your review{" "}
-                    <span className="text-red-400">*</span>
+                    Write your review <span className="text-red-400">*</span>
                   </label>
                   <textarea
                     value={reviewText}
@@ -1086,9 +1088,6 @@ export default function MyBookingsPage() {
     </div>
   );
 }
-
-
-
 
 // "use client";
 
@@ -2209,34 +2208,3 @@ export default function MyBookingsPage() {
 //     </div>
 //   );
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

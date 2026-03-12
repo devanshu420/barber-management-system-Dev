@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 
 export function TimeSelection({ serviceDuration, onSelect, shop }) {
+  // console.log("Service Duration:", serviceDuration);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [bookedSlots, setBookedSlots] = useState([]);
@@ -37,7 +38,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
-          }
+          },
         );
 
         console.log("Shop data:", response.data);
@@ -54,7 +55,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-              }
+              },
             );
 
             if (bookingsResponse.data.success) {
@@ -103,7 +104,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
       const timeDisplay = convertTo12Hour(timeStr);
       slots.push(timeDisplay);
 
-      currentMin += 30;
+      currentMin += serviceDuration || 30;
       if (currentMin >= 60) {
         currentMin -= 60;
         currentHour += 1;
@@ -113,7 +114,9 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
     return slots;
   };
 
-  const generateEndTime = (startTime, duration) => {
+  const generateEndTime = (startTime, duration = 30) => {
+    if (!startTime) return "";
+
     const [time, period] = startTime.split(" ");
     let [hours, minutes] = time.split(":").map(Number);
 
@@ -121,13 +124,17 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
     if (period === "AM" && hours === 12) hours = 0;
 
     const start = new Date();
-    start.setHours(hours, minutes);
+    start.setHours(hours);
+    start.setMinutes(minutes);
+    start.setSeconds(0);
 
     const end = new Date(start.getTime() + duration * 60000);
 
-    const endHours = end.getHours() % 12 || 12;
+    let endHours = end.getHours();
     const endMinutes = end.getMinutes().toString().padStart(2, "0");
-    const endPeriod = end.getHours() >= 12 ? "PM" : "AM";
+
+    const endPeriod = endHours >= 12 ? "PM" : "AM";
+    endHours = endHours % 12 || 12;
 
     return `${endHours}:${endMinutes} ${endPeriod}`;
   };
@@ -158,7 +165,7 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
-          }
+          },
         );
 
         if (response.data.success) {
@@ -208,7 +215,8 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
 
   const handleConfirm = () => {
     if (selectedDate && selectedTime) {
-      const endTime = generateEndTime(selectedTime, serviceDuration);
+      const duration = serviceDuration || 30;
+      const endTime = generateEndTime(selectedTime, duration);
 
       onSelect(selectedDate, {
         startTime: selectedTime,
@@ -329,8 +337,8 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
                       selected
                         ? "border-teal-500 bg-teal-500/15 text-teal-300 shadow-[0_0_18px_rgba(45,212,191,0.5)]"
                         : disabled
-                        ? "border-gray-700 bg-gray-800/70 text-gray-500 cursor-not-allowed opacity-60"
-                        : "border-gray-800 bg-gray-900/80 hover:border-teal-500/60 hover:bg-gray-900 text-white"
+                          ? "border-gray-700 bg-gray-800/70 text-gray-500 cursor-not-allowed opacity-60"
+                          : "border-gray-800 bg-gray-900/80 hover:border-teal-500/60 hover:bg-gray-900 text-white"
                     }`}
                   >
                     <div className="flex items-center justify-center mb-1">
@@ -345,16 +353,14 @@ export function TimeSelection({ serviceDuration, onSelect, shop }) {
                         selected
                           ? "text-teal-300"
                           : disabled
-                          ? "text-gray-500 line-through"
-                          : "text-white"
+                            ? "text-gray-500 line-through"
+                            : "text-white"
                       }`}
                     >
                       {time}
                     </p>
                     {disabled && (
-                      <p className="text-[10px] text-gray-500 mt-1">
-                        Booked
-                      </p>
+                      <p className="text-[10px] text-gray-500 mt-1">Booked</p>
                     )}
                   </button>
                 );

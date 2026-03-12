@@ -130,7 +130,7 @@ export function ServicesSection() {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         * { font-family: "Poppins", sans-serif; }
-        body, .cursor-none, .cursor-none * { cursor: none !important; }
+        body, .cursor-none, .cursor-none * { cursor: auto !important; }
         @keyframes shimmer {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
