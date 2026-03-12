@@ -34,7 +34,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
   const [error, setError] = useState("");
 
   const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "https://barber-book-devanshu.onrender.com";
+    process.env.NEXT_PUBLIC_API_URL || "https://barber-book-155830263049.asia-south1.run.app";
 
   // Fetch shops by GPS
   const fetchShopsByGPS = async (latitude, longitude, distance = 5) => {
@@ -56,7 +56,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
           reviews: shop.ratings?.count || 0,
           image:
             shop.image?.url || // 👈 yahan change
-            "https://via.placeholder.com/300?text=Barbershop",
+            "https://placehold.co/300x200?text=Barber+Shop",
           waitlist: shop.currentQueue?.length || 0,
           barbers: shop.staff?.length || 0,
         }));
@@ -92,7 +92,7 @@ export function ShopSelection({ userLocation, onSelect, maxDistance = 5 }) {
           reviews: shop.ratings?.count || 0,
           image:
             shop.image?.url || // 👈 same yahan bhi
-            "https://via.placeholder.com/300?text=Barbershop",
+            "https://placehold.co/300x200?text=Barber+Shop",
           waitlist: shop.currentQueue?.length || 0,
           barbers: shop.staff?.length || 0,
         }));

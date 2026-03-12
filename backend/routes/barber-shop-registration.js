@@ -485,7 +485,7 @@ router.get("/nearby-shops", async (req, res) => {
         },
       },
       {
-        $sort: { distance: 1, rating: -1 },
+        $sort: { distance: 1, "ratings.average": -1 },
       },
       {
         $limit: limit,
@@ -500,7 +500,7 @@ router.get("/nearby-shops", async (req, res) => {
           "location.coordinates": 1,
           "ratings.average": 1,
           "ratings.count": 1,
-          images: 1,
+          image: 1,
           distance: { $round: ["$distance", 2] },
         },
       },
