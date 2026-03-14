@@ -49,32 +49,6 @@ export default function LoginPage() {
 
         {/* Right: Login form */}
         <div className="w-full max-w-md mx-auto animate-fadeIn">
-          {/* Role toggle above form so left description can react */}
-          <div className="mb-4 flex gap-2 bg-gray-900/70 p-2 rounded-2xl border border-gray-800">
-            <button
-              type="button"
-              onClick={() => setSelectedRole("customer")}
-              className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                selectedRole === "customer"
-                  ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.6)]"
-                  : "bg-transparent text-gray-400 hover:text-white"
-              }`}
-            >
-              Customer
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedRole("barber")}
-              className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                selectedRole === "barber"
-                  ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.6)]"
-                  : "bg-transparent text-gray-400 hover:text-white"
-              }`}
-            >
-              Barber
-            </button>
-          </div>
-
           <LoginForm role={selectedRole} />
         </div>
       </div>
