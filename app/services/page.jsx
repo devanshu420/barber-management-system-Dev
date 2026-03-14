@@ -101,12 +101,14 @@ export default function ServicesPage() {
                     <span className="group-hover:text-teal-300 transition-colors">
                       Approx. 30–45 mins
                     </span>
-                    <span className="inline-flex items-center gap-1 text-teal-400/90 font-medium">
+                    <Link href="/booking" >
+                    <button className="inline-flex items-center gap-1 text-teal-400/90 font-medium cursor-pointer">
                       View slots
                       <span className="text-teal-300 group-hover:translate-x-0.5 transition-transform">
                         →
                       </span>
-                    </span>
+                    </button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
