@@ -1,7 +1,6 @@
 // models/Booking.js
 const mongoose = require("mongoose");
 const Counter = require("./Counter");
-const { stringify } = require("postcss");
 
 const bookingSchema = new mongoose.Schema(
   {
