@@ -34,7 +34,7 @@ export default function CustomerDashboard() {
   const [updating, setUpdating] = useState(false);
 
   const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "https://barber-book-devanshu.onrender.com";
+    process.env.NEXT_PUBLIC_API_URL || "https://barber-book-155830263049.asia-south1.run.app";
 
   // Fetch user profile from backend
   useEffect(() => {

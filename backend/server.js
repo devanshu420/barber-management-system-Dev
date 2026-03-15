@@ -47,16 +47,6 @@ socket.on("joinUserRoom", (userId) => {
   });
 });
 
-// ------------------- REST OF YOUR SERVER -------------------
-
-app.use(helmet());
-app.use(cors({
-  origin: ['http://localhost:3000', 'https://barber-book-dev.vercel.app'],
-  credentials: true
-}));
-
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 async function syncBookingCounter() {
   try {
@@ -87,6 +77,19 @@ async function syncBookingCounter() {
     console.error("❌ Counter sync error:", error);
   }
 }
+
+
+
+// ------------------- REST OF YOUR SERVER -------------------
+
+app.use(helmet());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://barber-book-dev.vercel.app'],
+  credentials: true
+}));
+
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 
 // DB Connect *******************************************************
