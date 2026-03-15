@@ -12,6 +12,7 @@ const {
   addReview,
   getAllBookings,
   getBookingStats,
+  searchBookingByNumber
 } = require("../controllers/bookingController");
 const { authenticate } = require("../middlewares/authMiddleware");
 
@@ -47,6 +48,9 @@ router.get("/admin/bookings", authenticate, getAllBookings);
 
 // 🔹 Admin: Get booking statistics
 router.get("/admin/bookings/stats/:shopId", authenticate, getBookingStats);
+
+// 🔹 Search booking by booking number
+router.get("/search/:bookingNumber", searchBookingByNumber);
 
 module.exports = router;
 

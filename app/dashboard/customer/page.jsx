@@ -142,7 +142,7 @@ export default function CustomerDashboard() {
       localStorage.removeItem("userBookings");
       localStorage.removeItem("userProfilePhoto");
       localStorage.removeItem("userId");
-      router.push("/");
+      router.push("/auth/login");
     } catch (error) {
       console.error("Error during logout:", error);
     }

@@ -224,13 +224,13 @@ export default function ShopDetailClient() {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "completed":
-        return "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+        return "bg-indigo-500/15 text-indigo-300 border border-indigo-500/40";
       case "confirmed":
-        return "bg-sky-500/10 text-sky-300 border border-sky-500/30";
+        return "bg-cyan-500/15 text-cyan-300 border border-cyan-500/40";
       case "cancelled":
-        return "bg-red-500/10 text-red-300 border border-red-500/30";
+        return "bg-red-500/15 text-red-300 border border-red-500/40";
       case "pending":
-        return "bg-amber-500/10 text-amber-300 border border-amber-500/30";
+        return "bg-yellow-500/15 text-yellow-300 border border-yellow-500/40";
       default:
         return "bg-slate-700/40 text-slate-200 border border-slate-600/60";
     }
@@ -604,81 +604,100 @@ export default function ShopDetailClient() {
                   </motion.div>
                 ) : bookings.length ? (
                   <div className="space-y-4">
-                    {bookings.map((booking, i) => (
-                      <motion.div
-                        key={booking._id || i}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        className="border border-slate-800 rounded-xl bg-slate-950/70 p-4 text-sm"
-                      >
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start gap-3 mb-2">
-                              <div>
-                                <p className="font-medium text-slate-100">
+                    {bookings.map((booking, i) => {
+                      const bookingNumberLabel =
+                        booking.bookingNumber || "N/A";
+                      return (
+                        <motion.div
+                          key={booking._id || i}
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.04 }}
+                          className="bg-black/40 border border-gray-700 rounded-xl p-4 text-sm hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(20,220,200,0.15)] transition"
+                        >
+                          {/* Header row */}
+                          <div className="flex justify-between items-start gap-3 mb-3">
+                            <div className="space-y-1">
+                              <p className="text-sm font-semibold text-white">
+                                Booking #{bookingNumberLabel}
+                              </p>
+                              <p className="text-[13px] text-slate-300">
+                                Service:{" "}
+                                <span className="text-slate-100">
                                   {booking.serviceName ||
                                     "Service not specified"}
-                                </p>
-                                <p className="text-xs text-slate-400">
+                                </span>
+                              </p>
+                              <p className="text-[13px] text-slate-300">
+                                Customer:{" "}
+                                <span className="text-slate-100">
                                   {booking.userId?.name || "Customer"}
-                                </p>
-                              </div>
-                              <span
-                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                  booking.status
-                                )}`}
-                              >
-                                {booking.status
-                                  ? booking.status.charAt(0).toUpperCase() +
-                                    booking.status.slice(1)
-                                  : "Unknown"}
-                              </span>
-                            </div>
-
-                            <div className="space-y-0.5 text-slate-300">
-                              <p>
-                                📅{" "}
-                                {booking.bookingDate
-                                  ? new Date(
-                                      booking.bookingDate
-                                    ).toLocaleDateString()
-                                  : "Date not set"}
+                                </span>
                               </p>
-                              <p>
-                                🕒 {booking.bookingTime?.startTime || "N/A"} –{" "}
-                                {booking.bookingTime?.endTime || "N/A"}
-                              </p>
-                              {booking.amount && (
-                                <p className="text-cyan-300 font-semibold">
-                                  ₹{booking.amount}
-                                </p>
-                              )}
                             </div>
+                            <span
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                booking.status
+                              )}`}
+                            >
+                              {booking.status
+                                ? booking.status.charAt(0).toUpperCase() +
+                                  booking.status.slice(1)
+                                : "Unknown"}
+                            </span>
                           </div>
 
-                          <div className="flex gap-2 md:flex-col md:w-40">
+                          {/* Details */}
+                          <div className="space-y-1.5 text-sm text-gray-400 mb-3">
+                            <p>
+                              📅{" "}
+                              {booking.bookingDate
+                                ? new Date(
+                                    booking.bookingDate
+                                  ).toLocaleDateString()
+                                : "Date not set"}
+                            </p>
+                            <p>
+                              🕒{" "}
+                              {booking.bookingTime?.startTime || "N/A"} –{" "}
+                              {booking.bookingTime?.endTime || "N/A"}
+                            </p>
+                            {booking.amount && (
+                              <p>
+                                💰 <span>₹{booking.amount}</span>
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Actions */}
+                          <div className="mt-2 flex flex-wrap gap-2">
                             {booking.status !== "confirmed" &&
                               booking.status !== "cancelled" &&
                               booking.status !== "completed" && (
-                                <Button
+                                <motion.button
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
                                   onClick={() =>
                                     handleBookingAction(
                                       booking._id,
                                       "confirmed"
                                     )
                                   }
-                                  disabled={updatingBookingId === booking._id}
-                                  className="flex-1 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-200 border border-emerald-500/40 text-xs"
+                                  disabled={
+                                    updatingBookingId === booking._id
+                                  }
+                                  className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 text-black shadow-md shadow-cyan-500/30 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-1"
                                 >
-                                  <Check className="w-3.5 h-3.5 mr-1" />
+                                  <Check className="w-3.5 h-3.5" />
                                   {updatingBookingId === booking._id
                                     ? "..."
                                     : "Confirm"}
-                                </Button>
+                                </motion.button>
                               )}
 
-                            <Button
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
                               onClick={() =>
                                 handleBookingAction(booking._id, "cancelled")
                               }
@@ -687,21 +706,23 @@ export default function ShopDetailClient() {
                                 booking.status === "confirmed" ||
                                 booking.status === "completed"
                               }
-                              className={`flex-1 text-xs ${
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center gap-1 shadow-md ${
                                 booking.status === "confirmed" ||
                                 booking.status === "completed"
                                   ? "bg-slate-700 text-slate-300 cursor-not-allowed"
-                                  : "bg-red-500/15 hover:bg-red-500/25 text-red-200 border border-red-500/40"
+                                  : "bg-gradient-to-r from-rose-500 to-red-400 text-white shadow-red-500/30"
                               }`}
                             >
-                              <Trash2 className="w-3.5 h-3.5 mr-1" />
+                              <Trash2 className="w-3.5 h-3.5" />
                               {updatingBookingId === booking._id
                                 ? "..."
                                 : "Cancel"}
-                            </Button>
+                            </motion.button>
 
                             {booking.status === "confirmed" && (
-                              <Button
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={() =>
                                   handleBookingAction(
                                     booking._id,
@@ -709,22 +730,22 @@ export default function ShopDetailClient() {
                                   )
                                 }
                                 disabled={updatingBookingId === booking._id}
-                                className="flex-1 bg-sky-500/15 hover:bg-sky-500/25 text-sky-200 border border-sky-500/40 text-xs"
+                                className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-indigo-500 to-blue-400 text-white shadow-md shadow-indigo-500/30 flex items-center gap-1"
                               >
-                                <CheckCircle className="w-3.5 h-3.5 mr-1" />
+                                <CheckCircle className="w-3.5 h-3.5" />
                                 {updatingBookingId === booking._id
                                   ? "..."
                                   : "Complete"}
-                              </Button>
+                              </motion.button>
                             )}
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 ) : (
-                  <p className="text-center text-sm text-slate-400 py-6">
-                    No bookings yet.
+                  <p className="text-center text-sm text-gray-400 py-6">
+                    No bookings yet for this shop.
                   </p>
                 )}
               </motion.div>

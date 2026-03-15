@@ -158,15 +158,25 @@ exports.refreshToken = async (req, res) => {
 // Logout
 exports.logout = async (req, res) => {
   try {
-    const userId = req.user.id;
-    await userModel.findByIdAndUpdate(userId, { refreshToken: null });
-    res.status(200).json({ success: true, message: "Logout successful" });
+    if (req.user?.id) {
+      await userModel.findByIdAndUpdate(req.user.id, {
+        refreshToken: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
   } catch (error) {
     console.error("Logout error:", error);
-    res.status(500).json({ success: false, message: "Logout failed", error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      message: "Logout failed",
+    });
   }
 };
-
 
 // ----------------------
 // Forgot Password (Send OTP)
