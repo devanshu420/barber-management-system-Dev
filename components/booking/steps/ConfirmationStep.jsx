@@ -79,6 +79,12 @@ export default function BookingConfirmation({ bookingData, onBack }) {
       );
 
       const bookingId = bookingRes.data.data._id;
+      // const bookingNumber = bookingRes.data.data.bookingNumber;
+      // console.log("Booking Number:", bookingNumber);
+
+      // console.log("Full Booking Response:", bookingRes.data);
+
+
 
       // 2️⃣ Create Razorpay Order
       const { data } = await axios.post(

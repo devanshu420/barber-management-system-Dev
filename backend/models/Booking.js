@@ -1,4 +1,7 @@
+// models/Booking.js
 const mongoose = require("mongoose");
+const Counter = require("./Counter");
+const { stringify } = require("postcss");
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -35,6 +38,13 @@ const bookingSchema = new mongoose.Schema(
         },
       },
     ],
+
+    // ✅ NEW: Sequential booking number
+    bookingNumber: {
+      type: String,
+      unique: true,
+      index: true,
+    },
 
     bookingDate: {
       type: Date,
@@ -119,14 +129,37 @@ bookingSchema.index({ userId: 1, bookingDate: -1 });
 bookingSchema.index({ shopId: 1, bookingDate: -1 });
 bookingSchema.index({ status: 1, bookingDate: 1 });
 
-bookingSchema.pre("save", async function () {
+;
+
+// ✅ Auto-calc finalAmount
+bookingSchema.pre("save", function () {
   const amount = this.amount || 0;
   const discount = this.discount || 0;
   this.finalAmount = Math.max(amount - discount, 0);
 });
 
-module.exports = mongoose.model("booking", bookingSchema);
+// ✅ Auto-increment bookingNumber (atomic, counters collection)
+bookingSchema.pre("save", async function () {
 
+  if (!this.isNew || this.bookingNumber) {
+    return;
+  }
+
+  const counter = await Counter.findOneAndUpdate(
+    { _id: "bookingNumber" },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+
+  const number = counter.seq;
+
+  this.bookingNumber = `BK${String(number).padStart(4, "0")}`;
+
+});
+
+
+
+module.exports = mongoose.model("booking", bookingSchema);
 
 
 

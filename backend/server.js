@@ -58,9 +58,47 @@ app.use(cors({
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+async function syncBookingCounter() {
+  try {
+    const Booking = require("./models/Booking");
+    const Counter = require("./models/Counter");
+
+    // highest bookingNumber wali booking find karo
+    const highestBooking = await Booking.findOne({})
+      .sort({ createdAt: -1 })
+      .select("bookingNumber");
+
+    let current = 0;
+
+    if (highestBooking && highestBooking.bookingNumber) {
+      const num = highestBooking.bookingNumber.replace("BK", "");
+      current = parseInt(num);
+    }
+
+    await Counter.findOneAndUpdate(
+      { _id: "bookingNumber" },
+      { seq: current },
+      { upsert: true }
+    );
+
+    console.log("✅ Booking counter synced:", current);
+
+  } catch (error) {
+    console.error("❌ Counter sync error:", error);
+  }
+}
+
+
+// DB Connect *******************************************************
 mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log("MongoDB connected successfully"))
+.then(async () => {
+  console.log("MongoDB connected successfully");
+
+  await syncBookingCounter();
+})
 .catch(err => console.error(err));
+
+
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

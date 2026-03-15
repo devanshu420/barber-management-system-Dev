@@ -88,6 +88,7 @@ export default function MyBookingsPage() {
 
         const transformedBookings = data.map((booking) => ({
           id: booking._id,
+          bookingNumber: booking.bookingNumber,
           shopName: booking.shopId?.shopName || "Unknown Shop",
           shopLocation: booking.shopId?.location?.address || "Unknown Location",
           date: new Date(booking.bookingDate).toLocaleDateString("en-GB"),
@@ -529,6 +530,12 @@ export default function MyBookingsPage() {
                     </div>
 
                     <div className="flex-1">
+                      {/* ✅ Booking number line */}
+                      <h3 className="text-sm font-semibold text-teal-300 mb-1">
+                        Booking No : {booking.bookingNumber}
+                      </h3>
+
+                      {/* Service / services */}
                       <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
                         {booking.service}
                       </h3>
@@ -558,6 +565,7 @@ export default function MyBookingsPage() {
                     </div>
                   </div>
 
+                  {/* Right side same as before */}
                   <div className="flex flex-col sm:flex-col-reverse items-start sm:items-end gap-3">
                     <div
                       className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold capitalize ${getStatusColor(
@@ -639,7 +647,7 @@ export default function MyBookingsPage() {
                 Booking Details
               </h2>
               <p className="text-gray-400 text-sm mb-6">
-                Confirmation #{selectedBooking._id?.toString().slice(-8)}
+                Booking Number: #{selectedBooking.bookingNumber}
               </p>
 
               <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full mb-8"></div>
