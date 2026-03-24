@@ -122,14 +122,14 @@ exports.createBooking = async (req, res) => {
       if (shopData && shopData.barberOwner) {
         const ownerId = shopData.barberOwner.toString();
 
-        global.io.to(ownerId).emit("newBooking", {
-          shopName: shopData.shopName,
-          service: serviceNames,
-          time: bookingTime,
-          bookingId: booking._id,
-        });
+        // global.io.to(ownerId).emit("newBooking", {
+        //   shopName: shopData.shopName,
+        //   service: serviceNames,
+        //   time: bookingTime,
+        //   bookingId: booking._id,
+        // });
 
-        console.log("📢 Real-time notification sent to barber:", ownerId);
+        // console.log("📢 Real-time notification sent to barber:", ownerId);
       }
     } catch (e) {
       console.error("Error sending socket event:", e);
@@ -634,17 +634,17 @@ exports.updateBookingStatus = async (req, res) => {
       });
     }
 
-    // 🔥 SEND REAL-TIME NOTIFICATION TO USER
-    global.io.to(booking.userId._id.toString()).emit("bookingUpdate", {
-      bookingId: booking._id,
-      status,
-      message:
-        status === "confirmed"
-          ? "Your booking has been confirmed 🎉"
-          : `Your booking status updated: ${status}`,
-    });
+    // // 🔥 SEND REAL-TIME NOTIFICATION TO USER
+    // global.io.to(booking.userId._id.toString()).emit("bookingUpdate", {
+    //   bookingId: booking._id,
+    //   status,
+    //   message:
+    //     status === "confirmed"
+    //       ? "Your booking has been confirmed 🎉"
+    //       : `Your booking status updated: ${status}`,
+    // });
 
-    console.log("📢 Notification sent to user:", booking.userId._id.toString());
+    // console.log("📢 Notification sent to user:", booking.userId._id.toString());
 
     res.status(200).json({
       success: true,
@@ -725,32 +725,32 @@ exports.rescheduleBooking = async (req, res) => {
 
     await booking.save();
 
-    // USER
-    if (booking.userId?._id) {
-      const room = booking.userId._id.toString();
-      global.io.to(room).emit("bookingUpdate", {
-        bookingId: booking._id.toString(),
-        type: "rescheduled",
-        newDate: booking.bookingDate,
-        newTime: booking.bookingTime,
-        message: "Your booking has been rescheduled 🔁",
-      });
-      console.log("📢 bookingUpdate (reschedule) to USER room:", room);
-    }
+    // // USER
+    // if (booking.userId?._id) {
+    //   const room = booking.userId._id.toString();
+    //   global.io.to(room).emit("bookingUpdate", {
+    //     bookingId: booking._id.toString(),
+    //     type: "rescheduled",
+    //     newDate: booking.bookingDate,
+    //     newTime: booking.bookingTime,
+    //     message: "Your booking has been rescheduled 🔁",
+    //   });
+    //   console.log("📢 bookingUpdate (reschedule) to USER room:", room);
+    // }
 
     // BARBER
-    if (booking.shopId?.barberOwner) {
-      const room = booking.shopId.barberOwner.toString();
-      global.io.to(room).emit("bookingUpdate", {
-        bookingId: booking._id.toString(),
-        type: "rescheduled",
-        newDate: booking.bookingDate,
-        newTime: booking.bookingTime,
-        service: booking.serviceName,
-        message: "A booking has been rescheduled",
-      });
-      console.log("📢 bookingUpdate (reschedule) to BARBER room:", room);
-    }
+    // if (booking.shopId?.barberOwner) {
+    //   const room = booking.shopId.barberOwner.toString();
+    //   global.io.to(room).emit("bookingUpdate", {
+    //     bookingId: booking._id.toString(),
+    //     type: "rescheduled",
+    //     newDate: booking.bookingDate,
+    //     newTime: booking.bookingTime,
+    //     service: booking.serviceName,
+    //     message: "A booking has been rescheduled",
+    //   });
+    //   console.log("📢 bookingUpdate (reschedule) to BARBER room:", room);
+    // }
 
     res.status(200).json({
       success: true,
@@ -794,29 +794,29 @@ exports.cancelBooking = async (req, res) => {
     }
 
     // USER
-    if (booking.userId?._id) {
-      const room = booking.userId._id.toString();
-      global.io.to(room).emit("bookingUpdate", {
-        bookingId: booking._id.toString(),
-        type: "cancelled",
-        message: "Your booking has been cancelled ❌",
-        reason: cancellationReason,
-      });
-      console.log("📢 bookingUpdate sent to USER room:", room);
-    }
+    // if (booking.userId?._id) {
+    //   const room = booking.userId._id.toString();
+    //   global.io.to(room).emit("bookingUpdate", {
+    //     bookingId: booking._id.toString(),
+    //     type: "cancelled",
+    //     message: "Your booking has been cancelled ❌",
+    //     reason: cancellationReason,
+    //   });
+    //   console.log("📢 bookingUpdate sent to USER room:", room);
+    // }
 
     // BARBER
-    if (booking.shopId?.barberOwner) {
-      const room = booking.shopId.barberOwner.toString();
-      global.io.to(room).emit("bookingUpdate", {
-        bookingId: booking._id.toString(),
-        type: "cancelled",
-        customerName: booking.userId?.name,
-        message: "A booking has been cancelled",
-        reason: cancellationReason,
-      });
-      console.log("📢 bookingUpdate sent to BARBER room:", room);
-    }
+    // if (booking.shopId?.barberOwner) {
+    //   const room = booking.shopId.barberOwner.toString();
+    //   global.io.to(room).emit("bookingUpdate", {
+    //     bookingId: booking._id.toString(),
+    //     type: "cancelled",
+    //     customerName: booking.userId?.name,
+    //     message: "A booking has been cancelled",
+    //     reason: cancellationReason,
+    //   });
+    //   console.log("📢 bookingUpdate sent to BARBER room:", room);
+    // }
     const html = `
   <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
     <div style="max-width: 480px; margin: auto; background: #ffffff;
@@ -904,27 +904,27 @@ exports.addReview = async (req, res) => {
       });
     }
 
-    if (booking.shopId?.barberOwner) {
-      const room = booking.shopId.barberOwner.toString();
-      global.io.to(room).emit("bookingUpdate", {
-        bookingId: booking._id.toString(),
-        type: "review",
-        rating,
-        review,
-        message: `New ${rating}⭐ review received`,
-      });
-      console.log("📢 bookingUpdate (review) to BARBER room:", room);
-    }
+    // if (booking.shopId?.barberOwner) {
+    //   const room = booking.shopId.barberOwner.toString();
+    //   global.io.to(room).emit("bookingUpdate", {
+    //     bookingId: booking._id.toString(),
+    //     type: "review",
+    //     rating,
+    //     review,
+    //     message: `New ${rating}⭐ review received`,
+    //   });
+    //   console.log("📢 bookingUpdate (review) to BARBER room:", room);
+    // }
 
-    if (booking.userId?._id) {
-      const room = booking.userId._id.toString();
-      global.io.to(room).emit("bookingUpdate", {
-        bookingId: booking._id.toString(),
-        type: "review-confirmation",
-        message: "Your review has been submitted successfully ⭐",
-      });
-      console.log("📢 bookingUpdate (review confirm) to USER room:", room);
-    }
+    // if (booking.userId?._id) {
+    //   const room = booking.userId._id.toString();
+    //   global.io.to(room).emit("bookingUpdate", {
+    //     bookingId: booking._id.toString(),
+    //     type: "review-confirmation",
+    //     message: "Your review has been submitted successfully ⭐",
+    //   });
+    //   console.log("📢 bookingUpdate (review confirm) to USER room:", room);
+    // }
 
     res.status(200).json({
       success: true,

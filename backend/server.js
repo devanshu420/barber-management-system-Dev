@@ -23,29 +23,29 @@ const io = new Server(server, {
 });
 
 // ---- MAKE io GLOBAL ----
-global.io = io;
+// global.io = io;
 
 // ---- SOCKET.IO EVENTS ----
-io.on("connection", (socket) => {
-  console.log("✔ Barber connected:", socket.id);
+// io.on("connection", (socket) => {
+//   console.log("✔ Barber connected:", socket.id);
 
-  // Barber joins its own room
-  socket.on("joinBarberRoom", (barberId) => {
-    socket.join(barberId);
-    console.log(`Barber joined room: ${barberId}`);
-  });
+//   // Barber joins its own room
+//   socket.on("joinBarberRoom", (barberId) => {
+//     socket.join(barberId);
+//     console.log(`Barber joined room: ${barberId}`);
+//   });
 
-  // USER joins their own room
-socket.on("joinUserRoom", (userId) => {
-  socket.join(userId);
-  console.log(`User joined room: ${userId}`);
-});
+//   // USER joins their own room
+// socket.on("joinUserRoom", (userId) => {
+//   socket.join(userId);
+//   console.log(`User joined room: ${userId}`);
+// });
 
 
-  socket.on("disconnect", () => {
-    console.log("❌ Client disconnected:", socket.id);
-  });
-});
+//   socket.on("disconnect", () => {
+//     console.log("❌ Client disconnected:", socket.id);
+//   });
+// });
 
 
 async function syncBookingCounter() {
@@ -116,4 +116,4 @@ app.use("/api/ai", require("./routes/aiRoutes"));
 
 // START SERVER
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
