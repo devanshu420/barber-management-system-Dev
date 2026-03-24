@@ -114,26 +114,26 @@ exports.createBooking = async (req, res) => {
     await booking.save();
 
     // --- SEND REAL-TIME NOTIFICATION TO BARBER ---
-    try {
-      const shopData = await BarberShop.findById(shopId).select(
-        "shopName barberOwner",
-      );
+    // try {
+    //   const shopData = await BarberShop.findById(shopId).select(
+    //     "shopName barberOwner",
+    //   );
 
-      if (shopData && shopData.barberOwner) {
-        const ownerId = shopData.barberOwner.toString();
+    //   if (shopData && shopData.barberOwner) {
+    //     const ownerId = shopData.barberOwner.toString();
 
-        // global.io.to(ownerId).emit("newBooking", {
-        //   shopName: shopData.shopName,
-        //   service: serviceNames,
-        //   time: bookingTime,
-        //   bookingId: booking._id,
-        // });
+    //     // global.io.to(ownerId).emit("newBooking", {
+    //     //   shopName: shopData.shopName,
+    //     //   service: serviceNames,
+    //     //   time: bookingTime,
+    //     //   bookingId: booking._id,
+    //     // });
 
-        // console.log("📢 Real-time notification sent to barber:", ownerId);
-      }
-    } catch (e) {
-      console.error("Error sending socket event:", e);
-    }
+    //     // console.log("📢 Real-time notification sent to barber:", ownerId);
+    //   }
+    // } catch (e) {
+    //   console.error("Error sending socket event:", e);
+    // }
 
     const html = `
   <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 
 axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
@@ -106,54 +106,54 @@ export default function MyBookingsPage() {
 
         setBookings(transformedBookings);
 
-        if (!socket) {
-          socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-            transports: ["websocket"],
-          });
+        // if (!socket) {
+        //   socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
+        //     transports: ["websocket"],
+        //   });
 
-          socket.on("connect", () => {
-            socket.emit("joinUserRoom", userId);
-            console.log("🔌 MyBookings socket connected, joined:", userId);
-          });
+        //   socket.on("connect", () => {
+        //     socket.emit("joinUserRoom", userId);
+        //     console.log("🔌 MyBookings socket connected, joined:", userId);
+        //   });
 
-          socket.on("bookingUpdate", (payload) => {
-            console.log("🔔 bookingUpdate (bookings page):", payload);
-            const {
-              bookingId,
-              type,
-              newDate,
-              newTime,
-              rating,
-              review,
-              message,
-            } = payload;
+        //   socket.on("bookingUpdate", (payload) => {
+        //     console.log("🔔 bookingUpdate (bookings page):", payload);
+        //     const {
+        //       bookingId,
+        //       type,
+        //       newDate,
+        //       newTime,
+        //       rating,
+        //       review,
+        //       message,
+        //     } = payload;
 
-            setBookings((prev) =>
-              prev.map((b) => {
-                if (b.id !== bookingId) return b;
+        //     setBookings((prev) =>
+        //       prev.map((b) => {
+        //         if (b.id !== bookingId) return b;
 
-                if (type === "cancelled") {
-                  return { ...b, status: "cancelled" };
-                }
-                if (type === "rescheduled") {
-                  return {
-                    ...b,
-                    date: new Date(newDate).toLocaleDateString("en-GB"),
-                    time: newTime,
-                  };
-                }
-                if (type === "review") {
-                  return { ...b, isReviewed: true, rating, review };
-                }
-                return b;
-              }),
-            );
-            window.dispatchEvent(
-              new CustomEvent("bb-booking-update", { detail: payload }),
-            );
-            if (message) showToast(message, "info");
-          });
-        }
+        //         if (type === "cancelled") {
+        //           return { ...b, status: "cancelled" };
+        //         }
+        //         if (type === "rescheduled") {
+        //           return {
+        //             ...b,
+        //             date: new Date(newDate).toLocaleDateString("en-GB"),
+        //             time: newTime,
+        //           };
+        //         }
+        //         if (type === "review") {
+        //           return { ...b, isReviewed: true, rating, review };
+        //         }
+        //         return b;
+        //       }),
+        //     );
+        //     window.dispatchEvent(
+        //       new CustomEvent("bb-booking-update", { detail: payload }),
+        //     );
+        //     if (message) showToast(message, "info");
+        //   });
+        // }
       } catch (err) {
         if (err.response?.status === 401) {
           router.push("/auth/login");

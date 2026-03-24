@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Building2, Star, Bell, Search, LogOut } from "lucide-react";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 
 export default function BarberDashboardPage() {
   const router = useRouter();
@@ -69,30 +69,30 @@ export default function BarberDashboardPage() {
   }, [barberId, router]);
 
   // socket notifications
-  useEffect(() => {
-    if (!barberId) return;
+  // useEffect(() => {
+  //   if (!barberId) return;
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-      transports: ["websocket"],
-      withCredentials: true,
-    });
+  //   const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
+  //     transports: ["websocket"],
+  //     withCredentials: true,
+  //   });
 
-    socket.on("connect", () => {
-      socket.emit("joinBarberRoom", barberId);
-    });
+  //   socket.on("connect", () => {
+  //     socket.emit("joinBarberRoom", barberId);
+  //   });
 
-    socket.on("newBooking", (data) => {
-      setNotifications((prev) => [
-        {
-          message: `New booking at ${data.shopName} for ${data.service}`,
-          time: new Date().toLocaleTimeString(),
-        },
-        ...prev,
-      ]);
-    });
+  //   socket.on("newBooking", (data) => {
+  //     setNotifications((prev) => [
+  //       {
+  //         message: `New booking at ${data.shopName} for ${data.service}`,
+  //         time: new Date().toLocaleTimeString(),
+  //       },
+  //       ...prev,
+  //     ]);
+  //   });
 
-    return () => socket.disconnect();
-  }, [barberId]);
+  //   return () => socket.disconnect();
+  // }, [barberId]);
 
   // cursor glow
   useEffect(() => {

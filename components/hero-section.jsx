@@ -568,22 +568,22 @@ function HeroSlider() {
   }, [router]);
 
   // ========= SOCKET.IO FOR USER NOTIFICATIONS ==========
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return; // user not logged in → no notifications
+  // useEffect(() => {
+  //   const userId = localStorage.getItem("userId");
+  //   if (!userId) return; // user not logged in → no notifications
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+  //   const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
 
-    socket.emit("joinUserRoom", userId);
+  //   socket.emit("joinUserRoom", userId);
 
-    socket.on("bookingUpdate", (data) => {
-      alert(data.message); // temporary popup
-      console.log("New user notification:", data);
-      setNotifications((prev) => [...prev, data]);
-    });
+  //   socket.on("bookingUpdate", (data) => {
+  //     alert(data.message); // temporary popup
+  //     console.log("New user notification:", data);
+  //     setNotifications((prev) => [...prev, data]);
+  //   });
 
-    return () => socket.disconnect();
-  }, []);
+  //   return () => socket.disconnect();
+  // }, []);
 
   return (
     // full-screen hero; keep same outer classes except slider-specific ones

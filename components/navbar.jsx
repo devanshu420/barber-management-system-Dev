@@ -56,33 +56,33 @@ useEffect(() => {
     }
   }, []);
 
-  // Socket notifications (direct from backend – optional, but keep)
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
+  // // Socket notifications (direct from backend – optional, but keep)
+  // useEffect(() => {
+  //   const userId = localStorage.getItem("userId");
+  //   if (!userId) return;
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`,{
-      transports: ["websocket"],
-    });
+  //   const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`,{
+  //     transports: ["websocket"],
+  //   });
 
-    socket.on("connect", () => {
-      socket.emit("joinUserRoom", userId);
-      console.log("🔌 Navbar socket connected, joined room:", userId);
-    });
+  //   socket.on("connect", () => {
+  //     socket.emit("joinUserRoom", userId);
+  //     console.log("🔌 Navbar socket connected, joined room:", userId);
+  //   });
 
-    socket.on("bookingUpdate", (data) => {
-      console.log("🔔 bookingUpdate (navbar socket):", data);
-      setNotifications((prev) => [
-        {
-          message: data.message || "Booking updated",
-          time: new Date().toLocaleTimeString(),
-        },
-        ...prev,
-      ]);
-    });
+  //   socket.on("bookingUpdate", (data) => {
+  //     console.log("🔔 bookingUpdate (navbar socket):", data);
+  //     setNotifications((prev) => [
+  //       {
+  //         message: data.message || "Booking updated",
+  //         time: new Date().toLocaleTimeString(),
+  //       },
+  //       ...prev,
+  //     ]);
+  //   });
 
-    return () => socket.disconnect();
-  }, []);
+  //   return () => socket.disconnect();
+  // }, []);
 
   // Listen global custom event from MyBookings page
   useEffect(() => {
