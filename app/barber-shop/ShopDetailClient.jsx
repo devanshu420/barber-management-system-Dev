@@ -77,7 +77,7 @@ export default function ShopDetailClient() {
       } catch (err) {
         console.error("fetchShop error:", err);
         setError(
-          err?.response?.data?.message || err.message || "Failed to fetch shop"
+          err?.response?.data?.message || err.message || "Failed to fetch shop",
         );
       }
 
@@ -108,14 +108,14 @@ export default function ShopDetailClient() {
       if (err.code === "ERR_NETWORK") {
         showToast(
           "Network error: ensure backend is running on ${process.env.NEXT_PUBLIC_API_URL}",
-          "error"
+          "error",
         );
       } else if (err.response?.status === 404) {
         showToast("Bookings API not found. Check backend routes.", "error");
       } else {
         showToast(
           err.response?.data?.message || "Failed to load bookings",
-          "error"
+          "error",
         );
       }
     } finally {
@@ -136,7 +136,9 @@ export default function ShopDetailClient() {
       const token = localStorage.getItem("token");
 
       setBookings((prev) =>
-        prev.map((b) => (b._id === bookingId ? { ...b, status: newStatus } : b))
+        prev.map((b) =>
+          b._id === bookingId ? { ...b, status: newStatus } : b,
+        ),
       );
 
       const res = await axios.put(
@@ -144,7 +146,7 @@ export default function ShopDetailClient() {
         { status: newStatus },
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
+        },
       );
 
       if (res.data?.success) {
@@ -152,11 +154,11 @@ export default function ShopDetailClient() {
           newStatus === "confirmed"
             ? "✅ Booking confirmed!"
             : newStatus === "cancelled"
-            ? "❌ Booking cancelled!"
-            : newStatus === "completed"
-            ? "🎉 Booking completed!"
-            : "Status updated",
-          "success"
+              ? "❌ Booking cancelled!"
+              : newStatus === "completed"
+                ? "🎉 Booking completed!"
+                : "Status updated",
+          "success",
         );
         fetchBookings();
       } else {
@@ -166,7 +168,7 @@ export default function ShopDetailClient() {
       console.error("handleBookingAction error:", err);
       showToast(
         err?.response?.data?.message || "Failed to update booking",
-        "error"
+        "error",
       );
       fetchBookings();
     } finally {
@@ -198,7 +200,7 @@ export default function ShopDetailClient() {
         formData,
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
+        },
       );
 
       if (res.data?.success) {
@@ -212,10 +214,7 @@ export default function ShopDetailClient() {
       }
     } catch (err) {
       console.error("handleSubmit error:", err);
-      showToast(
-        err?.response?.data?.message || "Error updating shop",
-        "error"
-      );
+      showToast(err?.response?.data?.message || "Error updating shop", "error");
     } finally {
       setUpdating(false);
     }
@@ -268,7 +267,7 @@ export default function ShopDetailClient() {
     const handleMouseEnter = () => setHovering(true);
     const handleMouseLeave = () => setHovering(false);
     const elements = document.querySelectorAll(
-      "button, a, [tabindex]:not([tabindex='-1']), input, textarea, label"
+      "button, a, [tabindex]:not([tabindex='-1']), input, textarea, label",
     );
     elements.forEach((el) => {
       el.addEventListener("mouseenter", handleMouseEnter);
@@ -547,7 +546,7 @@ export default function ShopDetailClient() {
                                   onChange={handleLocationChange}
                                   className="bg-slate-950/70 border border-slate-800 text-sm text-slate-100 px-3 py-2.5 rounded-lg focus:outline-none focus:border-cyan-400"
                                 />
-                              )
+                              ),
                             )}
                           </div>
                         </div>
@@ -605,8 +604,7 @@ export default function ShopDetailClient() {
                 ) : bookings.length ? (
                   <div className="space-y-4">
                     {bookings.map((booking, i) => {
-                      const bookingNumberLabel =
-                        booking.bookingNumber || "N/A";
+                      const bookingNumberLabel = booking.bookingNumber || "N/A";
                       return (
                         <motion.div
                           key={booking._id || i}
@@ -637,7 +635,7 @@ export default function ShopDetailClient() {
                             </div>
                             <span
                               className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                booking.status
+                                booking.status,
                               )}`}
                             >
                               {booking.status
@@ -653,13 +651,12 @@ export default function ShopDetailClient() {
                               📅{" "}
                               {booking.bookingDate
                                 ? new Date(
-                                    booking.bookingDate
+                                    booking.bookingDate,
                                   ).toLocaleDateString()
                                 : "Date not set"}
                             </p>
                             <p>
-                              🕒{" "}
-                              {booking.bookingTime?.startTime || "N/A"} –{" "}
+                              🕒 {booking.bookingTime?.startTime || "N/A"} –{" "}
                               {booking.bookingTime?.endTime || "N/A"}
                             </p>
                             {booking.amount && (
@@ -680,12 +677,10 @@ export default function ShopDetailClient() {
                                   onClick={() =>
                                     handleBookingAction(
                                       booking._id,
-                                      "confirmed"
+                                      "confirmed",
                                     )
                                   }
-                                  disabled={
-                                    updatingBookingId === booking._id
-                                  }
+                                  disabled={updatingBookingId === booking._id}
                                   className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 text-black shadow-md shadow-cyan-500/30 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-1"
                                 >
                                   <Check className="w-3.5 h-3.5" />
@@ -724,10 +719,7 @@ export default function ShopDetailClient() {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() =>
-                                  handleBookingAction(
-                                    booking._id,
-                                    "completed"
-                                  )
+                                  handleBookingAction(booking._id, "completed")
                                 }
                                 disabled={updatingBookingId === booking._id}
                                 className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-indigo-500 to-blue-400 text-white shadow-md shadow-indigo-500/30 flex items-center gap-1"

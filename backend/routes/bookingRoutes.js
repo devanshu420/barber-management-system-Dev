@@ -12,45 +12,32 @@ const {
   addReview,
   getAllBookings,
   getBookingStats,
-  searchBookingByNumber
+  searchBookingByNumber,
 } = require("../controllers/bookingController");
 const { authenticate } = require("../middlewares/authMiddleware");
 
-// 🔹 Create booking (user)
+// Create booking
 router.post("/create-bookings", authenticate, createBooking);
 
-// 🔹 Get user's bookings
+// User bookings
 router.get("/user", authenticate, getUserBookings);
 
-// 🔹 Get single booking by ID
-router.get("/:id", authenticate, getBookingById);
-
-// 🔹 Get shop's bookings (for barber)
-router.get("/shop/:shopId", getShopBookings);  //http://localhost:5000/api/bookings/shop/:shopId
-
-// 🔹 Get booked slots for specific date
+// Shop routes
 router.get("/shop/:shopId/date/:date", getBookedSlots);
+router.get("/shop/:shopId", getShopBookings);
 
-// 🔹 Update booking status
-router.put("/:id/status", authenticate, updateBookingStatus);
-
-// 🔹 Reschedule booking
-router.put("/:id/reschedule", authenticate, rescheduleBooking);
-
-// 🔹 Cancel booking
-router.put("/:id/cancel", authenticate, cancelBooking);
-
-// 🔹 Add review
-router.put("/:id/review", authenticate, addReview);
-
-// 🔹 Admin: Get all bookings
+// Admin routes
 router.get("/admin/bookings", authenticate, getAllBookings);
-
-// 🔹 Admin: Get booking statistics
 router.get("/admin/bookings/stats/:shopId", authenticate, getBookingStats);
 
-// 🔹 Search booking by booking number
+// Search
 router.get("/search/:bookingNumber", searchBookingByNumber);
 
-module.exports = router;
+// Single booking by id
+router.get("/:id", authenticate, getBookingById);
+router.put("/:id/status", authenticate, updateBookingStatus);
+router.put("/:id/reschedule", authenticate, rescheduleBooking);
+router.put("/:id/cancel", authenticate, cancelBooking);
+router.put("/:id/review", authenticate, addReview);
 
+module.exports = router;

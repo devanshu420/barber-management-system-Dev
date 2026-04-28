@@ -14,18 +14,18 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 
-const { Server } = require("socket.io");
-const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:3000", "https://barber-book-dev.vercel.app"],
-    methods: ["GET", "POST"],
-  },
-});
+// const { Server } = require("socket.io");
+// const io = new Server(server, {
+//   cors: {
+//     origin: ["http://localhost:3000", "https://barber-book-dev.vercel.app"],
+//     methods: ["GET", "POST"],
+//   },
+// });
 
-// ---- MAKE io GLOBAL ----
+// // ---- MAKE io GLOBAL ----
 // global.io = io;
 
-// ---- SOCKET.IO EVENTS ----
+// // ---- SOCKET.IO EVENTS ----
 // io.on("connection", (socket) => {
 //   console.log("✔ Barber connected:", socket.id);
 
@@ -113,7 +113,10 @@ app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/ai", require("./routes/aiRoutes"));
+app.use("/api/hairstyle", require("./routes/hairstyle.routes"));
 
 // START SERVER
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on ${PORT}`);
+});

@@ -2,48 +2,91 @@ const jwt = require("jsonwebtoken")
 const User = require("../models/User")
 
 // Verify JWT token
+// exports.authenticate = async (req, res, next) => {
+//   try {
+//     const token = req.header("Authorization")?.replace("Bearer ", "")
+
+//     if (!token) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Access token is required",
+//       })
+//     }
+
+//     // Verify token
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+//     // Find user
+//     const user = await User.findById(decoded.userId)
+
+//     if (!user || !user.isActive) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Invalid token or user not found",
+//       })
+//     }
+
+//     // Add user to request
+//     req.user = {
+//       id: user._id,
+//       email: user.email,
+//       role: user.role,
+//       name: user.name,
+//     }
+
+//     next()
+//   } catch (error) {
+//     console.error("Authentication error:", error)
+//     res.status(401).json({
+//       success: false,
+//       message: "Invalid or expired token",
+//       error: error.message,
+//     })
+//   }
+// }
+
+
+// Verify JWT token
 exports.authenticate = async (req, res, next) => {
   try {
-    const token = req.header("Authorization")?.replace("Bearer ", "")
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
       return res.status(401).json({
         success: false,
         message: "Access token is required",
-      })
+      });
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Find user
-    const user = await User.findById(decoded.userId)
+    const user = await User.findById(decoded.userId);
 
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
         message: "Invalid token or user not found",
-      })
+      });
     }
 
-    // Add user to request
     req.user = {
-      id: user._id,
+      _id: user._id,
+      id: user._id.toString(),
       email: user.email,
       role: user.role,
       name: user.name,
-    }
+    };
 
-    next()
+    next();
   } catch (error) {
-    console.error("Authentication error:", error)
+    console.error("Authentication error:", error);
     res.status(401).json({
       success: false,
       message: "Invalid or expired token",
       error: error.message,
-    })
+    });
   }
-}
+};
 
 // Role-based access control
 exports.authorize = (...roles) => {

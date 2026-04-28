@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Building2, Star, Bell, Search, LogOut } from "lucide-react";
-// import { io } from "socket.io-client";
+import { io } from "socket.io-client";
 
 export default function BarberDashboardPage() {
   const router = useRouter();
@@ -50,7 +50,7 @@ export default function BarberDashboardPage() {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/barbers/barbershops/${barberId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/barbers/barbershops/${barberId}`,
         );
 
         if (mounted) setShops(data.success ? data.data : []);
@@ -69,30 +69,30 @@ export default function BarberDashboardPage() {
   }, [barberId, router]);
 
   // socket notifications
-  // useEffect(() => {
-  //   if (!barberId) return;
+  useEffect(() => {
+    if (!barberId) return;
 
-  //   const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-  //     transports: ["websocket"],
-  //     withCredentials: true,
-  //   });
+    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
+      transports: ["websocket"],
+      withCredentials: true,
+    });
 
-  //   socket.on("connect", () => {
-  //     socket.emit("joinBarberRoom", barberId);
-  //   });
+    socket.on("connect", () => {
+      socket.emit("joinBarberRoom", barberId);
+    });
 
-  //   socket.on("newBooking", (data) => {
-  //     setNotifications((prev) => [
-  //       {
-  //         message: `New booking at ${data.shopName} for ${data.service}`,
-  //         time: new Date().toLocaleTimeString(),
-  //       },
-  //       ...prev,
-  //     ]);
-  //   });
+    socket.on("newBooking", (data) => {
+      setNotifications((prev) => [
+        {
+          message: `New booking at ${data.shopName} for ${data.service}`,
+          time: new Date().toLocaleTimeString(),
+        },
+        ...prev,
+      ]);
+    });
 
-  //   return () => socket.disconnect();
-  // }, [barberId]);
+    return () => socket.disconnect();
+  }, [barberId]);
 
   // cursor glow
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function BarberDashboardPage() {
       setSearchError("");
 
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/search/${bookingNumber}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/search/${bookingNumber}`,
       );
 
       setBookingResult(res.data.data);
@@ -168,7 +168,7 @@ export default function BarberDashboardPage() {
         { status },
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
+        },
       );
 
       if (res.data?.success) {
@@ -178,16 +178,16 @@ export default function BarberDashboardPage() {
           status === "confirmed"
             ? "✅ Booking confirmed!"
             : status === "cancelled"
-            ? "❌ Booking cancelled!"
-            : status === "completed"
-            ? "🎉 Booking completed!"
-            : "Booking updated"
+              ? "❌ Booking cancelled!"
+              : status === "completed"
+                ? "🎉 Booking completed!"
+                : "Booking updated",
         );
       }
     } catch (err) {
       showToast(
         err?.response?.data?.message || "Failed to update booking",
-        "error"
+        "error",
       );
     }
   };
@@ -203,7 +203,7 @@ export default function BarberDashboardPage() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       localStorage.clear();
@@ -212,6 +212,21 @@ export default function BarberDashboardPage() {
       console.error("Logout error:", error);
       localStorage.clear();
       router.push("/auth/login");
+    }
+  };
+
+  const fallback = "https://via.placeholder.com/600x300?text=Barbershop";
+
+  const getValidImage = (url) => {
+    if (!url) return fallback;
+
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "http:" || parsed.protocol === "https:"
+        ? url
+        : fallback;
+    } catch {
+      return fallback;
     }
   };
 
@@ -244,11 +259,11 @@ export default function BarberDashboardPage() {
         />
       </Head>
 
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#071012] via-[#0b0e13] to-[#030405] px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-[#071012] via-[#0b0e13] to-[#030405] px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Glow Cursor */}
         <div
           ref={glowRef}
-          className="pointer-events-none fixed z-20 w-32 sm:w-40 h-32 sm:h-40 rounded-full blur-3xl opacity-40 bg-gradient-to-tr from-cyan-400/40 to-teal-500/20 mix-blend-screen"
+          className="pointer-events-none fixed z-20 w-32 sm:w-40 h-32 sm:h-40 rounded-full blur-3xl opacity-40 bg-linear-to-tr from-cyan-400/40 to-teal-500/20 mix-blend-screen"
         />
         <div
           ref={cursorRef}
@@ -263,7 +278,8 @@ export default function BarberDashboardPage() {
                 My Shops
               </h1>
               <p className="mt-2 text-xs sm:text-sm text-gray-400 max-w-xl">
-                Manage your barber shops — edit details, view services & ratings.
+                Manage your barber shops — edit details, view services &
+                ratings.
               </p>
             </div>
 
@@ -323,7 +339,10 @@ export default function BarberDashboardPage() {
               </motion.button>
 
               {/* Add Shop */}
-              <Link href="/barber-shop-registration" className="order-2 sm:order-3">
+              <Link
+                href="/barber-shop-registration"
+                className="order-2 sm:order-3"
+              >
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -375,16 +394,16 @@ export default function BarberDashboardPage() {
                   whileHover={{ scale: 1.02 }}
                   className="group"
                 >
-                  <Link href={`/barber-shop/${shop._id}`} className="block h-full">
-                    <Card className="h-full overflow-hidden border border-gray-700 rounded-2xl bg-gradient-to-br from-[#0b1114]/60 to-[#061011]/40 backdrop-blur-md shadow-lg hover:shadow-[0_20px_60px_rgba(20,220,200,0.08)] transition-shadow">
+                  <Link
+                    href={`/barber-shop/${shop._id}`}
+                    className="block h-full"
+                  >
+                    <Card className="h-full overflow-hidden border border-gray-700 rounded-2xl bg-[#05080a] backdrop-blur-md shadow-lg hover:shadow-[0_20px_60px_rgba(20,220,200,0.08)] transition-shadow">
                       {/* image */}
                       <div className="relative w-full rounded-xl overflow-hidden border border-gray-800 bg-gray-900/70">
                         <div className="relative w-full pt-[60%]">
                           <img
-                            src={
-                              shop.image?.url ||
-                              "https://via.placeholder.com/600x300?text=Barbershop"
-                            }
+                            src={shop.image?.url}
                             alt={shop.shopName}
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                             onError={(e) => {
@@ -399,7 +418,7 @@ export default function BarberDashboardPage() {
                         <div className="flex items-center gap-3 sm:gap-4">
                           <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-300" />
                           <div>
-                            <CardTitle className="text-white text-sm sm:text-lg font-semibold truncate max-w-[160px] sm:max-w-xs">
+                            <CardTitle className="text-white text-sm sm:text-lg font-semibold truncate max-w-40 sm:max-w-xs">
                               {shop.shopName}
                             </CardTitle>
                             <p className="text-[11px] sm:text-xs text-gray-400">
@@ -468,7 +487,7 @@ export default function BarberDashboardPage() {
                   <button
                     onClick={searchBooking}
                     disabled={searchLoading}
-                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-cyan-500 text-black rounded-lg text-xs sm:text-sm min-w-[100px] sm:min-w-[110px]"
+                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-cyan-500 text-black rounded-lg text-xs sm:text-sm min-w-25 sm:min-w-27.5"
                   >
                     {searchLoading ? (
                       <>
@@ -503,9 +522,7 @@ export default function BarberDashboardPage() {
 
                   <p className="text-xs sm:text-sm text-gray-400">
                     Date:{" "}
-                    {new Date(
-                      bookingResult.bookingDate
-                    ).toLocaleDateString()}
+                    {new Date(bookingResult.bookingDate).toLocaleDateString()}
                   </p>
 
                   <p className="text-xs sm:text-sm text-gray-400">

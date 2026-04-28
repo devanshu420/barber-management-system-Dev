@@ -35,12 +35,13 @@ export function Navbar() {
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
     { name: "Bookings", href: "/my-booking" },
+    { name: "AI-HairStyle", href: "/hairstyle-generation" },
   ];
 
-useEffect(() => {
-  if (typeof window === "undefined") return;
-  setUserAvatar(localStorage.getItem("userProfilePhoto") || null);
-}, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setUserAvatar(localStorage.getItem("userProfilePhoto") || null);
+  }, []);
 
   // Load auth state
   useEffect(() => {
@@ -56,33 +57,39 @@ useEffect(() => {
     }
   }, []);
 
-  // // Socket notifications (direct from backend – optional, but keep)
-  // useEffect(() => {
-  //   const userId = localStorage.getItem("userId");
-  //   if (!userId) return;
+  // Socket notifications (direct from backend – optional, but keep)
+// useEffect(() => {
+//   const userId = localStorage.getItem("userId");
+//   if (!userId) return;
 
-  //   const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`,{
-  //     transports: ["websocket"],
-  //   });
+//   const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
+//     transports: ["websocket"],
+//   });
 
-  //   socket.on("connect", () => {
-  //     socket.emit("joinUserRoom", userId);
-  //     console.log("🔌 Navbar socket connected, joined room:", userId);
-  //   });
+//   socket.on("connect", () => {
+//     socket.emit("joinUserRoom", userId);
+//     console.log("🔌 Navbar socket connected, joined room:", userId);
+//   });
 
-  //   socket.on("bookingUpdate", (data) => {
-  //     console.log("🔔 bookingUpdate (navbar socket):", data);
-  //     setNotifications((prev) => [
-  //       {
-  //         message: data.message || "Booking updated",
-  //         time: new Date().toLocaleTimeString(),
-  //       },
-  //       ...prev,
-  //     ]);
-  //   });
+//   socket.on("bookingUpdate", (data) => {
+//     console.log("🔔 bookingUpdate (navbar socket):", data);
+//     setNotifications((prev) => [
+//       {
+//         message:
+//           data.message ||
+//           (data.type === "cancelled"
+//             ? "Your booking was cancelled"
+//             : data.type === "rescheduled"
+//               ? "Your booking was rescheduled"
+//               : "Booking updated"),
+//         time: new Date().toLocaleTimeString(),
+//       },
+//       ...prev,
+//     ]);
+//   });
 
-  //   return () => socket.disconnect();
-  // }, []);
+//   return () => socket.disconnect();
+// }, []);
 
   // Listen global custom event from MyBookings page
   useEffect(() => {
@@ -97,8 +104,8 @@ useEffect(() => {
             (data.type === "cancelled"
               ? "Your booking was cancelled"
               : data.type === "rescheduled"
-              ? "Your booking was rescheduled"
-              : "Booking updated"),
+                ? "Your booking was rescheduled"
+                : "Booking updated"),
           time: new Date().toLocaleTimeString(),
         },
         ...prev,
@@ -169,10 +176,7 @@ useEffect(() => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center space-x-2 group shrink-0"
-          >
+          <Link href="/" className="flex items-center space-x-2 group shrink-0">
             <Image
               src="/barberbook-logo.png"
               alt="BarberBook Logo"
@@ -291,50 +295,49 @@ useEffect(() => {
                   )}
                 </div> */}
                 <div className="relative profile-dropdown">
-  <button
-    onClick={() => setIsProfileOpen(!isProfileOpen)}
-    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition duration-300 group cursor-pointer"
-  >
-    <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-xs font-bold text-black">
-      {userAvatar ? (
-        <img
-          src={userAvatar}
-          alt={userName}
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        userName?.charAt(0).toUpperCase()
-      )}
-    </div>
-    <span className="text-sm font-medium text-gray-300 hidden sm:block group-hover:text-teal-400">
-      {userName}
-    </span>
-    <ChevronDown
-      className={`w-4 h-4 text-gray-400 transition duration-300 ${
-        isProfileOpen ? "rotate-180" : ""
-      }`}
-    />
-  </button>
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition duration-300 group cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-xs font-bold text-black">
+                      {userAvatar ? (
+                        <img
+                          src={userAvatar}
+                          alt={userName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        userName?.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <span className="text-sm font-medium text-gray-300 hidden sm:block group-hover:text-teal-400">
+                      {userName}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-400 transition duration-300 ${
+                        isProfileOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
 
-  {isProfileOpen && (
-    <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl py-2 animate-fadeIn">
-      <Link href="/dashboard/customer">
-        <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-teal-400 hover:bg-gray-800/50 flex items-center space-x-2 transition cursor-pointer">
-          <User className="w-4 h-4" />
-          <span>Dashboard</span>
-        </button>
-      </Link>
-      <button
-        onClick={handleLogout}
-        className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800/50 flex items-center space-x-2 transition border-t border-gray-800 cursor-pointer"
-      >
-        <LogOut className="w-4 h-4" />
-        <span>Sign Out</span>
-      </button>
-    </div>
-  )}
-</div>
-
+                  {isProfileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl py-2 animate-fadeIn">
+                      <Link href="/dashboard/customer">
+                        <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-teal-400 hover:bg-gray-800/50 flex items-center space-x-2 transition cursor-pointer">
+                          <User className="w-4 h-4" />
+                          <span>Dashboard</span>
+                        </button>
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-gray-800/50 flex items-center space-x-2 transition border-t border-gray-800 cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <Button
@@ -459,13 +462,6 @@ useEffect(() => {
   );
 }
 
-
-
-
-
-
-
-
 // "use client";
 
 // import { useEffect, useState } from "react";
@@ -493,7 +489,6 @@ useEffect(() => {
 //   const [userName, setUserName] = useState("");
 // const [notifications, setNotifications] = useState([]);
 // const [showNotifications, setShowNotifications] = useState(false);
-
 
 //   const router = useRouter();
 
@@ -543,7 +538,6 @@ useEffect(() => {
 //   return () => socket.disconnect();
 // }, [isAuthenticated]);
 
-
 //   // 🔹 Handle logout
 //   const handleLogout = () => {
 //     try {
@@ -552,8 +546,6 @@ useEffect(() => {
 //       localStorage.removeItem("userEmail");
 //       localStorage.removeItem("userId");
 //       localStorage.removeItem("userRole");
-
-
 
 //       setIsAuthenticated(false);
 //       setUserName("");
@@ -624,7 +616,6 @@ useEffect(() => {
 //   </span>
 // </Link>
 
-
 //           {/* 🔹 Desktop Navigation Menu */}
 //           <div className="hidden lg:flex items-center space-x-1">
 //             {navLinks.map((link) => (
@@ -635,7 +626,6 @@ useEffect(() => {
 //               </Link>
 //             ))}
 //           </div>
-
 
 //           {/* 🔹 Desktop Auth Section */}
 //           <div className="hidden md:flex items-center space-x-2">
@@ -652,7 +642,7 @@ useEffect(() => {
 //                     <span className="hidden sm:inline">Wallet</span>
 //                   </Button>
 //                 </Link>
-                
+
 //           {/* 🔔 Notification Bell */}
 // <div
 //   className="relative cursor-pointer mr-3"
@@ -693,7 +683,6 @@ useEffect(() => {
 //     </div>
 //   )}
 // </div>
-
 
 //                 {/* Profile Dropdown */}
 //                 <div className="relative profile-dropdown">
@@ -873,6 +862,3 @@ useEffect(() => {
 //     </nav>
 //   );
 // }
-
-
-
