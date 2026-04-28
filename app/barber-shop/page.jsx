@@ -143,11 +143,18 @@ export default function BarberDashboardPage() {
     try {
       setSearchLoading(true);
       setSearchError("");
-
+      const token = localStorage.getItem("token");
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/search/${bookingNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // MUST
+          },
+        },
       );
 
+      console.log(res);
+      
       setBookingResult(res.data.data);
     } catch (err) {
       setBookingResult(null);
@@ -487,11 +494,11 @@ export default function BarberDashboardPage() {
                   <button
                     onClick={searchBooking}
                     disabled={searchLoading}
-                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-cyan-500 text-black rounded-lg text-xs sm:text-sm min-w-25 sm:min-w-27.5"
+                    className="flex items-center justify-center gap-2 px-3 cursor-pointer sm:px-4 py-2 bg-cyan-500 text-black rounded-lg text-xs sm:text-sm min-w-25 sm:min-w-27.5"
                   >
                     {searchLoading ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                        <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin cursor-pointer" />
                         Searching
                       </>
                     ) : (
@@ -514,6 +521,13 @@ export default function BarberDashboardPage() {
                 <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
                   <p className="text-white font-semibold mb-2 text-sm sm:text-base">
                     Booking {bookingResult.bookingNumber}
+                  </p>
+
+                  <p className="text-xs sm:text-sm text-gray-400">
+                    Shop:{" "}
+                    <span className="text-cyan-300 font-medium">
+                      {bookingResult.shopId?.shopName || "N/A"}
+                    </span>
                   </p>
 
                   <p className="text-xs sm:text-sm text-gray-400">

@@ -899,34 +899,35 @@ exports.getBookingStats = async (req, res) => {
 
 /* -------------------------- SEARCH BOOKING NUMBER -------------------------- */
 
-exports.searchBookingByNumber = async (req, res) => {
-  try {
-    const bookingNumber = req.params.bookingNumber.toUpperCase();
+// exports.searchBookingByNumber = async (req, res) => {
+//   try {
+//     console.log("SEARCH BOOKING BY NUMBER");
+//     const bookingNumber = req.params.bookingNumber.toUpperCase();
 
-    const booking = await Booking.findOne({ bookingNumber })
-      .populate("userId", "name email")
-      .populate("shopId", "shopName location")
-      .lean();
+//     const booking = await Booking.findOne({ bookingNumber })
+//       .populate("userId", "name email")
+//       .populate("shopId", "shopName location")
+//       .lean();
 
-    if (!booking) {
-      return res.status(404).json({
-        success: false,
-        message: "Booking not found",
-      });
-    }
+//     if (!booking) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Booking not found",
+//       });
+//     }
 
-    return res.json({
-      success: true,
-      data: booking,
-    });
-  } catch (err) {
-    console.error("Search booking error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to search booking",
-    });
-  }
-};
+//     return res.json({
+//       success: true,
+//       data: booking,
+//     });
+//   } catch (err) {
+//     console.error("Search booking error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to search booking",
+//     });
+//   }
+// };
 
 
 
@@ -2977,3 +2978,63 @@ exports.searchBookingByNumber = async (req, res) => {
 // //     });
 // //   }
 // // };
+
+exports.searchBookingByNumber = async (req, res) => {
+  try {
+    console.log("SEARCH BOOKING BY NUMBER HIT");
+
+    const bookingNumber = req.params.bookingNumber?.toUpperCase();
+    const barberId = req.user._id;
+
+    console.log("BOOKING NUMBER:", bookingNumber);
+    console.log("BARBER ID:", barberId);
+
+    if (!bookingNumber) {
+      return res.status(400).json({
+        success: false,
+        message: "Booking number required",
+      });
+    }
+
+    //  IMPORTANT: restrict by barber owner via shop
+    const booking = await Booking.findOne({
+      bookingNumber,
+    })
+      .populate({
+        path: "shopId",
+        select: "shopName barberOwner location",
+      })
+      .populate("userId", "name email")
+      .lean();
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    //  SECURITY FILTER (VERY IMPORTANT)
+    if (
+      booking.shopId?.barberOwner?.toString() !== barberId.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "This Booking is not found in you shops",
+      });
+    }
+
+    console.log("BOOKING FOUND:", booking.bookingNumber);
+
+    return res.json({
+      success: true,
+      data: booking,
+    });
+  } catch (err) {
+    console.error("Search booking error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to search booking",
+    });
+  }
+};

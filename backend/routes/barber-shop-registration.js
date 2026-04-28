@@ -166,7 +166,10 @@ const handleValidationErrors = (req, res, next) => {
 //   }
 // );
 
-const { authenticate, requireBarber } = require("../middlewares/authMiddleware");
+const {
+  authenticate,
+  requireBarber,
+} = require("../middlewares/authMiddleware");
 
 // REGISTER SHOP (with optional single image)
 router.post(
@@ -527,43 +530,198 @@ router.get("/nearby-shops", async (req, res) => {
 // ROUTE 6: UPDATE SHOP
 // ============================================
 
-router.put("/shops/:id", async (req, res) => {
-  try {
-    const shopId = req.params.id;
+// router.put("/shops/:id", async (req, res) => {
+//   try {
+//     const shopId = req.params.id;
 
-    let updateData = { ...req.body };
-    if (req.body.services) {
-      updateData.services = JSON.parse(req.body.services);
-    }
-    if (req.body.workingHours) {
-      updateData.workingHours = JSON.parse(req.body.workingHours);
-    }
+//     // ==============================
+//     // 1. FIND EXISTING SHOP
+//     // ==============================
+//     const existingShop = await BarberShop.findById(shopId);
 
-    const shop = await BarberShop.findByIdAndUpdate(shopId, updateData, {
-      new: true,
-      runValidators: true,
-    }).select("-__v");
+//     if (!existingShop) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Shop not found",
+//       });
+//     }
 
-    if (!shop) {
-      return res.status(404).json({
+//     // ==============================
+//     // 2. PREPARE UPDATE DATA
+//     // ==============================
+//     let updateData = { ...req.body };
+
+//     // Parse JSON fields if coming from form-data
+//     if (req.body.services) {
+//       updateData.services =
+//         typeof req.body.services === "string"
+//           ? JSON.parse(req.body.services)
+//           : req.body.services;
+//     }
+
+//     if (req.body.workingHours) {
+//       updateData.workingHours =
+//         typeof req.body.workingHours === "string"
+//           ? JSON.parse(req.body.workingHours)
+//           : req.body.workingHours;
+//     }
+
+//     // ==============================
+//     // 3. FIX LOCATION (IMPORTANT)
+//     // ==============================
+//     if (updateData.location) {
+//       updateData.location = {
+//         ...existingShop.location.toObject(), // preserve old
+//         ...updateData.location, // override new values
+//       };
+
+//       //  ensure coordinates always exist
+//       if (!updateData.location.coordinates) {
+//         updateData.location.coordinates =
+//           existingShop.location.coordinates;
+//       }
+//     }
+
+//     // ==============================
+//     // 4. UPDATE SHOP
+//     // ==============================
+//     const updatedShop = await BarberShop.findByIdAndUpdate(
+//       shopId,
+//       updateData,
+//       {
+//         new: true,
+//         runValidators: true,
+//       }
+//     ).select("-__v");
+
+//     return res.json({
+//       success: true,
+//       message: "Shop updated successfully",
+//       data: updatedShop,
+//     });
+//   } catch (error) {
+//     console.error("Update shop error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message || "Failed to update shop",
+//     });
+//   }
+// });
+
+router.put(
+  "/shops/:id",
+  authenticate,
+  requireBarber,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const shopId = req.params.id;
+
+      // 1. Existing shop
+      const existingShop = await BarberShop.findById(shopId);
+      if (!existingShop) {
+        return res.status(404).json({
+          success: false,
+          message: "Shop not found",
+        });
+      }
+
+      let updateData = { ...req.body };
+
+      // ==============================
+      // ✅ PARSE JSON FIELDS
+      // ==============================
+      const safeParse = (data) => {
+        try {
+          return typeof data === "string" ? JSON.parse(data) : data;
+        } catch {
+          return data;
+        }
+      };
+
+      updateData.services = safeParse(req.body.services);
+      updateData.workingHours = safeParse(req.body.workingHours);
+      updateData.location = safeParse(req.body.location);
+      updateData.staff = safeParse(req.body.staff);
+
+      // ==============================
+      // ✅ LOCATION MERGE FIX
+      // ==============================
+      if (updateData.location) {
+        updateData.location = {
+          ...existingShop.location.toObject(),
+          ...updateData.location,
+        };
+
+        if (!updateData.location.coordinates) {
+          updateData.location.coordinates = existingShop.location.coordinates;
+        }
+      }
+
+      // ==============================
+      // 🔥 IMAGE UPDATE LOGIC
+      // ==============================
+      if (req.file) {
+        try {
+          // 👉 1. Delete old image (optional but recommended)
+          if (existingShop.image?.imageId) {
+            try {
+              await imagekit.deleteFile(existingShop.image.imageId);
+            } catch (err) {
+              console.warn("Old image delete failed:", err.message);
+            }
+          }
+
+          // 👉 2. Upload new image
+          const uploadedImage = await uploadImage({
+            buffer: req.file.buffer,
+            folder: "/barber-book/shops",
+          });
+
+          // 👉 3. Save new image
+          updateData.image = {
+            url: uploadedImage.url,
+            thumbnail: uploadedImage.thumbnail,
+            imageId: uploadedImage.id,
+            uploadedAt: new Date(),
+          };
+        } catch (err) {
+          console.error("Image update error:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to update image",
+          });
+        }
+      }
+
+      // ==============================
+      // ✅ UPDATE SHOP
+      // ==============================
+      const updatedShop = await BarberShop.findByIdAndUpdate(
+        shopId,
+        updateData,
+        {
+          new: true,
+          runValidators: true,
+        },
+      ).select("-__v");
+
+      return res.json({
+        success: true,
+        message: "Shop updated successfully",
+        data: updatedShop,
+      });
+    } catch (error) {
+      console.error("Update shop error:", error);
+
+      return res.status(500).json({
         success: false,
-        message: "Shop not found",
+        message: error.message || "Failed to update shop",
       });
     }
-
-    return res.json({
-      success: true,
-      message: "Shop updated successfully",
-      data: shop,
-    });
-  } catch (error) {
-    console.error("Update shop error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to update shop",
-    });
-  }
-});
+  },
+);
 
 // ============================================
 // ROUTE 7: DELETE SHOP
@@ -630,7 +788,9 @@ router.get("/barbershops/:ownerId", async (req, res) => {
 // ROUTE 9: SEARCH SHOPS
 // ============================================
 
-router.get("/search", async (req, res) => {
+router.get("/search", authenticate, requireBarber, async (req, res) => {
+
+  
   try {
     const searchQuery = req.query.q;
     const searchType = req.query.type || "all";
@@ -642,8 +802,16 @@ router.get("/search", async (req, res) => {
         message: "Search query must be at least 2 characters",
       });
     }
+   // ✅ IMPORTANT FIX (ObjectId safe)
+    const barberId = req.user._id;
+    console.log("BARBER ID:", barberId);
 
-    let filter = { isActive: true, isVerified: true };
+    let filter = {
+      isActive: true,
+      isVerified: true,
+      barberOwner: barberId, // 🔥 STRICT OWNER FILTER
+    };
+
     const regex = { $regex: searchQuery, $options: "i" };
 
     if (searchType === "name") {
@@ -662,8 +830,10 @@ router.get("/search", async (req, res) => {
     }
 
     const shops = await BarberShop.find(filter)
-      .select("-__v")
-      .sort({ rating: -1 })
+      .select(
+        "shopName location.city location.address image.url services.name ratings isVerified",
+      )
+      .sort({ createdAt: -1 })
       .limit(limit)
       .lean();
 
@@ -671,8 +841,15 @@ router.get("/search", async (req, res) => {
       success: true,
       count: shops.length,
       query: searchQuery,
-      searchType,
-      data: shops,
+      data: shops.map((shop) => ({
+        id: shop._id,
+        shopName: shop.shopName,
+        city: shop.location?.city,
+        address: shop.location?.address,
+        image: shop.image?.url,
+        servicesCount: shop.services?.length || 0,
+        rating: shop.ratings?.average || 0,
+      })),
     });
   } catch (error) {
     console.error("Search error:", error);
@@ -806,4 +983,3 @@ router.get("/top-rated", async (req, res) => {
 });
 
 module.exports = router;
-

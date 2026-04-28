@@ -14,7 +14,7 @@ const {
   getBookingStats,
   searchBookingByNumber,
 } = require("../controllers/bookingController");
-const { authenticate } = require("../middlewares/authMiddleware");
+const { authenticate, requireBarber } = require("../middlewares/authMiddleware");
 
 // Create booking
 router.post("/create-bookings", authenticate, createBooking);
@@ -31,7 +31,12 @@ router.get("/admin/bookings", authenticate, getAllBookings);
 router.get("/admin/bookings/stats/:shopId", authenticate, getBookingStats);
 
 // Search
-router.get("/search/:bookingNumber", searchBookingByNumber);
+router.get(
+  "/search/:bookingNumber",
+  authenticate,
+  requireBarber,
+  searchBookingByNumber,
+);
 
 // Single booking by id
 router.get("/:id", authenticate, getBookingById);
