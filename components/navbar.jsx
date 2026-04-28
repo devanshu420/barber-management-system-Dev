@@ -205,7 +205,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-2">
             {isAuthenticated ? (
               <>
-                <Link href="/payment">
+                {/* <Link href="/payment">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -214,7 +214,7 @@ export function Navbar() {
                     <Wallet className="w-4 h-4 mr-2" />
                     <span className="hidden sm:inline">Wallet</span>
                   </Button>
-                </Link>
+                </Link> */}
 
                 {/* Notification bell */}
                 <div

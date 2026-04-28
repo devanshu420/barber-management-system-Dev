@@ -9,36 +9,36 @@ export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState("customer");
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center px-4">
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center px-4 sm:px-6 py-8">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-center">
         {/* Left: Content */}
-        <div className="space-y-6 text-center lg:text-left">
+        <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
           <Link
             href="/"
-            className="inline-flex items-center space-x-3 group mb-4 justify-center lg:justify-start"
+            className="inline-flex items-center space-x-2 sm:space-x-3 group mb-3 sm:mb-4 justify-center lg:justify-start"
           >
-            <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center group-hover:bg-teal-600 transition">
-              <Scissors className="h-6 w-6 text-white" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-teal-500 rounded-xl flex items-center justify-center group-hover:bg-teal-600 transition">
+              <Scissors className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <span className="font-bold text-3xl text-white group-hover:text-teal-400 transition">
+            <span className="font-bold text-2xl sm:text-3xl text-white group-hover:text-teal-400 transition">
               BarberBook
             </span>
           </Link>
 
-          <div className="space-y-3">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+          <div className="space-y-2 sm:space-y-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight">
               Welcome back to your{" "}
               <span className="text-teal-400">barber hub</span>
             </h1>
-            <p className="text-base sm:text-lg text-gray-400 max-w-xl mx-auto lg:mx-0">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-400 max-w-xl mx-auto lg:mx-0">
               Sign in to manage bookings, track your appointments, and keep your
               grooming journey on point.
             </p>
           </div>
 
           <div className="w-full max-w-md mx-auto lg:mx-0">
-            <div className="p-3 bg-linear-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
-              <p className="text-teal-300 text-sm font-medium text-center">
+            <div className="p-2.5 sm:p-3 bg-linear-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
+              <p className="text-teal-300 text-xs sm:text-sm font-medium text-center">
                 {selectedRole === "customer"
                   ? "👤 Customers can book and manage appointments with top barbers."
                   : "✂️ Barbers can manage schedules, clients, and services."}

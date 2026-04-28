@@ -54,7 +54,7 @@ export function RegisterForm() {
         userData,
         {
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -80,11 +80,13 @@ export function RegisterForm() {
       console.error("Registration error:", error);
 
       if (error.response) {
-        setMessage(`❌ ${error.response.data.message || "Registration failed"}`);
+        setMessage(
+          `❌ ${error.response.data.message || "Registration failed"}`,
+        );
       } else if (error.request) {
         setMessage(
-          "❌ No response from server. Check if backend is running on https://barber-book-devanshu.onrender.com"
-        );  
+          "❌ No response from server. Check if backend is running on https://barber-book-devanshu.onrender.com",
+        );
       } else {
         setMessage(`❌ ${error.message}`);
       }
@@ -97,26 +99,26 @@ export function RegisterForm() {
     <div className="w-full max-w-md mx-auto my-10">
       <form
         onSubmit={handleSubmit}
-        className="relative bg-gradient-to-b from-gray-900/85 via-gray-900/95 to-black/95 backdrop-blur-2xl border border-gray-800/80 shadow-[0_20px_60px_rgba(0,0,0,0.75)] rounded-3xl px-6 sm:px-7 py-7 space-y-5 hover:border-gray-700/60 transition-all duration-200 hover:-translate-y-0.5"
+        className="relative bg-gradient-to-b from-gray-900/85 via-gray-900/95 to-black/95 backdrop-blur-2xl border border-gray-800/80 shadow-[0_20px_60px_rgba(0,0,0,0.75)] rounded-3xl px-4 sm:px-6 lg:px-7 py-5 sm:py-7 space-y-4 sm:space-y-5 hover:border-gray-700/60 transition-all duration-200 hover:-translate-y-0.5"
       >
         {/* top glow line */}
         <div className="absolute inset-x-10 -top-px h-px bg-gradient-to-r from-transparent via-teal-500/60 to-transparent" />
 
         {/* Header */}
-        <div className="space-y-3 text-center">
+        <div className="space-y-2 sm:space-y-3 text-center">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-11 h-11 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl flex items-center justify-center shadow-[0_0_22px_rgba(20,184,166,0.5)]">
-              <Scissors className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl flex items-center justify-center shadow-[0_0_22px_rgba(20,184,166,0.5)]">
+              <Scissors className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <span className="font-bold text-xl sm:text-2xl text-white">
+            <span className="font-bold text-lg sm:text-xl lg:text-2xl text-white">
               BarberBook
             </span>
           </div>
           <div>
-            <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white">
               Create your account
             </h2>
-            <p className="text-gray-400 text-xs sm:text-sm mt-1">
+            <p className="text-gray-400 text-[10px] sm:text-xs text-sm mt-1">
               Join the{" "}
               <span className="text-teal-400 font-medium">
                 {formData.role === "customer" ? "grooming" : "barber"}
@@ -127,36 +129,36 @@ export function RegisterForm() {
         </div>
 
         {/* Role Selection Tabs */}
-        <div className="grid grid-cols-2 gap-2.5 p-1.5 bg-gray-900/80 rounded-2xl border border-gray-800/90">
+        <div className="grid grid-cols-2 gap-2 sm:gap-2.5 p-1 sm:p-1.5 bg-gray-900/80 rounded-2xl border border-gray-800/90">
           <button
             type="button"
             onClick={() => setFormData({ ...formData, role: "customer" })}
-            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 sm:py-2.5 rounded-xl font-semibold text-[10px] sm:text-xs text-sm transition-all ${
               formData.role === "customer"
                 ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.7)]"
                 : "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/60"
             }`}
           >
-            <User className="w-4 h-4" />
+            <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Customer</span>
           </button>
           <button
             type="button"
             onClick={() => setFormData({ ...formData, role: "barber" })}
-            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 sm:py-2.5 rounded-xl font-semibold text-[10px] sm:text-xs text-sm transition-all ${
               formData.role === "barber"
                 ? "bg-teal-500 text-black shadow-[0_0_18px_rgba(20,184,166,0.7)]"
                 : "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800/60"
             }`}
           >
-            <Scissors className="w-4 h-4" />
+            <Scissors className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Barber</span>
           </button>
         </div>
 
         {/* Role Description */}
-        <div className="p-3.5 bg-gradient-to-r from-teal-500/12 to-teal-600/10 border border-teal-500/30 rounded-2xl">
-          <p className="text-teal-300 text-xs sm:text-sm font-medium text-center">
+        <div className="p-2.5 sm:p-3.5 bg-gradient-to-r from-teal-500/12 to-teal-600/10 border border-teal-500/30 rounded-2xl">
+          <p className="text-teal-300 text-[10px] sm:text-xs text-sm font-medium text-center">
             {formData.role === "customer"
               ? "📍 Discover and book appointments with trusted barbers near you."
               : "💼 Showcase your services, manage clients, and grow your shop."}
@@ -164,12 +166,12 @@ export function RegisterForm() {
         </div>
 
         {/* Name fields side-by-side on larger screens */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
           {/* First Name */}
-          <div className="space-y-1.5">
+          <div className="space-y-1 sm:space-y-1.5">
             <Label
               htmlFor="firstName"
-              className="text-gray-300 text-xs sm:text-sm font-medium"
+              className="text-gray-300 text-[10px] sm:text-xs text-sm font-medium"
             >
               First name
             </Label>
@@ -180,16 +182,16 @@ export function RegisterForm() {
               onChange={(e) =>
                 setFormData({ ...formData, firstName: e.target.value })
               }
-              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 sm:py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
               required
             />
           </div>
 
           {/* Last Name */}
-          <div className="space-y-1.5">
+          <div className="space-y-1 sm:space-y-1.5">
             <Label
               htmlFor="lastName"
-              className="text-gray-300 text-xs sm:text-sm font-medium"
+              className="text-gray-300 text-[10px] sm:text-xs text-sm font-medium"
             >
               Last name
             </Label>
@@ -200,17 +202,17 @@ export function RegisterForm() {
               onChange={(e) =>
                 setFormData({ ...formData, lastName: e.target.value })
               }
-              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 sm:py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
               required
             />
           </div>
         </div>
 
         {/* Email */}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <Label
             htmlFor="email"
-            className="text-gray-300 text-xs sm:text-sm font-medium"
+            className="text-gray-300 text-[10px] sm:text-xs text-sm font-medium"
           >
             Email
           </Label>
@@ -222,16 +224,16 @@ export function RegisterForm() {
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
-            className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+            className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 sm:py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
             required
           />
         </div>
 
         {/* Phone */}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <Label
             htmlFor="phone"
-            className="text-gray-300 text-xs sm:text-sm font-medium"
+            className="text-gray-300 text-[10px] sm:text-xs text-sm font-medium"
           >
             Phone number
           </Label>
@@ -243,16 +245,16 @@ export function RegisterForm() {
             onChange={(e) =>
               setFormData({ ...formData, phone: e.target.value })
             }
-            className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+            className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 sm:py-2.5 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
             required
           />
         </div>
 
         {/* Password */}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <Label
             htmlFor="password"
-            className="text-gray-300 text-xs sm:text-sm font-medium"
+            className="text-gray-300 text-[10px] sm:text-xs text-sm font-medium"
           >
             Password
           </Label>
@@ -265,28 +267,28 @@ export function RegisterForm() {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 pr-10 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 sm:py-2.5 pr-10 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
               required
             />
             <button
               type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               ) : (
-                <Eye className="w-4 h-4" />
+                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               )}
             </button>
           </div>
         </div>
 
         {/* Confirm Password */}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <Label
             htmlFor="confirmPassword"
-            className="text-gray-300 text-xs sm:text-sm font-medium"
+            className="text-gray-300 text-[10px] sm:text-xs text-sm font-medium"
           >
             Confirm password
           </Label>
@@ -302,20 +304,18 @@ export function RegisterForm() {
                   confirmPassword: e.target.value,
                 })
               }
-              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2.5 pr-10 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 sm:py-2.5 pr-10 w-full focus:border-teal-500/60 focus:bg-gray-900 transition"
               required
             />
             <button
               type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
-              onClick={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               ) : (
-                <Eye className="w-4 h-4" />
+                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               )}
             </button>
           </div>
@@ -325,7 +325,7 @@ export function RegisterForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-teal-500 via-teal-500 to-emerald-500 hover:from-teal-400 hover:via-teal-500 hover:to-emerald-400 text-black font-semibold rounded-2xl transition-transform duration-150 transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base shadow-[0_12px_32px_rgba(20,184,166,0.6)]"
+          className="w-full py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-teal-500 via-teal-500 to-emerald-500 hover:from-teal-400 hover:via-teal-500 hover:to-emerald-400 text-black font-semibold rounded-2xl transition-transform duration-150 transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed text-xs sm:text-sm text-base shadow-[0_12px_32px_rgba(20,184,166,0.6)]"
         >
           {loading ? "Creating account..." : "Create account"}
         </Button>
@@ -333,7 +333,7 @@ export function RegisterForm() {
         {/* Success/Error Message */}
         {message && (
           <div
-            className={`p-3.5 rounded-xl text-center text-xs sm:text-sm font-medium transition border ${
+            className={`p-2.5 sm:p-3.5 rounded-xl text-center text-[10px] sm:text-xs text-sm font-medium transition border ${
               message.startsWith("✅")
                 ? "bg-emerald-500/12 text-emerald-400 border-emerald-500/50"
                 : "bg-red-500/12 text-red-400 border-red-500/50"

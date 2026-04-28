@@ -30,7 +30,12 @@ const Footer = () => {
     },
     {
       title: "Company",
-      links: ["About BarberBook", "Help Center", "Contact us", "Terms & Privacy"],
+      links: [
+        "About BarberBook",
+        "Help Center",
+        "Contact us",
+        "Terms & Privacy",
+      ],
     },
   ];
 
@@ -41,7 +46,7 @@ const Footer = () => {
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Columns Section */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 px-6 sm:px-12 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 px-4 sm:px-6 lg:px-12 mb-8 sm:mb-12">
           {footerLinks.map((col, idx) => (
             <motion.div
               key={idx}
@@ -51,13 +56,13 @@ const Footer = () => {
               viewport={{ once: true }}
             >
               {col.title && (
-                <span className="text-white text-xl font-extrabold mb-8 block">
+                <span className="text-white text-lg sm:text-xl font-extrabold mb-4 sm:mb-6 lg:mb-8 block">
                   {col.title}
                 </span>
               )}
               <ul
-                className={`space-y-4 text-sm ${
-                  col.title ? "" : "mt-8 md:mt-0"
+                className={`space-y-3 sm:space-y-4 text-sm ${
+                  col.title ? "" : "mt-6 sm:mt-8 md:mt-0"
                 }`}
               >
                 {col.links.map((link, i) => (
@@ -68,7 +73,7 @@ const Footer = () => {
                   >
                     <a
                       href="#"
-                      className="text-gray-400 hover:text-cyan-400 transition-colors duration-300"
+                      className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 text-xs sm:text-sm"
                     >
                       {link}
                     </a>
@@ -80,13 +85,13 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <hr className="border-gray-700 my-8 max-w-6xl mx-auto px-6 sm:px-12" />
+        <hr className="border-gray-700 my-6 sm:my-8 max-w-6xl mx-auto px-4 sm:px-6 lg:px-12" />
 
         {/* Bottom Bar */}
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 px-6 sm:px-12">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 px-4 sm:px-6 lg:px-12">
           {/* Social Icons */}
           <motion.div
-            className="flex gap-6 text-gray-400"
+            className="flex gap-4 sm:gap-6 text-gray-400"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -104,7 +109,7 @@ const Footer = () => {
                 className="text-gray-400 hover:text-cyan-400 transition-colors duration-300"
                 aria-label={label}
               >
-                <Icon size={22} />
+                <Icon size={18} />
               </motion.a>
             ))}
           </motion.div>
@@ -117,11 +122,11 @@ const Footer = () => {
             <img
               src="https://flagcdn.com/in.svg"
               alt="India flag"
-              className="w-5 h-4 rounded-sm"
+              className="w-4 h-3 sm:w-5 sm:h-4 rounded-sm"
             />
-            <span className="text-base">Barbers in India</span>
+            <span className="text-sm sm:text-base">Barbers in India</span>
             <svg
-              className="w-4 h-4 text-gray-400"
+              className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -136,7 +141,7 @@ const Footer = () => {
           </motion.div>
 
           {/* App Store Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-3 sm:gap-4">
             <motion.a
               href="#"
               whileHover={{ scale: 1.05 }}
@@ -145,7 +150,7 @@ const Footer = () => {
               <img
                 src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
                 alt="App Store"
-                className="h-10 opacity-75 hover:opacity-100 transition-opacity duration-300"
+                className="h-8 sm:h-10 opacity-75 hover:opacity-100 transition-opacity duration-300"
               />
             </motion.a>
             <motion.a
@@ -156,14 +161,14 @@ const Footer = () => {
               <img
                 src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
                 alt="Google Play"
-                className="h-10 opacity-75 hover:opacity-100 transition-opacity duration-300"
+                className="h-8 sm:h-10 opacity-75 hover:opacity-100 transition-opacity duration-300"
               />
             </motion.a>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="text-center mt-8 text-gray-500 text-sm px-6">
+        <div className="text-center mt-6 sm:mt-8 text-gray-500 text-xs sm:text-sm px-4 sm:px-6">
           <p>
             &copy; {new Date().getFullYear()} BarberBook — Online booking for
             modern barbershops.

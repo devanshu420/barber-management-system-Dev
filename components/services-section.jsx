@@ -6,7 +6,6 @@ import { Scissors, Radar as Razor, Sparkles, Crown, Plus } from "lucide-react";
 
 // Custom Futuristic Cursor
 
-
 // Shimmer Loader
 const ShimmerPlaceholder = () => (
   <div className="relative h-48 bg-gray-900/60 rounded-2xl border border-gray-800/50 overflow-hidden">
@@ -28,7 +27,8 @@ const services = [
   {
     icon: Sparkles,
     title: "Hair Styling",
-    description: "Complete styling with premium products for special occasions.",
+    description:
+      "Complete styling with premium products for special occasions.",
   },
   {
     icon: Crown,
@@ -46,9 +46,8 @@ export function ServicesSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden py-24 px-6 sm:px-8 lg:px-16">
+    <section className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
       {/* Custom Cursor */}
-      
 
       {/* Ambient Glows */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -61,18 +60,19 @@ export function ServicesSection() {
           initial={{ opacity: 0, y: -24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="text-center mb-20"
+          className="text-center mb-12 sm:mb-16 lg:mb-20"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 mb-4">
             Our Services
           </h2>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            Choose from our range of professional grooming services, each delivered with expertise and attention to detail.
+          <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto">
+            Choose from our range of professional grooming services, each
+            delivered with expertise and attention to detail.
           </p>
         </motion.div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {loading
             ? [1, 2, 3, 4].map((k) => <ShimmerPlaceholder key={k} />)
             : services.map((service, idx) => {
@@ -91,7 +91,7 @@ export function ServicesSection() {
                       y: -8,
                       transition: { duration: 0.23, ease: "easeOut" },
                     }}
-                    className="group p-8 rounded-2xl bg-gray-900/50 border border-gray-800/50 shadow-xl hover:border-cyan-500/60 hover:shadow-cyan-400/20 transition relative overflow-hidden"
+                    className="group p-4 sm:p-6 lg:p-8 rounded-2xl bg-gray-900/50 border border-gray-800/50 shadow-xl hover:border-cyan-500/60 hover:shadow-cyan-400/20 transition relative overflow-hidden"
                   >
                     {/* Neon Glow */}
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -100,13 +100,13 @@ export function ServicesSection() {
 
                     {/* Content */}
                     <div className="relative z-10">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 p-3 mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 p-2.5 sm:p-3 mb-4 sm:mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Icon className="w-full h-full text-white" />
                       </div>
-                      <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors duration-300">
+                      <h3 className="text-lg sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:text-cyan-300 transition-colors duration-300">
                         {service.title}
                       </h3>
-                      <p className="text-gray-400 text-sm leading-relaxed">
+                      <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
                         {service.description}
                       </p>
                     </div>
@@ -116,8 +116,7 @@ export function ServicesSection() {
                       <div
                         className="absolute inset-0 rounded-2xl"
                         style={{
-                          boxShadow:
-                            "inset 0 0 24px 3px rgba(34,211,238,0.18)",
+                          boxShadow: "inset 0 0 24px 3px rgba(34,211,238,0.18)",
                         }}
                       />
                     </div>
@@ -128,12 +127,22 @@ export function ServicesSection() {
       </div>
 
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        * { font-family: "Poppins", sans-serif; }
-        body, .cursor-none, .cursor-none * { cursor: auto !important; }
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+        * {
+          font-family: "Poppins", sans-serif;
+        }
+        body,
+        .cursor-none,
+        .cursor-none * {
+          cursor: auto !important;
+        }
         @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
         }
         .shimmer-effect::before {
           content: "";
@@ -142,7 +151,12 @@ export function ServicesSection() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.12), transparent);
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(34, 211, 238, 0.12),
+            transparent
+          );
           animation: shimmer 2s infinite;
         }
       `}</style>

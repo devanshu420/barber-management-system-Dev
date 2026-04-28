@@ -69,30 +69,30 @@ export default function BarberDashboardPage() {
   }, [barberId, router]);
 
   // socket notifications
-  useEffect(() => {
-    if (!barberId) return;
+  // useEffect(() => {
+  //   if (!barberId) return;
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
-      transports: ["websocket"],
-      withCredentials: true,
-    });
+  //   const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
+  //     transports: ["websocket"],
+  //     withCredentials: true,
+  //   });
 
-    socket.on("connect", () => {
-      socket.emit("joinBarberRoom", barberId);
-    });
+  //   socket.on("connect", () => {
+  //     socket.emit("joinBarberRoom", barberId);
+  //   });
 
-    socket.on("newBooking", (data) => {
-      setNotifications((prev) => [
-        {
-          message: `New booking at ${data.shopName} for ${data.service}`,
-          time: new Date().toLocaleTimeString(),
-        },
-        ...prev,
-      ]);
-    });
+  //   socket.on("newBooking", (data) => {
+  //     setNotifications((prev) => [
+  //       {
+  //         message: `New booking at ${data.shopName} for ${data.service}`,
+  //         time: new Date().toLocaleTimeString(),
+  //       },
+  //       ...prev,
+  //     ]);
+  //   });
 
-    return () => socket.disconnect();
-  }, [barberId]);
+  //   return () => socket.disconnect();
+  // }, [barberId]);
 
   // cursor glow
   useEffect(() => {

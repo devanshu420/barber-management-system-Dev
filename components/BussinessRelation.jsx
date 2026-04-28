@@ -6,7 +6,6 @@ import { BadgeCheck } from "lucide-react";
 
 // Custom Futuristic Cursor
 
-
 // Scroll Fade Component
 const ScrollFade = ({ children, className = "", delay = 0 }) => {
   const ref = useRef(null);
@@ -20,7 +19,7 @@ const ScrollFade = ({ children, className = "", delay = 0 }) => {
           observer.unobserve(ref.current);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (ref.current) observer.observe(ref.current);
@@ -50,8 +49,6 @@ const BusinessRelation = () => {
 
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden flex flex-col justify-center py-20 px-6 md:px-16 lg:px-24">
-    
-
       {/* Ambient Glows */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -59,15 +56,15 @@ const BusinessRelation = () => {
 
       <div className="w-full max-w-4xl mx-auto relative z-10">
         {/* Header */}
-        <ScrollFade className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-snug mb-4">
+        <ScrollFade className="text-center mb-12 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-snug mb-4">
             We grow together —
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">
               Barbers and BarberBook.
             </span>
           </h2>
-          <p className="text-gray-300 mt-6 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-300 mt-4 sm:mt-6 max-w-2xl mx-auto text-base sm:text-lg">
             At BarberBook, we believe success comes when our barbers and our
             brand rise together. Our tools and platform are designed to help
             barbers in Indore build their presence, attract clients, and grow
@@ -76,33 +73,29 @@ const BusinessRelation = () => {
         </ScrollFade>
 
         {/* Content */}
-        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-16">
+        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 lg:gap-16">
           {/* Left Side - Features */}
-          <div className="flex-1 space-y-8 w-full max-w-md">
+          <div className="flex-1 space-y-6 sm:space-y-8 w-full max-w-md">
             {features.map((feature, index) => (
-              <ScrollFade
-                key={index}
-                delay={index * 150}
-                className="group"
-              >
+              <ScrollFade key={index} delay={index * 150} className="group">
                 <motion.div
                   whileHover={{ x: 8 }}
                   transition={{ duration: 0.3 }}
-                  className="flex items-start space-x-4 p-4 rounded-lg bg-gray-900/40 border border-gray-800/50 hover:border-cyan-500/40 transition-all duration-300"
+                  className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg bg-gray-900/40 border border-gray-800/50 hover:border-cyan-500/40 transition-all duration-300"
                 >
-                  <BadgeCheck className="text-cyan-400 w-6 h-6 flex-shrink-0 mt-1" />
-                  <p className="text-gray-300 text-base font-medium">
+                  <BadgeCheck className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 mt-1" />
+                  <p className="text-gray-300 text-sm sm:text-base font-medium">
                     {feature}
                   </p>
                 </motion.div>
               </ScrollFade>
             ))}
 
-            <ScrollFade delay={features.length * 150} className="mt-8">
+            <ScrollFade delay={features.length * 150} className="mt-6 sm:mt-8">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-black font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
+                className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-black font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 text-sm sm:text-base"
               >
                 Join the Growth Journey
               </motion.button>
@@ -110,18 +103,21 @@ const BusinessRelation = () => {
           </div>
 
           {/* Right Side - Image */}
-          <ScrollFade delay={300} className="flex-1 flex justify-center items-center">
+          <ScrollFade
+            delay={300}
+            className="flex-1 flex justify-center items-center"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7 }}
               className="relative"
             >
-              <div className="absolute rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-500 w-[300px] h-[400px] left-6 top-6 -z-10 shadow-2xl" />
+              <div className="absolute rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-500 w-[200px] h-[300px] sm:w-[250px] sm:h-[350px] left-4 sm:left-6 top-4 sm:top-6 -z-10 shadow-2xl" />
               <img
                 src="https://www.milady.com/wp-content/uploads/2023/09/Barbering-opportunities-abound.jpg"
                 alt="Indian barber working with client"
-                className="w-[260px] md:w-[310px] rounded-2xl shadow-2xl border-2 border-cyan-400/30 object-cover hover:border-cyan-400/60 transition-all duration-300"
+                className="w-[200px] sm:w-[260px] md:w-[310px] rounded-2xl shadow-2xl border-2 border-cyan-400/30 object-cover hover:border-cyan-400/60 transition-all duration-300"
               />
             </motion.div>
           </ScrollFade>
@@ -129,9 +125,15 @@ const BusinessRelation = () => {
       </div>
 
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        * { font-family: "Poppins", sans-serif; }
-        body, .cursor-none, .cursor-none * { cursor: auto !important; }
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+        * {
+          font-family: "Poppins", sans-serif;
+        }
+        body,
+        .cursor-none,
+        .cursor-none * {
+          cursor: auto !important;
+        }
       `}</style>
     </section>
   );

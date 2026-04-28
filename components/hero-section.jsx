@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useEffect, useState, forwardRef } from "react";
@@ -20,8 +18,14 @@ import { useRouter } from "next/navigation";
 // ========== BUTTON COMPONENT ==========
 const Button = forwardRef(
   (
-    { className = "", variant = "default", size = "default", children, ...props },
-    ref
+    {
+      className = "",
+      variant = "default",
+      size = "default",
+      children,
+      ...props
+    },
+    ref,
   ) => {
     const base =
       "inline-flex items-center justify-center font-semibold transition-all rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none select-none cursor-pointer";
@@ -50,7 +54,7 @@ const Button = forwardRef(
         {children}
       </button>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
@@ -116,7 +120,7 @@ function HeroSlider() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 1 }}
         >
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight text-white drop-shadow-2xl mb-4">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight tracking-tight text-white drop-shadow-2xl mb-4">
             Elevate Your{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 animate-pulse">
               Barber Business
@@ -128,10 +132,10 @@ function HeroSlider() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="text-lg md:text-2xl text-gray-200 drop-shadow-lg max-w-2xl mb-8"
+          className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 drop-shadow-lg max-w-2xl mb-6 sm:mb-8"
         >
           A modern Barber Management System designed to streamline bookings,
-          manage staff, track inventory, and enhance your customer experience — 
+          manage staff, track inventory, and enhance your customer experience —
           all in one smart platform.
         </motion.p>
 
@@ -267,73 +271,75 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-     {/* TOP‑LEVEL return ke andar */}
+      {/* TOP‑LEVEL return ke andar */}
 
-<section className="relative w-full h-screen overflow-hidden">
-  <HeroSlider />
-</section>
+      <section className="relative w-full h-screen overflow-hidden">
+        <HeroSlider />
+      </section>
 
-<main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-  {/* Features Section */}
-  <section className="mt-24 sm:mt-32 lg:mt-40">
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true }}
-      className="text-center mb-16 sm:mb-20"
-    >
-      <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
-        Why Choose{" "}
-        <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-teal-400">
-          The Barber Studio
-        </span>
-      </h2>
-      <p className="text-gray-300 text-lg max-w-2xl mx-auto drop-shadow-sm">
-        Experience premium grooming with cutting-edge technology and expert care.
-      </p>
-    </motion.div>
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        {/* Features Section */}
+        <section className="mt-24 sm:mt-32 lg:mt-40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16 sm:mb-20"
+          >
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
+              Why Choose{" "}
+              <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-teal-400">
+                The Barber Studio
+              </span>
+            </h2>
+            <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto drop-shadow-sm">
+              Experience premium grooming with cutting-edge technology and
+              expert care.
+            </p>
+          </motion.div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
-      {loading
-        ? [1, 2, 3, 4, 5, 6].map((k) => <ShimmerPlaceholder key={k} />)
-        : features.map(({ icon: Icon, title, description }, idx) => (
-            <FeatureCard
-              key={title}
-              Icon={Icon}
-              title={title}
-              description={description}
-              delay={idx * 0.1}
-            />
-          ))}
-    </div>
-  </section>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+            {loading
+              ? [1, 2, 3, 4, 5, 6].map((k) => <ShimmerPlaceholder key={k} />)
+              : features.map(({ icon: Icon, title, description }, idx) => (
+                  <FeatureCard
+                    key={title}
+                    Icon={Icon}
+                    title={title}
+                    description={description}
+                    delay={idx * 0.1}
+                  />
+                ))}
+          </div>
+        </section>
 
-  {/* CTA Section */}
-  <motion.section
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8 }}
-    viewport={{ once: true }}
-    className="mt-32 sm:mt-40 lg:mt-48 mb-16 px-6 sm:px-12 py-16 sm:py-24 bg-linear-to-r from-cyan-900/30 to-teal-900/30 backdrop-blur-xl border border-cyan-400/20 rounded-3xl text-center"
-  >
-    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
-      Experience{" "}
-      <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 via-teal-300 to-cyan-400">
-        Luxury
-      </span>{" "}
-      in Every Cut
-    </h2>
-    <p className="text-gray-300 text-lg sm:text-xl mb-10 max-w-2xl mx-auto drop-shadow-sm">
-      Book your next transformation today and join thousands of satisfied clients.
-    </p>
-    <Link href="/booking">
-      <Button size="lg" className="shadow-2xl">
-        Get Started <ArrowRight className="ml-2" />
-      </Button>
-    </Link>
-  </motion.section>
-</main>
+        {/* CTA Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="mt-32 sm:mt-40 lg:mt-48 mb-16 px-6 sm:px-12 py-16 sm:py-24 bg-linear-to-r from-cyan-900/30 to-teal-900/30 backdrop-blur-xl border border-cyan-400/20 rounded-3xl text-center"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">
+            Experience{" "}
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-400 via-teal-300 to-cyan-400">
+              Luxury
+            </span>{" "}
+            in Every Cut
+          </h2>
+          <p className="text-gray-300 text-base sm:text-lg lg:text-xl mb-8 sm:mb-10 max-w-2xl mx-auto drop-shadow-sm">
+            Book your next transformation today and join thousands of satisfied
+            clients.
+          </p>
+          <Link href="/booking">
+            <Button size="lg" className="shadow-2xl">
+              Get Started <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
+        </motion.section>
+      </main>
 
       {/* Global Styles */}
       <style jsx global>{`
@@ -396,13 +402,6 @@ export default function Home() {
   );
 }
 
-
-
-
-
-
-
-
 // "use client";
 
 // import React, { useEffect, useState, useRef, forwardRef } from "react";
@@ -422,7 +421,6 @@ export default function Home() {
 // import Image from "next/image";
 // import io from "socket.io-client";
 // import { useRouter } from "next/navigation";
-
 
 // // ========== BUTTON COMPONENT ==========
 // const Button = forwardRef(
@@ -459,7 +457,6 @@ export default function Home() {
 // Button.displayName = "Button";
 
 // // ========== FUTURISTIC CURSOR ==========
-
 
 // // ========== HERO SLIDER WITH NAVIGATION ==========
 // function HeroSlider() {
@@ -501,14 +498,6 @@ export default function Home() {
 
 //   return () => socket.disconnect();
 // }, []);
-
-
-
-
-
-
-
-
 
 //   useEffect(() => {
 //     if (!autoPlay) return;
@@ -571,7 +560,6 @@ export default function Home() {
 //         </motion.div>
 //       </AnimatePresence>
 
-     
 //       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20">
 //   <motion.div
 //     initial={{ opacity: 0, y: 30 }}
@@ -593,7 +581,7 @@ export default function Home() {
 //     className="text-lg md:text-2xl text-gray-200 drop-shadow-lg max-w-2xl mb-8"
 //   >
 //     A modern Barber Management System designed to streamline bookings,
-//     manage staff, track inventory, and enhance your customer experience — 
+//     manage staff, track inventory, and enhance your customer experience —
 //     all in one smart platform.
 //   </motion.p>
 
@@ -604,11 +592,11 @@ export default function Home() {
 //     className="flex flex-col sm:flex-row gap-4"
 //   >
 //     <Link href="/booking">
-    
+
 //         <Button size="lg" className="shadow-2xl">
 //           Get Started <ArrowRight className="ml-2" />
 //         </Button>
-     
+
 //     </Link>
 //     <Button size="lg" variant="outline">
 //       Learn More
@@ -616,8 +604,6 @@ export default function Home() {
 //   </motion.div>
 // </div>
 
-
-     
 //  {/* Navigation Arrows */}
 // {/* Navigation Arrows */}
 // <Button
@@ -637,8 +623,6 @@ export default function Home() {
 // >
 //   <ChevronRight className="w-6 h-6" />
 // </Button>
-
-
 
 //       {/* Slide Indicators */}
 //       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-30">
@@ -901,4 +885,3 @@ export default function Home() {
 //     </div>
 //   );
 // }
-

@@ -42,18 +42,17 @@ export function LoginForm({ role = "customer" }) {
         },
         {
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
 
       if (response.data.success) {
         const userFromDB = response.data.user;
-        const actualRole =
-          userFromDB.role || userFromDB.userType || "customer";
+        const actualRole = userFromDB.role || userFromDB.userType || "customer";
 
         // yaha selectedRole use ho raha hai
         if (actualRole !== selectedRole) {
           setMessage(
-            `❌ Role mismatch! You are registered as "${actualRole}" but trying to login as "${selectedRole}". Please select the correct role.`
+            `❌ Role mismatch! You are registered as "${actualRole}" but trying to login as "${selectedRole}". Please select the correct role.`,
           );
           setLoading(false);
           return;
@@ -106,22 +105,22 @@ export function LoginForm({ role = "customer" }) {
 
       <form
         onSubmit={handleSubmit}
-        className="relative bg-gradient-to-b from-gray-900/80 via-gray-900/90 to-black/90 backdrop-blur-2xl border border-gray-800/80 shadow-[0_18px_45px_rgba(0,0,0,0.65)] rounded-3xl px-6 py-5 space-y-5 w-full max-w-md hover:border-gray-700/70 transition-all duration-200 hover:-translate-y-0.5"
+        className="relative bg-gradient-to-b from-gray-900/80 via-gray-900/90 to-black/90 backdrop-blur-2xl border border-gray-800/80 shadow-[0_18px_45px_rgba(0,0,0,0.65)] rounded-3xl px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 w-full max-w-md hover:border-gray-700/70 transition-all duration-200 hover:-translate-y-0.5"
       >
         {/* Top accent line */}
         <div className="absolute inset-x-10 -top-px h-px bg-gradient-to-r from-transparent via-teal-500/60 to-transparent" />
 
         {/* Header */}
         <div className="text-center mb-1 space-y-2">
-          <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-teal-500/15 border border-teal-500/40 shadow-[0_0_20px_rgba(20,184,166,0.3)]">
-            <Scissors className="w-6 h-6 text-teal-400" />
+          <div className="inline-flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-teal-500/15 border border-teal-500/40 shadow-[0_0_20px_rgba(20,184,166,0.3)]">
+            <Scissors className="w-5 h-5 sm:w-6 sm:h-6 text-teal-400" />
           </div>
           <div className="space-y-0.5">
-            <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-white flex items-center justify-center gap-1.5">
+            <h2 className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight text-white flex items-center justify-center gap-1.5">
               Welcome back
-              <Sparkles className="w-4 h-4 text-teal-400" />
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-400" />
             </h2>
-            <p className="text-gray-400 text-[11px] sm:text-xs">
+            <p className="text-gray-400 text-[10px] sm:text-[11px] text-xs">
               Sign in to manage your{" "}
               <span className="text-teal-400/90 font-medium">
                 {selectedRole === "barber" ? "barber profile" : "bookings"}
@@ -131,38 +130,38 @@ export function LoginForm({ role = "customer" }) {
         </div>
 
         {/* Role tabs */}
-        <div className="flex gap-2 bg-gray-900/70 p-1.5 rounded-2xl border border-gray-800">
+        <div className="flex gap-1.5 sm:gap-2 bg-gray-900/70 p-1 sm:p-1.5 rounded-2xl border border-gray-800">
           <button
             type="button"
             onClick={() => setSelectedRole("customer")}
-            className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-[11px] text-xs font-semibold transition-all ${
               selectedRole === "customer"
                 ? "bg-teal-500 text-black shadow-[0_0_14px_rgba(20,184,166,0.6)]"
                 : "bg-transparent text-gray-400 hover:text-white"
             }`}
           >
-            <User2 className="w-3.5 h-3.5" />
+            <User2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             Customer
           </button>
           <button
             type="button"
             onClick={() => setSelectedRole("barber")}
-            className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-[11px] text-xs font-semibold transition-all ${
               selectedRole === "barber"
                 ? "bg-teal-500 text-black shadow-[0_0_14px_rgba(20,184,166,0.6)]"
                 : "bg-transparent text-gray-400 hover:text-white"
             }`}
           >
-            <Scissors className="w-3.5 h-3.5" />
+            <Scissors className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             Barber
           </button>
         </div>
 
         {/* Email */}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <Label
             htmlFor="email"
-            className="text-gray-300 text-xs font-medium flex items-center gap-1"
+            className="text-gray-300 text-[10px] sm:text-xs font-medium flex items-center gap-1"
           >
             Email address
           </Label>
@@ -175,16 +174,16 @@ export function LoginForm({ role = "customer" }) {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2 pr-9 w-full focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/50 focus:bg-gray-900 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 pr-9 w-full focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/50 focus:bg-gray-900 transition"
               required
             />
-            <Mail className="w-4 h-4 text-gray-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
+            <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 absolute right-2.5 top-1/2 -translate-y-1/2" />
           </div>
         </div>
 
         {/* Password */}
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] sm:text-xs">
+        <div className="space-y-1 sm:space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-xs">
             <Label
               htmlFor="password"
               className="text-gray-300 font-medium flex items-center gap-1"
@@ -202,19 +201,19 @@ export function LoginForm({ role = "customer" }) {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-xs sm:text-sm py-2 pr-10 w-full focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/50 focus:bg-gray-900 transition"
+              className="bg-gray-900/70 border-gray-800 text-white placeholder:text-gray-600 text-[10px] sm:text-xs text-sm py-2 pr-10 w-full focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/50 focus:bg-gray-900 transition"
               required
             />
-            <Lock className="w-4 h-4 text-gray-500 absolute right-8 top-1/2 -translate-y-1/2" />
+            <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 absolute right-8 top-1/2 -translate-y-1/2" />
             <button
               type="button"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-6 w-6 sm:h-7 sm:w-7 flex items-center justify-center text-gray-500 hover:text-teal-400 transition"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <EyeOff className="w-3.5 h-3.5" />
+                <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               ) : (
-                <Eye className="w-3.5 h-3.5" />
+                <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               )}
             </button>
           </div>
@@ -224,7 +223,7 @@ export function LoginForm({ role = "customer" }) {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 bg-gradient-to-r from-teal-500 via-teal-500 to-emerald-500 hover:from-teal-400 hover:via-teal-500 hover:to-emerald-400 text-black font-semibold rounded-2xl transition-transform duration-150 transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-[0_10px_24px_rgba(20,184,166,0.5)]"
+          className="w-full py-2 sm:py-2.5 bg-gradient-to-r from-teal-500 via-teal-500 to-emerald-500 hover:from-teal-400 hover:via-teal-500 hover:to-emerald-400 text-black font-semibold rounded-2xl transition-transform duration-150 transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed text-xs sm:text-sm shadow-[0_10px_24px_rgba(20,184,166,0.5)]"
         >
           {loading ? "Signing in..." : "Sign in"}
         </Button>
@@ -232,7 +231,7 @@ export function LoginForm({ role = "customer" }) {
         {/* Message */}
         {message && (
           <div
-            className={`p-2.5 rounded-xl text-center text-xs sm:text-sm font-medium transition border ${
+            className={`p-2 sm:p-2.5 rounded-xl text-center text-[10px] sm:text-xs text-sm font-medium transition border ${
               message.startsWith("✅")
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/40"
                 : "bg-red-500/10 text-red-400 border-red-500/40"
@@ -243,8 +242,8 @@ export function LoginForm({ role = "customer" }) {
         )}
 
         {/* Footer */}
-        <div className="pt-3 border-t border-gray-800/80 text-center space-y-1.5">
-          <p className="text-gray-400 text-xs sm:text-sm">
+        <div className="pt-2 sm:pt-3 border-t border-gray-800/80 text-center space-y-1 sm:space-y-1.5">
+          <p className="text-gray-400 text-[10px] sm:text-xs text-sm">
             Don&apos;t have an account?{" "}
             <a
               href="/auth/register"
@@ -256,14 +255,14 @@ export function LoginForm({ role = "customer" }) {
 
           <a
             href="/auth/forgot-password"
-            className="inline-block text-xs sm:text-sm text-teal-400 hover:text-teal-300 transition"
+            className="inline-block text-[10px] sm:text-xs text-sm text-teal-400 hover:text-teal-300 transition"
           >
             Forgot password?
           </a>
         </div>
 
         <div className="pt-1 text-center">
-          <p className="text-gray-500 text-[11px] sm:text-xs">
+          <p className="text-gray-500 text-[10px] sm:text-[11px] text-xs">
             Logging in as{" "}
             <span className="text-teal-400 font-semibold capitalize">
               {selectedRole}

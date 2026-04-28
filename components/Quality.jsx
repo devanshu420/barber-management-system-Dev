@@ -3,7 +3,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-
 // Scroll Fade Component
 const ScrollFade = ({ children, className = "", delay = 0 }) => {
   const ref = useRef(null);
@@ -17,7 +16,7 @@ const ScrollFade = ({ children, className = "", delay = 0 }) => {
           observer.unobserve(ref.current);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (ref.current) observer.observe(ref.current);
@@ -41,24 +40,26 @@ const Quality = () => {
     {
       number: "01",
       title: "Personalized Experience",
-      description: "Every client gets tailored grooming recommendations and barber matches based on their style and preferences.",
+      description:
+        "Every client gets tailored grooming recommendations and barber matches based on their style and preferences.",
     },
     {
       number: "02",
       title: "Seamless Digital Booking",
-      description: "From choosing your barber to paying online, our system makes the entire process smooth, fast, and stress-free.",
+      description:
+        "From choosing your barber to paying online, our system makes the entire process smooth, fast, and stress-free.",
     },
     {
       number: "03",
       title: "Professional & Verified Barbers",
-      description: "All barbers are skilled, background-checked, and committed to delivering premium grooming services every time.",
+      description:
+        "All barbers are skilled, background-checked, and committed to delivering premium grooming services every time.",
     },
   ];
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-cyan-950 text-white overflow-hidden flex flex-col items-center justify-center px-6 md:px-16 lg:px-24 py-20">
       {/* Custom Cursor */}
-  
 
       {/* Ambient Glows */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -72,34 +73,38 @@ const Quality = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="rounded-3xl p-12 md:p-16 shadow-2xl overflow-hidden relative bg-gray-900/60 border border-gray-800/50"
+            className="rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 shadow-2xl overflow-hidden relative bg-gray-900/60 border border-gray-800/50"
           >
             {/* Glow effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-teal-500/5 to-cyan-500/10 blur-2xl" />
 
             <div className="relative z-10">
-              <h2 className="text-white font-bold text-3xl lg:text-4xl text-center mb-16">
+              <h2 className="text-white font-bold text-2xl sm:text-3xl lg:text-4xl text-center mb-8 sm:mb-12 lg:mb-16">
                 What makes us different
               </h2>
 
               {/* Features Row */}
-              <div className="flex flex-col md:flex-row justify-between items-stretch gap-12 mb-12">
+              <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 sm:gap-8 md:gap-12 mb-8 sm:mb-12">
                 {features.map((feature, idx) => (
-                  <ScrollFade key={idx} delay={200 + idx * 200} className="flex-1">
+                  <ScrollFade
+                    key={idx}
+                    delay={200 + idx * 200}
+                    className="flex-1"
+                  >
                     <motion.div
                       whileHover={{ y: -8 }}
                       transition={{ duration: 0.3 }}
-                      className="text-center h-full p-6 rounded-xl bg-gray-900/40 border border-gray-800/50 hover:border-cyan-500/40 hover:bg-gray-900/60 transition-all duration-300 group"
+                      className="text-center h-full p-4 sm:p-6 rounded-xl bg-gray-900/40 border border-gray-800/50 hover:border-cyan-500/40 hover:bg-gray-900/60 transition-all duration-300 group"
                     >
-                      <div className="flex justify-center mb-6">
-                        <span className="w-16 h-16 flex items-center justify-center border-2 border-cyan-400 rounded-full text-cyan-400 font-bold text-2xl bg-cyan-400/10">
+                      <div className="flex justify-center mb-4 sm:mb-6">
+                        <span className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center border-2 border-cyan-400 rounded-full text-cyan-400 font-bold text-lg sm:text-2xl bg-cyan-400/10">
                           {feature.number}
                         </span>
                       </div>
-                      <h3 className="text-cyan-300 font-bold text-lg mb-4 group-hover:text-cyan-200 transition-colors duration-300">
+                      <h3 className="text-cyan-300 font-bold text-base sm:text-lg mb-3 sm:mb-4 group-hover:text-cyan-200 transition-colors duration-300">
                         {feature.title}
                       </h3>
-                      <p className="text-gray-400 text-base font-medium leading-relaxed">
+                      <p className="text-gray-400 text-sm sm:text-base font-medium leading-relaxed">
                         {feature.description}
                       </p>
                     </motion.div>
@@ -112,7 +117,7 @@ const Quality = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-black font-bold text-lg px-10 py-4 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
+                  className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-black font-bold text-base sm:text-lg px-6 sm:px-8 lg:px-10 py-3 sm:py-4 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
                 >
                   Start Free Now
                 </motion.button>
@@ -122,12 +127,15 @@ const Quality = () => {
         </ScrollFade>
 
         {/* Bottom Tagline */}
-        <ScrollFade delay={1000} className="mt-20 text-center">
+        <ScrollFade
+          delay={1000}
+          className="mt-12 sm:mt-16 lg:mt-20 text-center"
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 text-3xl lg:text-4xl font-bold"
+            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 text-2xl sm:text-3xl lg:text-4xl font-bold"
           >
             Change is hard. <br />
             We make it easy.
@@ -136,9 +144,15 @@ const Quality = () => {
       </div>
 
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        * { font-family: "Poppins", sans-serif; }
-        body, .cursor-none, .cursor-none * { cursor: auto !important; }
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+        * {
+          font-family: "Poppins", sans-serif;
+        }
+        body,
+        .cursor-none,
+        .cursor-none * {
+          cursor: auto !important;
+        }
       `}</style>
     </div>
   );

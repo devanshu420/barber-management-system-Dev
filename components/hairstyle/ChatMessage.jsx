@@ -1,6 +1,3 @@
-
-
-
 // components/hairstyle/ChatMessage.tsx
 "use client";
 
@@ -12,7 +9,7 @@ export default function ChatMessage({ item, onImageClick }) {
   return (
     <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[80%] rounded-2xl border px-3 py-2 text-sm ${
+        className={`max-w-[85%] sm:max-w-[80%] rounded-2xl border px-2.5 py-2 text-xs sm:px-3 sm:py-2 sm:text-sm ${
           isUser
             ? "border-cyan-400/40 bg-cyan-500/15 text-cyan-50"
             : "border-white/10 bg-white/5 text-gray-100"
@@ -27,7 +24,7 @@ export default function ChatMessage({ item, onImageClick }) {
             <img
               src={item.originalImageUrl}
               alt="Uploaded"
-              className="h-32 w-full max-w-[220px] object-cover"
+              className="h-24 w-full max-w-[180px] sm:h-32 sm:max-w-[220px] object-cover"
             />
           </button>
         )}
@@ -41,24 +38,18 @@ export default function ChatMessage({ item, onImageClick }) {
             <img
               src={item.generatedImageUrl}
               alt="Generated hairstyle"
-              className="h-40 w-full max-w-[260px] object-cover"
+              className="h-32 w-full max-w-[200px] sm:h-40 sm:max-w-[260px] object-cover"
             />
           </button>
         )}
 
-        <p className="whitespace-pre-wrap">{item.prompt}</p>
+        <p className="whitespace-pre-wrap break-words">{item.prompt}</p>
       </div>
     </div>
   );
 }
 
-
-
-
-
-
-
-
+// ... (rest of the code remains the same)
 
 // "use client";
 
@@ -508,15 +499,6 @@ export default function ChatMessage({ item, onImageClick }) {
 //     </main>
 //   );
 // }
-
-
-
-
-
-
-
-
-
 
 // "use client";
 
