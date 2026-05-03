@@ -1,9 +1,25 @@
 const userModel = require("../models/User");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const {sendEmail} = require("../utils/sendEmail.js");
+const { sendEmail } = require("../utils/sendEmail.js");
+const {
+  generateToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} = require("../utils/token");
+const { verifyGoogleToken } = require("../utils/googleAuth");
 
-const { generateToken, generateRefreshToken, verifyRefreshToken } = require("../utils/token");
+// Helper: same response shape har login ke liye
+const buildAuthResponse = async (user) => {
+  const token = generateToken(user._id, user.role);
+  const refreshToken = generateRefreshToken(user._id);
+
+  user.refreshToken = refreshToken;
+  user.lastLogin = new Date();
+  await user.save();
+
+  return { token, refreshToken, user: user.toJSON() };
+};
 
 // Registration
 exports.register = async (req, res) => {
@@ -11,18 +27,24 @@ exports.register = async (req, res) => {
     let { name, email, phone, password, role = "customer" } = req.body;
     email = email.toLowerCase();
 
-    const existingUser = await userModel.findOne({ $or: [{ email }, { phone }] });
+    const existingUser = await userModel.findOne({
+      $or: [{ email }, { phone }],
+    });
     if (existingUser)
-      return res.status(400).json({ success: false, message: "User already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
 
-    const user = await userModel.create({ name, email, phone, password, role });
+    const user = await userModel.create({
+      name,
+      email,
+      phone,
+      password,
+      role,
+      authProvider: "local",
+    });
 
-    const token = generateToken(user._id, user.role);
-    const refreshToken = generateRefreshToken(user._id);
-
-    user.refreshToken = refreshToken;
-
-    await user.save();
+    const { token, refreshToken } = await buildAuthResponse(user);
 
     const html = `
   <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
@@ -94,39 +116,205 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(500).json({ success: false, message: "Registration failed", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Registration failed",
+      error: error.message,
+    });
   }
 };
 
-// Login
+// Login (local)
 exports.login = async (req, res) => {
   try {
     let { email, password } = req.body;
     email = email.toLowerCase();
 
     if (!email || !password)
-      return res.status(400).json({ success: false, message: "Provide email and password" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Provide email and password" });
 
     const user = await userModel.findOne({ email }).select("+password");
-    if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    if (!user)
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
+
+    if (user.authProvider !== "local") {
+      return res.status(400).json({
+        success: false,
+        message:
+          "This account is registered with Google. Please use Google login.",
+      });
+    }
 
     const isValid = await user.comparePassword(password);
-    if (!isValid) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    if (!isValid)
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
 
     if (!user.isActive)
-      return res.status(401).json({ success: false, message: "Account deactivated" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Account deactivated" });
 
-    const token = generateToken(user._id, user.role);
-    const refreshToken = generateRefreshToken(user._id);
+    const { token, refreshToken } = await buildAuthResponse(user);
 
-    user.refreshToken = refreshToken;
-    user.lastLogin = new Date();
-    await user.save();
-
-    res.status(200).json({ success: true, message: "Login successful", user, token, refreshToken });
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user,
+      token,
+      refreshToken,
+    });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ success: false, message: "Login failed", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Login failed", error: error.message });
+  }
+};
+
+// ----------------------
+// NEW: Google Login
+// POST /api/auth/google
+// ----------------------
+exports.googleLogin = async (req, res) => {
+  try {
+    const { credential, role } = req.body;
+
+    const googleProfile = await verifyGoogleToken(credential);
+
+    // let user = null;
+
+  // 1. Find by googleId
+let user = await userModel.findOne({ googleId: googleProfile.googleId });
+
+// 2. If not found → try email
+if (!user) {
+  user = await userModel.findOne({ email: googleProfile.email });
+}
+
+// 3. If user exists → LINK account
+if (user) {
+  // 🔥 CASE 1: Already linked
+  if (user.googleId && user.googleId === googleProfile.googleId) {
+    // normal login
+  }
+
+  // 🔥 CASE 2: Local account → link Google
+  else if (!user.googleId) {
+    user.googleId = googleProfile.googleId;
+    user.authProvider = "google"; // 🔥 important
+
+    // optional updates
+    if (!user.profilePhoto && googleProfile.profilePhoto) {
+      user.profilePhoto = googleProfile.profilePhoto;
+    }
+
+    if (googleProfile.emailVerified) {
+      user.isEmailVerified = true;
+      user.isVerified = true;
+    }
+
+    await user.save();
+  }
+
+  // 🔥 CASE 3: Conflict
+  else {
+    return res.status(409).json({
+      success: false,
+      message: "This email is already linked to another Google account.",
+    });
+  }
+}
+
+// 4. If user NOT exists → create new
+if (!user) {
+  user = await userModel.create({
+    name: googleProfile.name || "Google User",
+    email: googleProfile.email,
+    googleId: googleProfile.googleId,
+    authProvider: "google",
+    profilePhoto: googleProfile.profilePhoto,
+    isEmailVerified: googleProfile.emailVerified,
+    isVerified: googleProfile.emailVerified,
+    role: role && ["customer", "barber"].includes(role) ? role : "customer",
+    phone: null,
+    password: null,
+  });
+} else {
+      // Link googleId if not already linked
+      if (!user.googleId) {
+        user.googleId = googleProfile.googleId;
+      }
+
+      // Safety: if existing user has different googleId
+      if (user.googleId && user.googleId !== googleProfile.googleId) {
+        return res.status(409).json({
+          success: false,
+          message:
+            "This email is already linked to a different Google account.",
+        });
+      }
+
+      // authProvider consistency
+      if (user.authProvider !== "local") {
+        user.authProvider = "google";
+      }
+
+      if (!user.profilePhoto && googleProfile.profilePhoto) {
+        user.profilePhoto = googleProfile.profilePhoto;
+      }
+
+      if (!user.name && googleProfile.name) {
+        user.name = googleProfile.name;
+      }
+
+      if (googleProfile.emailVerified) {
+        user.isEmailVerified = true;
+      }
+
+      if (user.isEmailVerified) {
+        user.isVerified = user.isPhoneVerified || user.isEmailVerified;
+      }
+
+      user.lastLogin = new Date();
+      await user.save();
+    }
+
+    const { token, refreshToken } = await buildAuthResponse(user);
+
+    return res.status(200).json({
+      success: true,
+      message: "Google login successful",
+      user,
+      token,
+      refreshToken,
+      needsPhone: !user.phone,
+      needsProfileCompletion: !user.phone,
+    });
+  } catch (error) {
+    console.error("Google login error:", error);
+
+    if (
+      error?.message?.includes("Invalid") ||
+      error?.message?.includes("Wrong recipient") ||
+      error?.message?.includes("Token used too late")
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Google credential",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Google login failed",
+      error: error.message,
+    });
   }
 };
 
@@ -134,13 +322,18 @@ exports.login = async (req, res) => {
 exports.refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-    if (!refreshToken) return res.status(401).json({ success: false, message: "Refresh token required" });
+    if (!refreshToken)
+      return res
+        .status(401)
+        .json({ success: false, message: "Refresh token required" });
 
     const decoded = verifyRefreshToken(refreshToken);
     const user = await userModel.findById(decoded.id).select("+refreshToken");
 
     if (!user || user.refreshToken !== refreshToken)
-      return res.status(401).json({ success: false, message: "Invalid refresh token" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid refresh token" });
 
     const newToken = generateToken(user._id, user.role);
     const newRefreshToken = generateRefreshToken(user._id);
@@ -148,10 +341,19 @@ exports.refreshToken = async (req, res) => {
     user.refreshToken = newRefreshToken;
     await user.save();
 
-    res.status(200).json({ success: true, message: "Token refreshed", token: newToken, refreshToken: newRefreshToken });
+    res.status(200).json({
+      success: true,
+      message: "Token refreshed",
+      token: newToken,
+      refreshToken: newRefreshToken,
+    });
   } catch (error) {
     console.error("Token refresh error:", error);
-    res.status(401).json({ success: false, message: "Token refresh failed", error: error.message });
+    res.status(401).json({
+      success: false,
+      message: "Token refresh failed",
+      error: error.message,
+    });
   }
 };
 
@@ -205,10 +407,7 @@ exports.forgotPasswordOtp = async (req, res) => {
     console.log("Forget Password OTP:", otp);
 
     // Hash OTP before saving
-    const hashedOtp = crypto
-      .createHash("sha256")
-      .update(otp)
-      .digest("hex");
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     user.resetOtp = hashedOtp;
     user.resetOtpExpire = Date.now() + 5 * 60 * 1000; // 5 minutes
@@ -293,10 +492,7 @@ exports.verifyResetOtp = async (req, res) => {
 
     email = email.toLowerCase();
 
-    const hashedOtp = crypto
-      .createHash("sha256")
-      .update(otp)
-      .digest("hex");
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const user = await userModel.findOne({
       email,
@@ -344,10 +540,7 @@ exports.resetPasswordWithOtp = async (req, res) => {
 
     email = email.toLowerCase();
 
-    const hashedOtp = crypto
-      .createHash("sha256")
-      .update(otp)
-      .digest("hex");
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const user = await userModel.findOne({
       email,
@@ -385,3 +578,183 @@ exports.resetPasswordWithOtp = async (req, res) => {
   }
 };
 
+// const userModel = require("../models/User");
+// const crypto = require("crypto");
+// const bcrypt = require("bcryptjs");
+// const {sendEmail} = require("../utils/sendEmail.js");
+
+// const { generateToken, generateRefreshToken, verifyRefreshToken } = require("../utils/token");
+
+// // Registration
+// exports.register = async (req, res) => {
+//   try {
+//     let { name, email, phone, password, role = "customer" } = req.body;
+//     email = email.toLowerCase();
+
+//     const existingUser = await userModel.findOne({ $or: [{ email }, { phone }] });
+//     if (existingUser)
+//       return res.status(400).json({ success: false, message: "User already exists" });
+
+//     const user = await userModel.create({ name, email, phone, password, role });
+
+//     const token = generateToken(user._id, user.role);
+//     const refreshToken = generateRefreshToken(user._id);
+
+//     user.refreshToken = refreshToken;
+
+//     await user.save();
+
+//     const html = `
+//   <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
+//     <div style="max-width: 500px; margin: auto; background: #ffffff;
+//                 border-radius: 10px; overflow: hidden;
+//                 box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+//       <div style="background: #111827; padding: 20px; text-align: center;">
+//         <h1 style="color: #ffffff; margin: 0;">✂ BarberBook</h1>
+//         <p style="color: #9ca3af; margin: 5px 0 0; font-size: 13px;">
+//           Welcome to your new grooming hub
+//         </p>
+//       </div>
+
+//       <div style="padding: 30px; text-align: left;">
+//         <h2 style="color: #111827; margin-bottom: 10px; font-size: 20px;">
+//           Welcome, ${name || "there"} 👋
+//         </h2>
+
+//         <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0 0 14px;">
+//           Thanks for creating an account with <strong>BarberBook</strong>.
+//           You can now easily discover barbers, book appointments, and manage
+//           all your grooming visits in one place.
+//         </p>
+
+//         <div style="
+//           margin: 24px 0;
+//           padding: 14px 16px;
+//           background: #f3f4f6;
+//           border-radius: 8px;
+//           font-size: 14px;
+//           color: #111827;
+//         ">
+//           <p style="margin: 0 0 4px;">
+//             <strong>What you can do next:</strong>
+//           </p>
+//           <ul style="padding-left: 18px; margin: 6px 0 0; color: #4b5563;">
+//             <li>Browse available barbers and services</li>
+//             <li>Book a haircut or beard trim in a few taps</li>
+//             <li>View and manage your upcoming appointments</li>
+//           </ul>
+//         </div>
+
+//         <p style="color: #6b7280; font-size: 12px; line-height: 1.6; margin: 0;">
+//           If you didn’t sign up for BarberBook, you can safely ignore this email.
+//         </p>
+//       </div>
+
+//       <div style="
+//         background: #f9fafb;
+//         padding: 15px;
+//         text-align: center;
+//         font-size: 12px;
+//         color: #9ca3af;
+//       ">
+//         © ${new Date().getFullYear()} BarberBook. All rights reserved.
+//       </div>
+//     </div>
+//   </div>
+// `;
+
+//     await sendEmail(user.email, "Welcome to BarberBook", html);
+
+//     res.status(201).json({
+//       success: true,
+//       message: "User registered successfully",
+//       user,
+//       token,
+//       refreshToken,
+//     });
+//   } catch (error) {
+//     console.error("Registration error:", error);
+//     res.status(500).json({ success: false, message: "Registration failed", error: error.message });
+//   }
+// };
+
+// Refresh token
+// exports.refreshToken = async (req, res) => {
+//   try {
+//     const { refreshToken } = req.body;
+//     if (!refreshToken) return res.status(401).json({ success: false, message: "Refresh token required" });
+
+//     const decoded = verifyRefreshToken(refreshToken);
+//     const user = await userModel.findById(decoded.userId || decoded.id).select("+refreshToken");
+
+//     if (!user || user.refreshToken !== refreshToken)
+//       return res.status(401).json({ success: false, message: "Invalid refresh token" });
+
+//     const { token: newToken, refreshToken: newRefreshToken } = await buildAuthResponse(user);
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Token refreshed",
+//       token: newToken,
+//       refreshToken: newRefreshToken,
+//     });
+//   } catch (error) {
+//     console.error("Token refresh error:", error);
+//     res.status(401).json({ success: false, message: "Token refresh failed", error: error.message });
+//   }
+// };
+
+// Logout
+// exports.logout = async (req, res) => {
+//   try {
+//     if (req.user?.id) {
+//       await userModel.findByIdAndUpdate(req.user.id, {
+//         refreshToken: null,
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Logout successful",
+//     });
+//   } catch (error) {
+//     console.error("Logout error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Logout failed",
+//     });
+//   }
+// };
+
+// // Login
+// exports.login = async (req, res) => {
+//   try {
+//     let { email, password } = req.body;
+//     email = email.toLowerCase();
+
+//     if (!email || !password)
+//       return res.status(400).json({ success: false, message: "Provide email and password" });
+
+//     const user = await userModel.findOne({ email }).select("+password");
+//     if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
+
+//     const isValid = await user.comparePassword(password);
+//     if (!isValid) return res.status(401).json({ success: false, message: "Invalid credentials" });
+
+//     if (!user.isActive)
+//       return res.status(401).json({ success: false, message: "Account deactivated" });
+
+//     const token = generateToken(user._id, user.role);
+//     const refreshToken = generateRefreshToken(user._id);
+
+//     user.refreshToken = refreshToken;
+//     user.lastLogin = new Date();
+//     await user.save();
+
+//     res.status(200).json({ success: true, message: "Login successful", user, token, refreshToken });
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     res.status(500).json({ success: false, message: "Login failed", error: error.message });
+//   }
+// };

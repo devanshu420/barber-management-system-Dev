@@ -40,7 +40,7 @@ export default function BarberDashboardPage() {
   // fetch shops
   useEffect(() => {
     if (!barberId) {
-      router.push("/auth/barber-login");
+      router.push("/auth/login");
       return;
     }
 

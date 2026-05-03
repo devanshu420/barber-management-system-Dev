@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, User, Scissors } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -93,6 +94,51 @@ export function RegisterForm() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const token = credentialResponse?.credential;
+
+      if (!token) {
+        setMessage("❌ Google credential not received");
+        return;
+      }
+
+      setLoading(true);
+
+      const response = await axios.post(`${API_BASE}/api/auth/google`, {
+        credential: token,
+        role: formData.role,
+      });
+
+      if (response.data.success) {
+        const user = response.data.user;
+
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userName", user.name);
+        localStorage.setItem("userEmail", user.email);
+        localStorage.setItem("userRole", user.role);
+
+        setMessage("✅ Google login successful!");
+
+        setTimeout(() => {
+          router.push(
+            user.role === "barber" ? "/barber-shop-registration" : "/",
+          );
+        }, 1000);
+      }
+    } catch (error) {
+      setMessage("❌ Google login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setMessage("❌ Google login failed");
   };
 
   return (
@@ -343,6 +389,21 @@ export function RegisterForm() {
           </div>
         )}
       </form>
+
+      {/* OR Divider */}
+      <div className="flex items-center gap-3 my-4">
+        <div className="h-px flex-1 bg-gray-800" />
+        <span className="text-gray-500 text-xs sm:text-sm font-medium">OR</span>
+        <div className="h-px flex-1 bg-gray-800" />
+      </div>
+
+      {/* Google Login */}
+      <div className="flex justify-center mt-2">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={handleGoogleError}
+        />
+      </div>
     </div>
   );
 }

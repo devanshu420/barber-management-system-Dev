@@ -1,73 +1,81 @@
 "use client";
 
 import { useState } from "react";
-import { LoginForm } from "@/components/auth/login-form";
 import Link from "next/link";
 import { Scissors } from "lucide-react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState("customer");
+  const [googleError, setGoogleError] = useState("");
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center px-4 sm:px-6 py-8">
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-center">
-        {/* Left: Content */}
-        <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
-          <Link
-            href="/"
-            className="inline-flex items-center space-x-2 sm:space-x-3 group mb-3 sm:mb-4 justify-center lg:justify-start"
-          >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-teal-500 rounded-xl flex items-center justify-center group-hover:bg-teal-600 transition">
-              <Scissors className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-            </div>
-            <span className="font-bold text-2xl sm:text-3xl text-white group-hover:text-teal-400 transition">
-              BarberBook
-            </span>
-          </Link>
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        
+        <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+          
+          {/* ================= LEFT SECTION (DESKTOP ONLY) ================= */}
+          <div className="hidden lg:flex flex-col space-y-6 text-left">
 
-          <div className="space-y-2 sm:space-y-3">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight">
-              Welcome back to your{" "}
-              <span className="text-teal-400">barber hub</span>
-            </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-400 max-w-xl mx-auto lg:mx-0">
-              Sign in to manage bookings, track your appointments, and keep your
-              grooming journey on point.
-            </p>
-          </div>
+            {/* Logo */}
+            <Link
+              href="/"
+              className="inline-flex items-center gap-3 group"
+            >
+              <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
+                <Scissors className="h-6 w-6 text-white" />
+              </div>
+              <span className="font-bold text-3xl text-white group-hover:text-teal-400 transition">
+                BarberBook
+              </span>
+            </Link>
 
-          <div className="w-full max-w-md mx-auto lg:mx-0">
-            <div className="p-2.5 sm:p-3 bg-linear-to-r from-teal-500/10 to-teal-600/10 border border-teal-500/30 rounded-lg">
-              <p className="text-teal-300 text-xs sm:text-sm font-medium text-center">
-                {selectedRole === "customer"
-                  ? "👤 Customers can book and manage appointments with top barbers."
-                  : "✂️ Barbers can manage schedules, clients, and services."}
+            {/* Heading */}
+            <div>
+              <h1 className="text-4xl font-bold text-white leading-tight">
+                Welcome back to your{" "}
+                <span className="text-teal-400">barber hub</span>
+              </h1>
+
+              <p className="mt-4 text-gray-400 max-w-md">
+                Sign in to manage bookings, track your appointments, and keep
+                your grooming journey on point.
               </p>
             </div>
+
+            {/* Info box */}
+            <div className="max-w-md">
+              <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-lg">
+                <p className="text-teal-300">
+                  {selectedRole === "customer"
+                    ? "👤 Customers can book & manage appointments."
+                    : "✂️ Barbers manage schedules & clients."}
+                </p>
+              </div>
+            </div>
+
+            {/* Error */}
+            {googleError && (
+              <p className="text-red-400">
+                {googleError}
+              </p>
+            )}
+          </div>
+
+          {/* ================= RIGHT SECTION ================= */}
+          <div className="w-full max-w-md mx-auto">
+            
+            {/* Login Card */}
+            <div>
+              <LoginForm role={selectedRole} />
+            </div>
+
           </div>
         </div>
-
-        {/* Right: Login form */}
-        <div className="w-full max-w-md mx-auto animate-fadeIn">
-          <LoginForm role={selectedRole} />
-        </div>
       </div>
-
-      <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
-    </div>
+    </GoogleOAuthProvider>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleLogin } from "@react-oauth/google";
 import {
   Eye,
   EyeOff,
@@ -27,6 +28,12 @@ export function LoginForm({ role = "customer" }) {
     password: "",
   });
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+// console.log("CLIENT ID:", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+
+  // =========================
+  // EMAIL/PASSWORD LOGIN
+  // =========================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -35,7 +42,7 @@ export function LoginForm({ role = "customer" }) {
       setLoading(true);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        `${API_BASE}/api/auth/login`,
         {
           email: formData.email,
           password: formData.password,
@@ -49,7 +56,6 @@ export function LoginForm({ role = "customer" }) {
         const userFromDB = response.data.user;
         const actualRole = userFromDB.role || userFromDB.userType || "customer";
 
-        // yaha selectedRole use ho raha hai
         if (actualRole !== selectedRole) {
           setMessage(
             `❌ Role mismatch! You are registered as "${actualRole}" but trying to login as "${selectedRole}". Please select the correct role.`,
@@ -95,6 +101,91 @@ export function LoginForm({ role = "customer" }) {
     }
   };
 
+  // =========================
+  // GOOGLE LOGIN
+  // =========================
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const token = credentialResponse?.credential;
+
+      if (!token) {
+        setMessage("❌ Google credential not received");
+        return;
+      }
+
+      setLoading(true);
+
+      const response = await axios.post(
+        `${API_BASE}/api/auth/google`,
+        {
+          credential: token,
+          role: selectedRole,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
+      if (response.data.success) {
+        handleLoginSuccess(response.data);
+      } else {
+        setMessage("❌ Google login failed");
+      }
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setMessage("❌ Google login failed");
+  };
+
+  // =========================
+  // COMMON SUCCESS HANDLER
+  // =========================
+  const handleLoginSuccess = (data) => {
+    const user = data.user;
+    const actualRole = user.role || "customer";
+
+    if (actualRole !== selectedRole) {
+      setMessage(
+        `❌ Role mismatch! Registered as "${actualRole}", selected "${selectedRole}"`,
+      );
+      return;
+    }
+
+    setMessage("✅ Login successful!");
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userName", user.name);
+    localStorage.setItem("userEmail", user.email);
+    localStorage.setItem("userRole", actualRole);
+    localStorage.setItem("userId", user._id || user.id);
+
+    setTimeout(() => {
+      if (actualRole === "barber") {
+        router.push("/barber-shop");
+      } else if (actualRole === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/");
+      }
+    }, 1000);
+  };
+
+  // =========================
+  // COMMON ERROR HANDLER
+  // =========================
+  const handleError = (error) => {
+    if (error.response) {
+      setMessage(`❌ ${error.response.data.message || "Login failed"}`);
+    } else {
+      setMessage("❌ Server error");
+    }
+  };
+
   return (
     <div className="relative w-full flex items-center justify-center">
       {/* Background glow (compact) */}
@@ -109,6 +200,8 @@ export function LoginForm({ role = "customer" }) {
       >
         {/* Top accent line */}
         <div className="absolute inset-x-10 -top-px h-px bg-gradient-to-r from-transparent via-teal-500/60 to-transparent" />
+
+        {/* 🔵 GOOGLE LOGIN */}
 
         {/* Header */}
         <div className="text-center mb-1 space-y-2">
@@ -260,6 +353,21 @@ export function LoginForm({ role = "customer" }) {
             Forgot password?
           </a>
         </div>
+
+        {/* OR Divider */}
+      <div className="flex items-center gap-3 my-4">
+        <div className="h-px flex-1 bg-gray-800" />
+        <span className="text-gray-500 text-xs sm:text-sm font-medium">OR</span>
+        <div className="h-px flex-1 bg-gray-800" />
+      </div>
+
+      {/* Google Login */}
+      <div className="flex justify-center mt-2">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={handleGoogleError}
+        />
+      </div>
 
         <div className="pt-1 text-center">
           <p className="text-gray-500 text-[10px] sm:text-[11px] text-xs">
