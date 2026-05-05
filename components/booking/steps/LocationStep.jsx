@@ -338,7 +338,7 @@ export function LocationSelection({ onSelect }) {
           <Button
             onClick={handleGPSLocation}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-black font-semibold py-2.5 rounded-xl transition-transform duration-150 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="w-full bg-gradient-to-r cursor-pointer from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-black font-semibold py-2.5 rounded-xl transition-transform duration-150 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {loading && !shopsLoading ? (
               <>
@@ -347,7 +347,7 @@ export function LocationSelection({ onSelect }) {
               </>
             ) : (
               <>
-                <Navigation className="w-4 h-4 mr-2" />
+                <Navigation className="w-4 h-4 mr-2 " />
                 Use GPS location
               </>
             )}
@@ -395,7 +395,7 @@ export function LocationSelection({ onSelect }) {
             <Button
               onClick={handleManualLocation}
               disabled={loading || !manualLocation.trim()}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-semibold py-2.5 rounded-xl transition-transform duration-150 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="w-full bg-linear-to-r cursor-pointer from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-semibold py-2.5 rounded-xl transition-transform duration-150 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               {loading && !shopsLoading ? (
                 <>

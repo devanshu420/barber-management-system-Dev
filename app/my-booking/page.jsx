@@ -582,7 +582,7 @@ export default function MyBookingsPage() {
                     <div className="flex gap-2 w-full sm:w-auto">
                       <Button
                         onClick={() => handleViewDetails(booking)}
-                        className="flex-1 sm:flex-none bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/50 text-sm px-3 py-2 rounded-lg"
+                        className="flex-1 sm:flex-none bg-teal-500/20 cursor-pointer hover:bg-teal-500/30 text-teal-400 border border-teal-500/50 text-sm px-3 py-2 rounded-lg"
                       >
                         Details
                       </Button>
@@ -592,7 +592,7 @@ export default function MyBookingsPage() {
                         <Button
                           onClick={() => openRescheduleModal(booking)}
                           disabled={actionLoading}
-                          className="flex-1 sm:flex-none bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
+                          className="flex-1 sm:flex-none bg-blue-500/20 cursor-pointer hover:bg-blue-500/30 text-blue-400 border border-blue-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
                         >
                           Reschedule
                         </Button>
@@ -602,7 +602,7 @@ export default function MyBookingsPage() {
                         <Button
                           onClick={() => openCancelModal(booking)}
                           disabled={actionLoading}
-                          className="flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
+                          className="flex-1 sm:flex-none bg-red-500/20 cursor-pointer hover:bg-red-500/30 text-red-400 border border-red-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
                         >
                           Cancel
                         </Button>
@@ -613,7 +613,7 @@ export default function MyBookingsPage() {
                           <Button
                             onClick={() => openReviewModal(booking)}
                             disabled={actionLoading}
-                            className="flex-1 sm:flex-none bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
+                            className="flex-1 sm:flex-none cursor-pointer bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/50 text-sm px-3 py-2 rounded-lg disabled:opacity-50"
                           >
                             Add Review
                           </Button>
@@ -769,7 +769,7 @@ export default function MyBookingsPage() {
                   !selectedBooking.isReviewed && (
                     <Button
                       onClick={() => openReviewModal(selectedBooking)}
-                      className="flex-1 bg-purple-500 hover:bg-purple-600 text-white"
+                      className="flex-1 bg-purple-500 hover:bg-purple-600 text-white cursor-pointer"
                     >
                       Add Review
                     </Button>
@@ -788,7 +788,7 @@ export default function MyBookingsPage() {
                 {selectedBooking.status === "pending" && (
                   <Button
                     onClick={() => openCancelModal(selectedBooking)}
-                    className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50"
+                    className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50 cursor-pointer"
                   >
                     Cancel
                   </Button>
@@ -797,7 +797,7 @@ export default function MyBookingsPage() {
                 <Button
                   onClick={handleCloseDetails}
                   variant="outline"
-                  className="flex-1 bg-gray-800/50 hover:bg-gray-700"
+                  className="flex-1 bg-gray-800/50 hover:bg-gray-700 cursor-pointer"
                 >
                   Close
                 </Button>

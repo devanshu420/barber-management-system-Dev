@@ -141,13 +141,13 @@ exports.login = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
 
-    if (user.authProvider !== "local") {
-      return res.status(400).json({
-        success: false,
-        message:
-          "This account is registered with Google. Please use Google login.",
-      });
-    }
+    // if (user.authProvider !== "local") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message:
+    //       "This account is registered with Google. Please use Google login.",
+    //   });
+    // }
 
     const isValid = await user.comparePassword(password);
     if (!isValid)
@@ -207,7 +207,7 @@ if (user) {
   // 🔥 CASE 2: Local account → link Google
   else if (!user.googleId) {
     user.googleId = googleProfile.googleId;
-    user.authProvider = "google"; // 🔥 important
+    // user.authProvider = "google"; 
 
     // optional updates
     if (!user.profilePhoto && googleProfile.profilePhoto) {

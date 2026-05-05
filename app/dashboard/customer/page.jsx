@@ -34,30 +34,26 @@ export default function CustomerDashboard() {
   const [updating, setUpdating] = useState(false);
 
   const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "https://barber-book-155830263049.asia-south1.run.app";
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://barber-book-155830263049.asia-south1.run.app";
 
   // Fetch user profile from backend
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token =
-          typeof window !== "undefined"
-            ? localStorage.getItem("token")
-            : null;
+          typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
         if (!token) {
           router.push("/auth/login");
           return;
         }
 
-        const { data } = await axios.get(
-          `${API_BASE_URL}/api/users/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const { data } = await axios.get(`${API_BASE_URL}/api/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         // Backend: { success: true, data: { ...user } }
         if (!data?.success || !data?.data) {
@@ -69,10 +65,8 @@ export default function CustomerDashboard() {
 
         setUserData({
           ...user,
-          bookings:
-            user.bookings ?? user.totalBookings ?? 0,
-          reviews:
-            user.reviews ?? user.totalReviews ?? 0,
+          bookings: user.bookings ?? user.totalBookings ?? 0,
+          reviews: user.reviews ?? user.totalReviews ?? 0,
           walletBalance: user.walletBalance ?? 0,
           loyaltyPoints: user.loyaltyPoints ?? 0,
           lastBookingAt: user.lastBookingAt
@@ -95,21 +89,13 @@ export default function CustomerDashboard() {
         localStorage.setItem("userPhone", user.phone || "");
         localStorage.setItem(
           "userBookings",
-          String(
-            user.bookings ?? user.totalBookings ?? 0
-          )
+          String(user.bookings ?? user.totalBookings ?? 0),
         );
         if (user.profilePhoto) {
-          localStorage.setItem(
-            "userProfilePhoto",
-            user.profilePhoto
-          );
+          localStorage.setItem("userProfilePhoto", user.profilePhoto);
         }
         if (user._id || user.id) {
-          localStorage.setItem(
-            "userId",
-            user._id || user.id
-          );
+          localStorage.setItem("userId", user._id || user.id);
         }
       } catch (error) {
         const status = error?.response?.status;
@@ -161,9 +147,7 @@ export default function CustomerDashboard() {
     try {
       setUpdating(true);
       const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("token")
-          : null;
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
       if (!token) {
         router.push("/auth/login");
@@ -185,7 +169,7 @@ export default function CustomerDashboard() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (data.success) {
@@ -196,10 +180,7 @@ export default function CustomerDashboard() {
         localStorage.setItem("userEmail", updated.email);
         localStorage.setItem("userPhone", updated.phone);
         if (updated.profilePhoto) {
-          localStorage.setItem(
-            "userProfilePhoto",
-            updated.profilePhoto
-          );
+          localStorage.setItem("userProfilePhoto", updated.profilePhoto);
         }
 
         // Update state from backend response
@@ -208,17 +189,14 @@ export default function CustomerDashboard() {
           name: updated.name,
           email: updated.email,
           phone: updated.phone,
-          profilePhoto:
-            updated.profilePhoto || prev.profilePhoto,
+          profilePhoto: updated.profilePhoto || prev.profilePhoto,
           isEmailVerified: updated.isEmailVerified,
           isPhoneVerified: updated.isPhoneVerified,
         }));
 
         setIsEditing(false);
         setProfilePhotoFile(null);
-        setProfilePhotoPreview(
-          updated.profilePhoto || null
-        );
+        setProfilePhotoPreview(updated.profilePhoto || null);
 
         alert("Profile updated successfully");
       } else {
@@ -242,9 +220,7 @@ export default function CustomerDashboard() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 mb-4">
             <Scissors className="w-6 h-6 text-teal-400 animate-spin" />
           </div>
-          <p className="text-gray-400">
-            Loading dashboard...
-          </p>
+          <p className="text-gray-400">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -254,9 +230,7 @@ export default function CustomerDashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">
-            Unable to load user data
-          </p>
+          <p className="text-gray-400 mb-4">Unable to load user data</p>
           <Button
             onClick={() => router.push("/")}
             className="bg-teal-500 hover:bg-teal-600"
@@ -290,7 +264,7 @@ export default function CustomerDashboard() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-400 hover:text-teal-400 hover:bg-gray-800/50"
+                className="text-gray-400 hover:text-teal-400 hover:bg-gray-800/50 cursor-pointer"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
@@ -307,7 +281,7 @@ export default function CustomerDashboard() {
 
           <Button
             onClick={handleLogout}
-            className="bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/50 text-sm"
+            className="bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/50 text-sm cursor-pointer"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
@@ -360,9 +334,7 @@ export default function CustomerDashboard() {
                         <input
                           type="text"
                           value={editName}
-                          onChange={(e) =>
-                            setEditName(e.target.value)
-                          }
+                          onChange={(e) => setEditName(e.target.value)}
                           className="w-full px-3.5 py-2.5 rounded-lg bg-slate-900/70 border border-slate-700 text-sm outline-none focus:ring-1 focus:ring-teal-400"
                           placeholder="Enter your name"
                         />
@@ -385,7 +357,7 @@ export default function CustomerDashboard() {
                   {!isEditing && (
                     <Button
                       onClick={() => setIsEditing(true)}
-                      className="h-9 bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 border border-teal-500/40 text-xs sm:text-sm"
+                      className="h-9 bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 border border-teal-500/40 text-xs sm:text-sm cursor-pointer"
                     >
                       <Edit className="w-4 h-4 mr-1.5" />
                       Edit Profile
@@ -398,23 +370,10 @@ export default function CustomerDashboard() {
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/40">
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
                     <span className="text-xs text-emerald-300">
-                      Email{" "}
-                      {userData.isEmailVerified
-                        ? "verified"
-                        : "pending"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/40">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="text-xs text-emerald-300">
-                      Phone{" "}
-                      {userData.isPhoneVerified
-                        ? "verified"
-                        : "pending"}
+                      Email {userData.isEmailVerified ? "verified" : "pending"}
                     </span>
                   </div>
                 </div>
-
                 {/* Contact row */}
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 border-t border-slate-800/80 mt-2">
                   <div className="flex-1">
@@ -428,9 +387,7 @@ export default function CustomerDashboard() {
                           <input
                             type="email"
                             value={editEmail}
-                            onChange={(e) =>
-                              setEditEmail(e.target.value)
-                            }
+                            onChange={(e) => setEditEmail(e.target.value)}
                             className="w-full px-3 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-xs sm:text-sm outline-none focus:ring-1 focus:ring-teal-400"
                           />
                         </div>
@@ -456,9 +413,7 @@ export default function CustomerDashboard() {
                           <input
                             type="tel"
                             value={editPhone}
-                            onChange={(e) =>
-                              setEditPhone(e.target.value)
-                            }
+                            onChange={(e) => setEditPhone(e.target.value)}
                             className="w-full px-3 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-xs sm:text-sm outline-none focus:ring-1 focus:ring-teal-400"
                             placeholder="10-digit number"
                           />
@@ -467,9 +422,7 @@ export default function CustomerDashboard() {
                     ) : (
                       <div className="flex items-center gap-2 text-xs sm:text-sm">
                         <Phone className="w-4 h-4 text-teal-400" />
-                        <span className="text-slate-300">
-                          {userData.phone}
-                        </span>
+                        <span className="text-slate-300">{userData.phone}</span>
                       </div>
                     )}
                   </div>
@@ -483,9 +436,7 @@ export default function CustomerDashboard() {
                       onClick={handleProfileUpdate}
                       className="bg-teal-500 hover:bg-teal-600 text-black text-sm px-5"
                     >
-                      {updating
-                        ? "Saving..."
-                        : "Save changes"}
+                      {updating ? "Saving..." : "Save changes"}
                     </Button>
                     <Button
                       type="button"
@@ -494,16 +445,10 @@ export default function CustomerDashboard() {
                       onClick={() => {
                         setIsEditing(false);
                         setEditName(userData.name || "");
-                        setEditEmail(
-                          userData.email || ""
-                        );
-                        setEditPhone(
-                          userData.phone || ""
-                        );
+                        setEditEmail(userData.email || "");
+                        setEditPhone(userData.phone || "");
                         setProfilePhotoFile(null);
-                        setProfilePhotoPreview(
-                          userData.profilePhoto || null
-                        );
+                        setProfilePhotoPreview(userData.profilePhoto || null);
                       }}
                       className="border-slate-700 text-slate-300 text-sm"
                     >
@@ -519,14 +464,10 @@ export default function CustomerDashboard() {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">
-                  Total bookings
-                </span>
+                <span className="text-xs text-slate-400">Total bookings</span>
                 <Calendar className="w-5 h-5 text-teal-400/60" />
               </div>
-              <p className="mt-3 text-3xl font-semibold">
-                {userData.bookings}
-              </p>
+              <p className="mt-3 text-3xl font-semibold">{userData.bookings}</p>
               <p className="mt-1 text-[11px] text-slate-500">
                 Keep your grooming on schedule.
               </p>
@@ -534,14 +475,10 @@ export default function CustomerDashboard() {
 
             <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">
-                  Reviews
-                </span>
+                <span className="text-xs text-slate-400">Reviews</span>
                 <Star className="w-5 h-5 text-yellow-400/70" />
               </div>
-              <p className="mt-3 text-3xl font-semibold">
-                {userData.reviews}
-              </p>
+              <p className="mt-3 text-3xl font-semibold">{userData.reviews}</p>
               <p className="mt-1 text-[11px] text-slate-500">
                 Share feedback to help your barbers.
               </p>
@@ -577,9 +514,7 @@ export default function CustomerDashboard() {
                 </label>
                 <div className="mt-2 flex items-center gap-3 px-3.5 py-3 rounded-xl bg-slate-900/70 border border-slate-800">
                   <Phone className="w-4 h-4 text-teal-400" />
-                  <span className="text-slate-100">
-                    {userData.phone}
-                  </span>
+                  <span className="text-slate-100">{userData.phone}</span>
                 </div>
               </div>
 
@@ -605,9 +540,7 @@ export default function CustomerDashboard() {
 
             <div className="space-y-5 text-sm">
               <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-slate-900/60">
-                <span className="text-slate-400">
-                  Member since
-                </span>
+                <span className="text-slate-400">Member since</span>
                 <span className="text-slate-100 font-medium">
                   {userData.joinDate}
                 </span>
@@ -615,9 +548,7 @@ export default function CustomerDashboard() {
 
               {userData.lastBookingAt && (
                 <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-slate-900/60">
-                  <span className="text-slate-400">
-                    Last booking
-                  </span>
+                  <span className="text-slate-400">Last booking</span>
                   <span className="text-slate-100 font-medium">
                     {userData.lastBookingAt}
                   </span>
@@ -625,41 +556,31 @@ export default function CustomerDashboard() {
               )}
 
               <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-slate-900/60">
-                <span className="text-slate-400">
-                  Total bookings
-                </span>
+                <span className="text-slate-400">Total bookings</span>
                 <span className="text-teal-300 font-semibold">
                   {userData.bookings}
                 </span>
               </div>
 
               <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-slate-900/60">
-                <span className="text-slate-400">
-                  Reviews given
-                </span>
+                <span className="text-slate-400">Reviews given</span>
                 <span className="text-yellow-300 font-semibold">
                   {userData.reviews}
                 </span>
               </div>
 
-              {typeof userData.walletBalance !==
-                "undefined" && (
+              {typeof userData.walletBalance !== "undefined" && (
                 <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-                  <span className="text-slate-300">
-                    Wallet balance
-                  </span>
+                  <span className="text-slate-300">Wallet balance</span>
                   <span className="text-emerald-300 font-semibold">
                     ₹{userData.walletBalance}
                   </span>
                 </div>
               )}
 
-              {typeof userData.loyaltyPoints !==
-                "undefined" && (
+              {typeof userData.loyaltyPoints !== "undefined" && (
                 <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30">
-                  <span className="text-slate-300">
-                    Loyalty points
-                  </span>
+                  <span className="text-slate-300">Loyalty points</span>
                   <span className="text-purple-300 font-semibold">
                     {userData.loyaltyPoints}
                   </span>
@@ -667,9 +588,7 @@ export default function CustomerDashboard() {
               )}
 
               <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-orange-500/10 border border-orange-500/30">
-                <span className="text-slate-300">
-                  Your rating
-                </span>
+                <span className="text-slate-300">Your rating</span>
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
@@ -688,25 +607,21 @@ export default function CustomerDashboard() {
         </div>
 
         {/* Actions */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link href="/booking">
-            <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]">
+            <Button className="w-full bg-emerald-500 hover:bg-emerald-600 cursor-pointer text-black font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]">
               Book new appointment
             </Button>
           </Link>
           <Link href="/my-booking">
-            <Button className="w-full bg-teal-500 hover:bg-teal-600 text-black font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]">
+            <Button className="w-full bg-teal-500 hover:bg-teal-600 cursor-pointer text-black font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]">
               View bookings
             </Button>
           </Link>
-          <Link href="/payment">
-            <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]">
-              Manage payments
-            </Button>
-          </Link>
+
           <Button
             onClick={handleLogout}
-            className="w-full bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/50 font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]"
+            className="w-full bg-red-500/15 cursor-pointer hover:bg-red-500/25 text-red-400 border border-red-500/50 font-semibold py-3 rounded-xl transition-transform hover:scale-[1.03]"
           >
             Sign out
           </Button>
@@ -715,13 +630,6 @@ export default function CustomerDashboard() {
     </div>
   );
 }
-
-
-
-
-
-
-
 
 // "use client";
 
